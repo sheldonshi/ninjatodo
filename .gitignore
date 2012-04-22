@@ -1,0 +1,7 @@
+.DS_Store
+out/*
+tmp/*
+modules/*
+*.ipr
+*.iws
+*.iml

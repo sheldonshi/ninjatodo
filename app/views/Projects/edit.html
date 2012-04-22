@@ -1,0 +1,33 @@
+#{extends 'main.html' /}
+#{set title:'Edit' /}
+
+<script type="text/javascript">
+    $().ready(function(){
+        mytinytodo.project = '${project.id}';
+        mytinytodo.mttUrl = "/";
+    });
+</script>
+
+<div><a href="#" class="mtt-back-button">&{'go_back'}</a></div>
+
+<h3>&{'set_header'}</h3>
+
+<div id="settings_msg" style="display:none"></div>
+
+#{form @Projects.save() , id:'settings_form' }
+
+<table class="mtt-settings-table">
+    <tr>
+        <th>&{'set_title'}<br/><span class="descr">&{'set_title_descr'}</span></th>
+        <td> <input name="title" value="${project.title}" class="in350" /> </td>
+    </tr>
+    <tr><td colspan="2" class="form-buttons">
+
+        <input type="submit" value="&{'save'}" />
+        <input type="button" class="mtt-back-button" value="&{'cancel'}" />
+
+    </td></tr>
+</table>
+
+#{/form}
+
