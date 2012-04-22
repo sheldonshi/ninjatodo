@@ -7,7 +7,7 @@
 (function(){
 
 var taskList = new Array(), taskOrder = new Array();
-var filter = { compl:0, search:'', due:'' };
+var filter = { completed:0, search:'', due:'' };
 var sortOrder; //save task order before dragging
 var searchTimer;
 var objPrio = {};
@@ -21,7 +21,7 @@ var tabLists = {
 	_alltasks: {},
 	clear: function(){
 		this._lists = {}; this._length = 0; this._order = [];
-		this._alltasks = { id:-1, showCompl:0, sort:3 }; 
+		this._alltasks = { id:-1, showCompleted:0, sort:3 };
 	},
 	length: function(){ return this._length; },
 	exists: function(id){ if(this._lists[id] || id==-1) return true; else return false; },
@@ -56,6 +56,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
 		firstdayofweek: 1,
 		touchDevice: false
 	},
+    project: '',
 
 	timers: {
 		previewtag: 0
@@ -76,6 +77,10 @@ var mytinytodo = window.mytinytodo = _mtt = {
 		
 		init: function(lang)
 		{
+            lang.daysMin = lang['days_min'] ? lang['days_min'].split(",") : null;
+            lang.daysLong = lang['days_long'] ? lang['days_long'].split(",") : null;
+            lang.monthsMin = lang['months_short'] ? lang['months_short'].split(",") : null;
+            lang.monthsLong = lang['months_long'] ? lang['months_long'].split(",") : null;
 			this.__lang = lang;
 			this.daysMin = this.__lang.daysMin;
 			this.daysLong = this.__lang.daysLong;
@@ -314,10 +319,10 @@ var mytinytodo = window.mytinytodo = _mtt = {
 			buttonImage: _mtt.templateUrl + 'images/calendar.png', buttonImageOnly: true,
 			constrainInput: false,
 			duration:'',
-			dayNamesMin:_mtt.lang.daysMin, dayNames:_mtt.lang.daysLong, monthNamesShort:_mtt.lang.monthsLong
+			dayNamesMin:_mtt.lang.daysMin, dayNames:_mtt.lang.daysLong, monthNames:_mtt.lang.monthsLong
 		});
 
-		$("#edittags").autocomplete('ajax.php?suggestTags', {scroll: false, multiple: true, selectFirst:false, max:8, extraParams:{list:function(){ var taskId = document.getElementById('taskedit_form').id.value; return taskList[taskId].listId; }}});
+		$("#edittags").autocomplete('Tags/suggest', {scroll: false, multiple: true, selectFirst:false, max:8, extraParams:{project:_mtt.project}});
 
 		$('#taskedit_form').find('select,input,textarea').bind('change keypress', function(){
 			flag.editFormChanged = true;
@@ -783,7 +788,7 @@ function loadTasks(opts)
 
 	_mtt.db.request('loadTasks', {
 		list: curList.id,
-		compl: curList.showCompl,
+        showCompleted: curList.showCompleted,
 		sort: curList.sort,
 		search: filter.search,
 		tag: _mtt.filter.getTags(true),
@@ -812,20 +817,19 @@ function prepareTaskStr(item, noteExp)
 {
 	// &mdash; = &#8212; = —
 	var id = item.id;
-	var prio = item.prio;
-	return '<li id="taskrow_'+id+'" class="' + (item.compl?'task-completed ':'') + item.dueClass + (item.note!=''?' task-has-note':'') +
-				((curList.showNotes && item.note != '') || noteExp ? ' task-expanded' : '') + prepareTagsClass(item.tags_ids) + '">' +
+	var prio = item.priority;
+	return '<li id="taskrow_'+id+'" class="' + prepareItemStyleClass(item, noteExp) + '">' +
 		'<div class="task-actions"><a href="#" class="taskactionbtn"></a></div>'+"\n"+
 		'<div class="task-left"><div class="task-toggle"></div>'+
-		'<input type="checkbox" '+(flag.readOnly?'disabled="disabled"':'')+(item.compl?'checked="checked"':'')+'/></div>'+"\n"+
+		'<input type="checkbox" '+(flag.readOnly?'disabled="disabled"':'')+(item.completed?'checked="checked"':'')+'/></div>'+"\n"+
 		'<div class="task-middle"><div class="task-through-right">'+prepareDuedate(item)+
 		'<span class="task-date-completed"><span title="'+item.dateInlineTitle+'">'+item.dateInline+'</span>&#8212;'+
 		'<span title="'+item.dateCompletedInlineTitle+'">'+item.dateCompletedInline+'</span></span></div>'+"\n"+
 		'<div class="task-through">'+preparePrio(prio,id)+'<span class="task-title">'+prepareHtml(item.title)+'</span> '+
-		(curList.id == -1 ? '<span class="task-listname">'+ tabLists.get(item.listId).name +'</span>' : '') +	"\n" +
+		(curList.id == -1 ? '<span class="task-listname">'+ tabLists.get(item.toDoList.id).name +'</span>' : '') +	"\n" +
 		prepareTagsStr(item)+'<span class="task-date">'+item.dateInlineTitle+'</span></div>'+
 		'<div class="task-note-block">'+
-			'<div id="tasknote'+id+'" class="task-note"><span>'+prepareHtml(item.note)+'</span></div>'+
+			'<div id="tasknote'+id+'" class="task-note"><span>'+(item.note ? prepareHtml(item.note) : '')+'</span></div>'+
 			'<div id="tasknotearea'+id+'" class="task-note-area"><textarea id="notetext'+id+'"></textarea>'+
 				'<span class="task-note-actions"><a href="#" class="mtt-action-note-save">'+_mtt.lang.get('actionNoteSave')+
 				'</a> | <a href="#" class="mtt-action-note-cancel">'+_mtt.lang.get('actionNoteCancel')+'</a></span></div>'+
@@ -836,6 +840,8 @@ function prepareTaskStr(item, noteExp)
 
 function prepareHtml(s)
 {
+    // escape html tags
+    s = $("<div/>").text(s).html();
 	// make URLs clickable
 	s = s.replace(/(^|\s|>)(www\.([\w\#$%&~\/.\-\+;:=,\?\[\]@]+?))(,|\.|:|)?(?=\s|&quot;|&lt;|&gt;|\"|<|>|$)/gi, '$1<a href="http://$2" target="_blank">$2</a>$4');
 	return s.replace(/(^|\s|>)((?:http|https|ftp):\/\/([\w\#$%&~\/.\-\+;:=,\?\[\]@]+?))(,|\.|:|)?(?=\s|&quot;|&lt;|&gt;|\"|<|>|$)/ig, '$1<a href="$2" target="_blank">$2</a>$4');
@@ -852,10 +858,17 @@ function preparePrio(prio,id)
 
 function prepareTagsStr(item)
 {
-	if(!item.tags || item.tags == '') return '';
-	var a = item.tags.split(',');
-	if(!a.length) return '';
-	var b = item.tags_ids.split(',')
+//	if(!item.tags || item.tags == '') return '';
+//	var a = item.tags.split(',');
+//	if(!a.length) return '';
+//	var b = item.tags_ids.split(',')
+    if (!item.tags || item.tags.length == 0) return '';
+    var a = [];
+    var b = [];
+    for (var i in item.tags) {
+        a.push(item.tags[i].text);
+        b.push(item.tags[i].id);
+    }
 	for(var i in a) {
 		a[i] = '<a href="#" class="tag" tag="'+a[i]+'" tagid="'+b[i]+'">'+a[i]+'</a>';
 	}
@@ -875,10 +888,23 @@ function prepareTagsClass(ids)
 
 function prepareDuedate(item)
 {
-	if(!item.duedate) return '';
-	return '<span class="duedate" title="'+item.dueTitle+'"><span class="duedate-arrow">→</span> '+item.dueStr+'</span>';
+	if(!item.dateDueInDays) return '';
+	return '<span class="duedate" title="'+item.dueTitle+'"><span class="duedate-arrow">→</span> due in '+ Math.ceil(item.dateDueInDays) +' days</span>';
 };
 
+function prepareItemStyleClass(item, noteExp) {
+    var styleClass = item.completed?'task-completed ':'';
+    if (item.dateDueInDays) {
+        if (item.dateDueInDays <= -1) {
+            styleClass += "past";
+        } else if (item.dateDueInDays < 2) {
+            styleClass += "today";
+        }
+    }
+    styleClass += (item.note && item.note !=''?' task-has-note':'') +
+        ((curList.showNotes && item.note != '') || noteExp ? ' task-expanded' : '') + prepareTagsClass(item.tags_ids);
+    return styleClass;
+}
 
 function submitNewTask(form)
 {
@@ -907,66 +933,38 @@ function changeTaskOrder(id)
 	if(taskOrder.length < 2) return;
 	var oldOrder = taskOrder.slice();
 	// sortByHand
-	if(curList.sort == 0) taskOrder.sort( function(a,b){ 
-			if(taskList[a].compl != taskList[b].compl) return taskList[a].compl-taskList[b].compl;
-			return taskList[a].ow-taskList[b].ow
+	if(!curList.sortOrder || curList.sortOrder == "DEFAULT") taskOrder.sort( function(a,b){
+			if(taskList[a].completed != taskList[b].completed) return taskList[a].completed-taskList[b].completed;
+			return taskList[a].orderIndex-taskList[b].orderIndex
 		});
 	// sortByPrio
-	else if(curList.sort == 1) taskOrder.sort( function(a,b){
-			if(taskList[a].compl != taskList[b].compl) return taskList[a].compl-taskList[b].compl;
+	else if(curList.sortOrder == "PRIORITY") taskOrder.sort( function(a,b){
+			if(taskList[a].completed != taskList[b].completed) return taskList[a].completed-taskList[b].completed;
 			if(taskList[a].prio != taskList[b].prio) return taskList[b].prio-taskList[a].prio;
 			if(taskList[a].dueInt != taskList[b].dueInt) return taskList[a].dueInt-taskList[b].dueInt;
 			return taskList[a].ow-taskList[b].ow; 
 		});
-	// sortByPrio (reverse)
-	else if(curList.sort == 101) taskOrder.sort( function(a,b){
-			if(taskList[a].compl != taskList[b].compl) return taskList[a].compl-taskList[b].compl;
-			if(taskList[a].prio != taskList[b].prio) return taskList[a].prio-taskList[b].prio;
-			if(taskList[a].dueInt != taskList[b].dueInt) return taskList[b].dueInt-taskList[a].dueInt;
-			return taskList[b].ow-taskList[a].ow; 
-		});		
 	// sortByDueDate
-	else if(curList.sort == 2) taskOrder.sort( function(a,b){
-			if(taskList[a].compl != taskList[b].compl) return taskList[a].compl-taskList[b].compl;
+	else if(curList.sortOrder == "DUE_DATE") taskOrder.sort( function(a,b){
+			if(taskList[a].completed != taskList[b].completed) return taskList[a].completed-taskList[b].completed;
 			if(taskList[a].dueInt != taskList[b].dueInt) return taskList[a].dueInt-taskList[b].dueInt;
 			if(taskList[a].prio != taskList[b].prio) return taskList[b].prio-taskList[a].prio;
 			return taskList[a].ow-taskList[b].ow; 
 		});
-	// sortByDueDate (reverse)
-	else if(curList.sort == 102) taskOrder.sort( function(a,b){
-			if(taskList[a].compl != taskList[b].compl) return taskList[a].compl-taskList[b].compl;
-			if(taskList[a].dueInt != taskList[b].dueInt) return taskList[b].dueInt-taskList[a].dueInt;
-			if(taskList[a].prio != taskList[b].prio) return taskList[a].prio-taskList[b].prio;
-			return taskList[b].ow-taskList[a].ow; 
-		});		
 	// sortByDateCreated
-	else if(curList.sort == 3) taskOrder.sort( function(a,b){
-			if(taskList[a].compl != taskList[b].compl) return taskList[a].compl-taskList[b].compl;
+	else if(curList.sortOrder == "DATE_CREATED") taskOrder.sort( function(a,b){
+			if(taskList[a].completed != taskList[b].completed) return taskList[a].completed-taskList[b].completed;
 			if(taskList[a].dateInt != taskList[b].dateInt) return taskList[a].dateInt-taskList[b].dateInt;
 			if(taskList[a].prio != taskList[b].prio) return taskList[b].prio-taskList[a].prio;
 			return taskList[a].ow-taskList[b].ow; 
 		});
-	// sortByDateCreated (reverse)
-	else if(curList.sort == 103) taskOrder.sort( function(a,b){
-			if(taskList[a].compl != taskList[b].compl) return taskList[a].compl-taskList[b].compl;
-			if(taskList[a].dateInt != taskList[b].dateInt) return taskList[b].dateInt-taskList[a].dateInt;
-			if(taskList[a].prio != taskList[b].prio) return taskList[a].prio-taskList[b].prio;
-			return taskList[b].ow-taskList[a].ow; 
-		});
 	// sortByDateModified
-	else if(curList.sort == 4) taskOrder.sort( function(a,b){
-			if(taskList[a].compl != taskList[b].compl) return taskList[a].compl-taskList[b].compl;
+	else if(curList.sortOrder == "LAST_UPDATED") taskOrder.sort( function(a,b){
+			if(taskList[a].completed != taskList[b].completed) return taskList[a].completed-taskList[b].completed;
 			if(taskList[a].dateEditedInt != taskList[b].dateEditedInt) return taskList[a].dateEditedInt-taskList[b].dateEditedInt;
 			if(taskList[a].prio != taskList[b].prio) return taskList[b].prio-taskList[a].prio;
 			return taskList[a].ow-taskList[b].ow; 
 		});
-	// sortByDateModified (reverse)
-	else if(curList.sort == 104) taskOrder.sort( function(a,b){
-			if(taskList[a].compl != taskList[b].compl) return taskList[a].compl-taskList[b].compl;
-			if(taskList[a].dateEditedInt != taskList[b].dateEditedInt) return taskList[b].dateEditedInt-taskList[a].dateEditedInt;
-			if(taskList[a].prio != taskList[b].prio) return taskList[a].prio-taskList[b].prio;
-			return taskList[b].ow-taskList[a].ow; 
-		});		
 	else return;
 	if(oldOrder.toString() == taskOrder.toString()) return;
 	if(id && taskList[id])
@@ -1016,22 +1014,22 @@ function setTaskPrio(id, prio)
 	taskList[id].prio = prio;
 	var $t = $('#taskrow_'+id);
 	$t.find('.task-prio').replaceWith(preparePrio(prio, id));
-	if(curList.sort != 0) changeTaskOrder(id);
+	if(curList.sort != "DEFAULT") changeTaskOrder(id);
 	$t.effect("highlight", {color:_mtt.theme.editTaskFlashColor}, 'normal');
 };
 
 function setSort(v, init)
 {
 	$('#listmenucontainer .sort-item').removeClass('mtt-item-checked').children('.mtt-sort-direction').text('');
-	if(v == 0) $('#sortByHand').addClass('mtt-item-checked');
-	else if(v==1 || v==101) $('#sortByPrio').addClass('mtt-item-checked').children('.mtt-sort-direction').text(v==1 ? '↑' : '↓');
-	else if(v==2 || v==102) $('#sortByDueDate').addClass('mtt-item-checked').children('.mtt-sort-direction').text(v==2 ? '↑' : '↓');
-	else if(v==3 || v==103) $('#sortByDateCreated').addClass('mtt-item-checked').children('.mtt-sort-direction').text(v==3 ? '↓' : '↑');
-	else if(v==4 || v==104) $('#sortByDateModified').addClass('mtt-item-checked').children('.mtt-sort-direction').text(v==4 ? '↓' : '↑');
+	if(v == "DEFAULT") $('#sortByHand').addClass('mtt-item-checked');
+	else if(v=="PRIORITY") $('#sortByPrio').addClass('mtt-item-checked').children('.mtt-sort-direction').text(v==1 ? '↑' : '↓');
+	else if(v=="DUE_DATE") $('#sortByDueDate').addClass('mtt-item-checked').children('.mtt-sort-direction').text(v==2 ? '↑' : '↓');
+	else if(v=="DATE_CREATED") $('#sortByDateCreated').addClass('mtt-item-checked').children('.mtt-sort-direction').text(v==3 ? '↓' : '↑');
+	else if(v=="LAST_UPDATED") $('#sortByDateModified').addClass('mtt-item-checked').children('.mtt-sort-direction').text(v==4 ? '↓' : '↑');
 	else return;
 
 	curList.sort = v;
-	if(v == 0 && !flag.readOnly) $("#tasklist").sortable('enable');
+	if(v == "DEFAULT" && !flag.readOnly) $("#tasklist").sortable('enable');
 	else $("#tasklist").sortable('disable');
 	
 	if(!init)
@@ -1053,11 +1051,11 @@ function changeTaskCnt(task, dir, old)
 	}
 	else if(dir == 0 && old == null) //on comleteTask
 	{
-		if(!curList.showCompl && task.compl) taskCnt.total--;
-		if(task.dueClass != '') taskCnt[task.dueClass] += task.compl ? -1 : 1;
+		if(!curList.showCompleted && task.completed) taskCnt.total--;
+		if(task.dueClass != '') taskCnt[task.dueClass] += task.completed ? -1 : 1;
 	}
 	if(dir != 0) {
-		if(task.dueClass != '' && !task.compl) taskCnt[task.dueClass] += dir;
+		if(task.dueClass != '' && !task.completed) taskCnt[task.dueClass] += dir;
 		taskCnt.total += dir;
 	}
 };
@@ -1172,11 +1170,11 @@ function listMenuClick(el, menu)
 		case 'btnRssFeed': feedCurList(); break;
 		case 'btnShowCompleted': showCompletedToggle(); break;
 		case 'btnClearCompleted': clearCompleted(); break;
-		case 'sortByHand': setSort(0); break;
-		case 'sortByPrio': setSort(curList.sort==1 ? 101 : 1); break;
-		case 'sortByDueDate': setSort(curList.sort==2 ? 102 : 2); break;
-		case 'sortByDateCreated': setSort(curList.sort==3 ? 103 : 3); break;
-		case 'sortByDateModified': setSort(curList.sort==4 ? 104 : 4); break;
+		case 'sortByHand': setSort("DEFAULT"); break;
+		case 'sortByPrio': setSort("PRIORITY"); break;
+		case 'sortByDueDate': setSort("DUE_DATE"); break;
+		case 'sortByDateCreated': setSort("DATE_CREATED"); break;
+		case 'sortByDateModified': setSort("LAST_UPDATED"); break;
 	}
 };
 
@@ -1201,21 +1199,21 @@ function deleteTask(id)
 function completeTask(id, ch)
 {
 	if(!taskList[id]) return; //click on already removed from the list while anim. effect
-	var compl = 0;
-	if(ch.checked) compl = 1;
-	_mtt.db.request('completeTask', {id:id, compl:compl, list:curList.id}, function(json){
+	var completed = false;
+	if(ch.checked) completed = true;
+	_mtt.db.request('completeTask', {id:id, completed:completed, list:curList.id}, function(json){
 		if(!parseInt(json.total)) return;
 		var item = json.list[0];
-		if(item.compl) $('#taskrow_'+id).addClass('task-completed');
+		if(item.completed) $('#taskrow_'+id).addClass('task-completed');
 		else $('#taskrow_'+id).removeClass('task-completed');
 		taskList[id] = item;
 		changeTaskCnt(taskList[id], 0);
-		if(item.compl && !curList.showCompl) {
+		if(item.completed && !curList.showCompleted) {
 			delete taskList[id];
 			taskOrder.splice($.inArray(id,taskOrder), 1);
 			$('#taskrow_'+id).fadeOut('normal', function(){ $(this).remove() });
 		}
-		else if(curList.showCompl) {
+		else if(curList.showCompleted) {
 			$('#taskrow_'+item.id).replaceWith(prepareTaskStr(taskList[id]));
 			$('#taskrow_'+id).fadeOut('fast', function(){	
 				changeTaskOrder(id);				
@@ -1232,7 +1230,7 @@ function toggleTaskNote(id)
 	var aArea = '#tasknotearea'+id;
 	if($(aArea).css('display') == 'none')
 	{
-		$('#notetext'+id).val(taskList[id].noteText);
+		$('#notetext'+id).val(taskList[id].note);
 		$(aArea).show();
 		$('#tasknote'+id).hide();
 		$('#taskrow_'+id).addClass('task-expanded');
@@ -1273,13 +1271,13 @@ function editTask(id)
 	// no need to clear form
 	var form = document.getElementById('taskedit_form');
 	form.task.value = dehtml(item.title);
-	form.note.value = item.noteText;
+	form.note.value = item.note ? item.note : '';
 	form.id.value = item.id;
-	form.tags.value = item.tags.split(',').join(', ');
-	form.duedate.value = item.duedate;
-	form.prio.value = item.prio;
-	$('#taskedit-date .date-created>span').text(item.date);
-	if(item.compl) $('#taskedit-date .date-completed').show().find('span').text(item.dateCompleted);
+	form.tags.value = $(item.tags).map(function() { return this.text }).get().join(', ');
+	form.duedate.value = item.dateDue ? item.dateDue : '';
+	form.prio.value = item.priority;
+	$('#taskedit-date .date-created>span').text(item.dateCreated);
+	if(item.completed) $('#taskedit-date .date-completed').show().find('span').text(item.dateCompleted);
 	else $('#taskedit-date .date-completed').hide();
 	toggleEditAllTags(0);
 	showEditForm();
@@ -1309,14 +1307,16 @@ function showEditForm(isAdd)
 		if(_mtt.options.autotag) form.tags.value = _mtt.filter.getTags();
 		if($('#task').val() != '')
 		{
-			_mtt.db.request('parseTaskStr', { list:curList.id, title:$('#task').val(), tag:_mtt.filter.getTags() }, function(json){
-				if(!json) return;
-				form.task.value = json.title
-				form.tags.value = (form.tags.value != '') ? form.tags.value +', '+ json.tags : json.tags;
-				form.prio.value = json.prio;
-				$('#task').val('');
-
-			});
+//			_mtt.db.request('parseTaskStr', { list:curList.id, title:$('#task').val(), tag:_mtt.filter.getTags() }, function(json){
+//				if(!json) return;
+//				form.task.value = json.title
+//				form.tags.value = (form.tags.value != '') ? form.tags.value +', '+ json.tags : json.tags;
+//				form.prio.value = json.prio;
+//				$('#task').val('');
+//
+//			});
+            form.task.value = $('#task').val();
+            $('#task').val('');
 		}
 	}
 	else {
@@ -1343,7 +1343,7 @@ function saveTask(form)
 			taskList[item.id] = item;
 			var noteExpanded = (item.note != '' && $('#taskrow_'+item.id).is('.task-expanded')) ? 1 : 0;
 			$('#taskrow_'+item.id).replaceWith(prepareTaskStr(item, noteExpanded));
-			if(curList.sort != 0) changeTaskOrder(item.id);
+			if(curList.sort != "DEFAULT") changeTaskOrder(item.id);
 			_mtt.pageBack(); //back to list
 			refreshTaskCnt();
 			$('#taskrow_'+item.id).effect("highlight", {color:_mtt.theme.editTaskFlashColor}, 'normal', function(){$(this).css('display','')});
@@ -1375,7 +1375,7 @@ function fillEditAllTags()
 {
 	var a = [];
 	for(var i=tagsList.length-1; i>=0; i--) { 
-		a.push('<a href="#" class="tag" tag="'+tagsList[i].tag+'">'+tagsList[i].tag+'</a>');
+		a.push('<a href="#" class="tag" tag="'+tagsList[i].text+'">'+tagsList[i].text+'</a>');
 	}
 	$('#alltags .tags-list').html(a.join(', '));
 	$('#alltags').show();
@@ -1396,10 +1396,10 @@ function loadTags(listId, callback)
 {
 	_mtt.db.request('tagCloud', {list:listId}, function(json){
 		if(!parseInt(json.total)) tagsList = [];
-		else tagsList = json.cloud;
+		else tagsList = json.list;
 		var cloud = '';
 		$.each(tagsList, function(i,item){
-			cloud += ' <a href="#" tag="'+item.tag+'" tagid="'+item.id+'" class="tag w'+item.w+'" >'+item.tag+'</a>';
+			cloud += ' <a href="#" tag="'+item.text+'" tagid="'+item.id+'" class="tag w'+item.weight+'" >'+item.text+'</a>';
 		});
 		$('#tagcloudcontent').html(cloud)
 		flag.tagsChanged = false;
@@ -1511,15 +1511,15 @@ function orderChanged(event,ui)
 	// prepare param
 	var o = [];
 	var diff;
-	var replaceOW = taskList[sortOrder[h1[itemId]].split('_')[1]].ow;
+	var replaceOW = taskList[sortOrder[h1[itemId]].split('_')[1]].orderIndex;
 	for(var j in h0)
 	{
 		diff = h1[j] - h0[j];
 		if(diff != 0) {
 			var a = j.split('_');
-			if(j == itemId) diff = replaceOW - taskList[a[1]].ow;
+			if(j == itemId) diff = replaceOW - taskList[a[1]].orderIndex;
 			o.push({id:a[1], diff:diff});
-			taskList[a[1]].ow += diff;
+			taskList[a[1]].orderIndex += diff;
 		}
 	}
 
@@ -1737,7 +1737,7 @@ function moveTaskToList(taskId, listId)
 			taskList[item.id] = item;
 			var noteExpanded = (item.note != '' && $('#taskrow_'+item.id).is('.task-expanded')) ? 1 : 0;
 			$('#taskrow_'+item.id).replaceWith(prepareTaskStr(item, noteExpanded));
-			if(curList.sort != 0) changeTaskOrder(item.id);
+			if(curList.sort != "DEFAULT") changeTaskOrder(item.id);
 			refreshTaskCnt();
 			$('#taskrow_'+item.id).effect("highlight", {color:_mtt.theme.editTaskFlashColor}, 'normal', function(){$(this).css('display','')});
 		}
@@ -1808,7 +1808,7 @@ function tabmenuOnListSelected(list)
 		$('#btnPublish').removeClass('mtt-item-checked');
 		$('#btnRssFeed').addClass('mtt-item-disabled');
 	}
-	if(list.showCompl) $('#btnShowCompleted').addClass('mtt-item-checked');
+	if(list.showCompleted) $('#btnShowCompleted').addClass('mtt-item-checked');
 	else $('#btnShowCompleted').removeClass('mtt-item-checked');
 };
 
@@ -1827,8 +1827,8 @@ function listOrderChanged(event, ui)
 
 function showCompletedToggle()
 {
-	var act = curList.showCompl ? 0 : 1;
-	curList.showCompl = tabLists.get(curList.id).showCompl = act;
+	var act = curList.showCompleted ? 0 : 1;
+	curList.showCompleted = tabLists.get(curList.id).showCompleted = act;
 	if(act) $('#btnShowCompleted').addClass('mtt-item-checked');
 	else $('#btnShowCompleted').removeClass('mtt-item-checked');
 	loadTasks({setCompl:1});
@@ -1842,7 +1842,7 @@ function clearCompleted()
 	_mtt.db.request('clearCompletedInList', {list:curList.id}, function(json){
 		if(!parseInt(json.total)) return;
 		flag.tagsChanged = true;
-		if(curList.showCompl) loadTasks();
+		if(curList.showCompleted) loadTasks();
 	});
 };
 
@@ -2135,7 +2135,7 @@ function logout()
 function showSettings()
 {
 	if(_mtt.pages.current.page == 'ajax' && _mtt.pages.current.pageClass == 'settings') return false;
-	$('#page_ajax').load(_mtt.mttUrl+'settings.php?ajax=yes',null,function(){ 
+	$('#page_ajax').load(_mtt.mttUrl+'Projects/edit?id=' + _mtt.project,null,function(){
 		//showhide($('#page_ajax').addClass('mtt-page-settings'), $('#page_tasks'));
 		_mtt.pageSet('ajax','settings');
 	})
@@ -2146,9 +2146,10 @@ function saveSettings(frm)
 {
 	if(!frm) return false;
 	var params = { save:'ajax' };
+    params["id"] = _mtt.project;
 	$(frm).find("input:text,input:password,input:checked,select").filter(":enabled").each(function() { params[this.name || '__'] = this.value; }); 
 	$(frm).find(":submit").attr('disabled','disabled').blur();
-	$.post(_mtt.mttUrl+'settings.php', params, function(json){
+	$.post(_mtt.mttUrl+'Projects/save', params, function(json){
 		if(json.saved) {
 			flashInfo(_mtt.lang.get('settingsSaved'));
 			setTimeout('window.location.reload();', 1000);

@@ -33,7 +33,7 @@ mytinytodoStorageAjax.prototype =
 
 	loadLists: function(params, callback)
 	{
-		$.getJSON(this.mtt.mttUrl+'ajax.php?loadLists'+'&rnd='+Math.random(), callback);
+		$.getJSON(this.mtt.mttUrl+'ToDoLists/loadLists?rnd='+Math.random(), callback);
 	},
 
 
@@ -42,28 +42,23 @@ mytinytodoStorageAjax.prototype =
 		var q = '';
 		if(params.search && params.search != '') q += '&s='+encodeURIComponent(params.search);
 		if(params.tag && params.tag != '') q += '&t='+encodeURIComponent(params.tag);
-		if(params.setCompl && params.setCompl != 0) q += '&setCompl=1';
+		if(params.setCompl && params.setCompl != 0) q += '&changeShowCompleted=1';
 		q += '&rnd='+Math.random();
 
-/*		$.getJSON(mtt.mttUrl+'ajax.php?loadTasks&list='+params.list+'&compl='+params.compl+'&sort='+params.sort+'&tz='+params.tz+q, function(json){
-			callback.call(mtt, json);
-		})
-*/
-
-		$.getJSON(this.mtt.mttUrl+'ajax.php?loadTasks&list='+params.list+'&compl='+params.compl+'&sort='+params.sort+q, callback);
+		$.getJSON(this.mtt.mttUrl+'ToDos/loadTasks?list='+params.list+'&showCompleted='+params.showCompleted+'&sort='+params.sort+q, callback);
 	},
 
 
 	newTask: function(params, callback)
 	{
-		$.post(this.mtt.mttUrl+'ajax.php?newTask',
+		$.post(this.mtt.mttUrl+'ToDos/newTask',
 			{ list:params.list, title: params.title, tag:params.tag }, callback, 'json');
 	},
 	
 
 	fullNewTask: function(params, callback)
 	{
-		$.post(this.mtt.mttUrl+'ajax.php?fullNewTask',
+		$.post(this.mtt.mttUrl+'ToDos/saveFullTask',
 			{ list:params.list, title:params.title, note:params.note, prio:params.prio, tags:params.tags, duedate:params.duedate },
 			callback, 'json');
 	},
@@ -71,7 +66,7 @@ mytinytodoStorageAjax.prototype =
 
 	editTask: function(params, callback)
 	{
-		$.post(this.mtt.mttUrl+'ajax.php?editTask='+params.id,
+		$.post(this.mtt.mttUrl+'ToDos/saveFullTask',
 			{ id:params.id, title:params.title, note:params.note, prio:params.prio, tags:params.tags, duedate:params.duedate },
 			callback, 'json');
 	},
@@ -79,50 +74,65 @@ mytinytodoStorageAjax.prototype =
 
 	editNote: function(params, callback)
 	{
-		$.post(this.mtt.mttUrl+'ajax.php?editNote='+params.id, {id:params.id, note: params.note}, callback, 'json');
+		$.post(this.mtt.mttUrl+'ToDos/editNote', {id:params.id, note: params.note}, callback, 'json');
 	},
 
 
 	completeTask: function(params, callback)
 	{
-		$.post(this.mtt.mttUrl+'ajax.php?completeTask='+params.id, { id:params.id, compl:params.compl }, callback, 'json');
+		$.post(this.mtt.mttUrl+'ToDos/completeTask', { id:params.id, completed:params.completed }, callback, 'json');
 	},
 
 
 	deleteTask: function(params, callback)
 	{
-		$.post(this.mtt.mttUrl+'ajax.php?deleteTask='+params.id, { id:params.id }, callback, 'json');
+		$.post(this.mtt.mttUrl+'ToDos/deleteTask', { id:params.id }, callback, 'json');
 	},
 
 
 	setPrio: function(params, callback)
 	{
-		$.getJSON(this.mtt.mttUrl+'ajax.php?setPrio='+params.id+'&prio='+params.prio+'&rnd='+Math.random(), callback);
+		$.getJSON(this.mtt.mttUrl+'ToDos/setPriority?id='+params.id+'&prio='+params.prio+'&rnd='+Math.random(), callback);
 	},
 
 	
 	setSort: function(params, callback)
 	{
-		$.post(this.mtt.mttUrl+'ajax.php?setSort', { list:params.list, sort:params.sort }, callback, 'json');
+		$.post(this.mtt.mttUrl+'ToDoLists/setListSortOrder', { list:params.list, sort:params.sort }, callback, 'json');
 	},
 
 	changeOrder: function(params, callback)
 	{
-		var order = '';
-		for(var i in params.order) {
-			order += params.order[i].id +'='+ params.order[i].diff + '&';
+        var order = {};
+        for(var i in params.order) {
+            var key = params.order[i].diff;
+            if (order[key]) {
+                order[key].push(params.order[i].id);
+            } else {
+                order[key] = [params.order[i].id];
+            }
 		}
-		$.post(this.mtt.mttUrl+'ajax.php?changeOrder', { order:order }, callback, 'json');
+        var paramMap = {};
+        for (var key in order) {
+            if (!paramMap.id && order[key].length == 1) {
+                paramMap.id = order[key][0];
+            } else if (key > 0) {
+                paramMap.back = order[key];
+            } else if (key < 0) {
+                paramMap.forward=order[key];
+            }
+        }
+		$.post(this.mtt.mttUrl+'ToDos/changeOrder', paramMap, callback, 'json');
 	},
 
 	tagCloud: function(params, callback)
 	{
-		$.getJSON(this.mtt.mttUrl+'ajax.php?tagCloud&list='+params.list+'&rnd='+Math.random(), callback);
+		$.getJSON(this.mtt.mttUrl+'ToDos/tagCloud?list='+params.list+'&rnd='+Math.random(), callback);
 	},
 
 	moveTask: function(params, callback)
 	{
-		$.post(this.mtt.mttUrl+'ajax.php?moveTask', { id:params.id, from:params.from, to:params.to }, callback, 'json');
+		$.post(this.mtt.mttUrl+'ToDos/moveTask', { id:params.id, from:params.from, to:params.to }, callback, 'json');
 	},
 
 	parseTaskStr: function(params, callback)
@@ -134,18 +144,18 @@ mytinytodoStorageAjax.prototype =
 	// Lists
 	addList: function(params, callback)
 	{
-		$.post(this.mtt.mttUrl+'ajax.php?addList', { name:params.name }, callback, 'json'); 
+		$.post(this.mtt.mttUrl+'ToDoLists/addList', { name:params.name }, callback, 'json');
 
 	},
 
 	renameList:  function(params, callback)
 	{
-		$.post(this.mtt.mttUrl+'ajax.php?renameList', { list:params.list, name:params.name }, callback, 'json');
+		$.post(this.mtt.mttUrl+'ToDoLists/renameList', { list:params.list, name:params.name }, callback, 'json');
 	},
 
 	deleteList: function(params, callback)
 	{
-		$.post(this.mtt.mttUrl+'ajax.php?deleteList', { list:params.list }, callback, 'json');
+		$.post(this.mtt.mttUrl+'ToDoLists/deleteList', { list:params.list }, callback, 'json');
 	},
 
 	publishList: function(params, callback)
@@ -165,12 +175,12 @@ mytinytodoStorageAjax.prototype =
 
 	changeListOrder: function(params, callback)
 	{
-		$.post(this.mtt.mttUrl+'ajax.php?changeListOrder', { order:params.order }, callback, 'json');
+		$.post(this.mtt.mttUrl+'ToDoLists/changeListOrder', { order:params.order }, callback, 'json');
 	},
 
 	clearCompletedInList: function(params, callback)
 	{
-		$.post(this.mtt.mttUrl+'ajax.php?clearCompletedInList', { list:params.list }, callback, 'json');
+		$.post(this.mtt.mttUrl+'ToDoLists/clearCompletedInList', { list:params.list }, callback, 'json');
 	}
 
 };
