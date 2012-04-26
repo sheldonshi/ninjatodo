@@ -2,7 +2,6 @@ package controllers;
 
 import models.Tag;
 import org.apache.commons.lang.StringUtils;
-import play.db.jpa.JPA;
 import play.mvc.Controller;
 import play.mvc.With;
 
@@ -15,7 +14,7 @@ import java.util.List;
  * Time: 8:52 AM
  * To change this template use File | Settings | File Templates.
  */
-@With(LanguageController.class)
+@With(LanguageFilter.class)
 public class Tags extends Controller {
     /**
      * return up to limit # of suggested tags that contains q
@@ -30,7 +29,7 @@ public class Tags extends Controller {
         } 
         String returnString = "";
         if (StringUtils.isNotEmpty(q)) {
-            List<Tag> tags = Tag.find("project.id=? and name like '%" + q + "%'", project).fetch(limit);
+            List<Tag> tags = Tag.find("project.id=? and text like '%" + q + "%'", project).fetch(limit);
             for (Tag tag : tags) {
                 returnString += tag.text + "|" + tag.id + "\n";
             }

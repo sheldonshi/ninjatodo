@@ -11,7 +11,7 @@ import play.mvc.With;
  * Time: 7:02 PM
  * To change this template use File | Settings | File Templates.
  */
-@With(LanguageController.class)
+@With(LanguageFilter.class)
 public class Projects extends Controller {
     public static void edit(Long id) {
         Project project = Project.findById(id);

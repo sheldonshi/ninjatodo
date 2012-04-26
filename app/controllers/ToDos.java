@@ -21,7 +21,7 @@ import java.util.List;
  * Time: 5:07 PM
  * To change this template use File | Settings | File Templates.
  */
-@With(LanguageController.class)
+@With(LanguageFilter.class)
 public class ToDos extends Controller {
 
     public static void newTask(Long list, String title) {
@@ -164,7 +164,7 @@ public class ToDos extends Controller {
             toDo.delete();
         }
 
-        renderText(Utils.toJson(toDo));
+        renderText(Utils.toJson(1));
     }
 
     /**

@@ -13,7 +13,7 @@ import java.util.List;
  * Time: 6:30 PM
  * To change this template use File | Settings | File Templates.
  */
-public class LanguageController extends Controller {
+public class LanguageFilter extends Controller {
     @Before
     public static void checkLanguage() {
         if (session.get("language") == null) {

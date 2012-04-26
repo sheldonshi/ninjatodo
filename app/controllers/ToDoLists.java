@@ -5,14 +5,9 @@ import org.apache.commons.lang.StringUtils;
 import play.db.jpa.JPA;
 import play.mvc.Controller;
 import play.mvc.With;
-import utils.DateJsonUtils;
-import utils.JSConstant;
 import utils.Utils;
 
 import javax.persistence.NoResultException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -22,7 +17,7 @@ import java.util.List;
  * Time: 3:45 PM
  * To change this template use File | Settings | File Templates.
  */
-@With(LanguageController.class)
+@With(LanguageFilter.class)
 public class ToDoLists extends Controller {
     /**
      * required json data structure on the UI {'list':[], 'total':..}
