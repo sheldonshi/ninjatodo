@@ -76,6 +76,10 @@ public class ToDo extends Model {
     
     @Transient
     public Float dateDueInDays;
+
+    // hack, mapped to the same toDoList field's corresponding column, read-only, for json conversion purpose
+    @Column(name = "todolist_id", nullable = false, insertable = false, updatable = false)
+    public Long toDoListId;
     
     public ToDo() {
         dateCreated = new Date();

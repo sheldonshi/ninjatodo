@@ -826,7 +826,7 @@ function prepareTaskStr(item, noteExp)
 		'<span class="task-date-completed"><span title="'+item.dateInlineTitle+'">'+item.dateInline+'</span>&#8212;'+
 		'<span title="'+item.dateCompletedInlineTitle+'">'+item.dateCompletedInline+'</span></span></div>'+"\n"+
 		'<div class="task-through">'+preparePrio(prio,id)+'<span class="task-title">'+prepareHtml(item.title)+'</span> '+
-		(curList.id == -1 ? '<span class="task-listname">'+ tabLists.get(item.toDoList.id).name +'</span>' : '') +	"\n" +
+		(curList.id == -1 ? '<span class="task-listname">'+ tabLists.get(item.toDoListId).name +'</span>' : '') +	"\n" +
 		prepareTagsStr(item)+'<span class="task-date">'+item.dateInlineTitle+'</span></div>'+
 		'<div class="task-note-block">'+
 			'<div id="tasknote'+id+'" class="task-note"><span>'+(item.note ? prepareHtml(item.note) : '')+'</span></div>'+
