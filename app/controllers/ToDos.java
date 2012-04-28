@@ -51,7 +51,7 @@ public class ToDos extends Controller {
 
      $.getJSON(this.mtt.mttUrl+'loadTasks&list='+params.list+'&completed=' + params.completed + '&changeShowCompleted='+params.changeShowCompleted+'&sort='+params.sort+q, callback);
      */
-    public static void loadTasks(Long list, Boolean showCompleted, Boolean changeShowCompleted) {
+    public static void loadTasks(Long list, Boolean showCompleted, Boolean changeShowCompleted, String t) {
         if (Boolean.TRUE.equals(changeShowCompleted)) {
             // showCompleted has been changed; update. TODO check permission
             ToDoList toDoList = ToDoList.findById(list);
@@ -63,7 +63,7 @@ public class ToDos extends Controller {
                 params.get("sort") : null;
 
         String querySortStr = " order by " + (sort != null ? sort : SortOrder.DEFAULT.getSqlSort());
-        List tasks = new ArrayList();
+        List<ToDo> tasks = new ArrayList<ToDo>();
         if (!StringUtils.isEmpty(params.get("s"))) {
             String queryLikeStr = "%"+ params.get("s") + "%";
             tasks = ToDo.find("toDoList.id=? and (title like ? or note like ?)" + (showCompleted ? "" : " and completed=false") + querySortStr, list, queryLikeStr, queryLikeStr).fetch();
@@ -71,6 +71,20 @@ public class ToDos extends Controller {
             tasks = ToDo.find("toDoList.id=? " + (showCompleted ? "" : " and completed=false") + querySortStr, list).fetch();
         } else {
             tasks = ToDo.find(querySortStr).fetch();
+        }
+        // filter by tag now
+        if (StringUtils.isNotEmpty(t)) {
+            String[] tags = t.split(",");
+            for (int i=0; i<tasks.size(); i++) {
+                // loop through all tags. filtered result must have all tags
+                for (String tag : tags) {
+                    if (!tasks.get(i).hasTag(tag)) {
+                        tasks.remove(i);
+                        i--;
+                        break;
+                    }
+                }
+            }
         }
         renderText(Utils.toJson(tasks));
     }
@@ -116,15 +130,18 @@ public class ToDos extends Controller {
             for (String t : tags) {
                 // first find if tag exists, if not, save it
                 t = t.trim();
-                Tag existing = Tag.find("text=?", t).first();
-                if (existing == null) {
-                    Tag tag = new Tag();
-                    tag.text = t;
-                    tag.project = Project.findById(1L);
-                    tag.save();
-                    existing = tag;
+                // remove empty tag
+                if (t.length() > 0) {
+                    Tag existing = Tag.find("text=?", t).first();
+                    if (existing == null) {
+                        Tag tag = new Tag();
+                        tag.text = t;
+                        tag.project = Project.findById(1L);
+                        tag.save();
+                        existing = tag;
+                    }
+                    toDo.tags.add(existing);
                 }
-                toDo.tags.add(existing);
             }
         }
         toDo.save();

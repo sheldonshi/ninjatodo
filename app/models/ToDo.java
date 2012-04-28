@@ -109,4 +109,20 @@ public class ToDo extends Model {
     public Date getDateDue() {
         return dateDue;
     }
+
+    /**
+     * Checks whether this to do has a tag t
+     * @param t
+     * @return
+     */
+    public boolean hasTag(String t) {
+        if (tags != null) {
+            for (Tag tag : tags) {
+                if (tag.text.equalsIgnoreCase(t)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 }
