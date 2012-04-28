@@ -997,7 +997,9 @@ function prioPopup(act, el, id)
 		return;
 	}
 	var offset = $(el).offset();
-	$('#priopopup').css({ position: 'absolute', top: offset.top + 1, left: offset.left + 1 });
+    var prioOffset = id && taskList[id] ? -(taskList[id].priority + 1) * 21 : 1;
+
+	$('#priopopup').css({ position: 'absolute', top: offset.top+2, left: offset.left+prioOffset-4 });
 	objPrio.taskId = id;
 	objPrio.el = el;
 	objPrio.timer = setTimeout("$('#priopopup').show()", 300);
@@ -1014,7 +1016,7 @@ function prioClick(prio, el)
 function setTaskPrio(id, prio)
 {
 	_mtt.db.request('setPrio', {id:id, prio:prio});
-	taskList[id].prio = prio;
+	taskList[id].priority = prio;
 	var $t = $('#taskrow_'+id);
 	$t.find('.task-prio').replaceWith(preparePrio(prio, id));
 	if(curList.sort != "DEFAULT") changeTaskOrder(id);
