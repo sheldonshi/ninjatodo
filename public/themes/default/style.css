@@ -223,8 +223,8 @@ li.task-completed .task-note-block .task-note { text-decoration:line-through; }
 .prio-neg { background-color:#3377ff; color:#ffffff; }
 .prio-pos { background-color:#ff3333; color:#ffffff; }
 .prio-pos-1 { background-color:#ff7700; color:#ffffff; }
-.prio-zero { /*background-color:#dedede;*/ }
-.task-prio.prio-zero { display:none; } 
+.prio-zero { color:#ffffff }
+li:hover .prio-zero { background-color:#bbbbbb; }
 
 .form-row { margin-top:8px; }
 .form-row .h { font-weight:bold; color:#333333; }
@@ -250,7 +250,8 @@ a.mtt-back-button { font-size:0.8em; }
 
 #priopopup { overflow: hidden; z-index:100; background-color:#f9f9f9; border:1px solid #cccccc; padding:5px; } 
 #priopopup span { cursor:pointer; border:1px solid #f9f9f9; }
-#priopopup .prio-zero:hover { border-color:#dedede; }
+#priopopup .prio-zero { background-color:#bbbbbb; }
+#priopopup .prio-zero:hover { border-color:#bbbbbb; }
 #priopopup .prio-neg:hover { border-color:#3377ff; }
 #priopopup .prio-pos:hover { border-color:#ff3333; }
 #priopopup .prio-pos-1:hover { border-color:#ff7700; }
