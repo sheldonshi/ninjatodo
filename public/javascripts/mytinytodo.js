@@ -351,7 +351,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
 			//return false;
 		});
 
-		$('#tasklist .task-toggle').live('click', function(){
+        $('#tasklist .task-toggle').live('mouseover', function(){
 			var id = getLiTaskId(this);
 			if(id) $('#taskrow_'+id).toggleClass('task-expanded');
 			return false;
@@ -998,8 +998,7 @@ function prioPopup(act, el, id)
 	}
 	var offset = $(el).offset();
     var prioOffset = id && taskList[id] ? -(taskList[id].priority + 1) * 21 : 1;
-
-	$('#priopopup').css({ position: 'absolute', top: offset.top+2, left: offset.left+prioOffset-4 });
+    $('#priopopup').css({ position: 'absolute', top: offset.top+2, left: offset.left+prioOffset-4 });
 	objPrio.taskId = id;
 	objPrio.el = el;
 	objPrio.timer = setTimeout("$('#priopopup').show()", 300);
