@@ -339,7 +339,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
 			if(id) editTask(parseInt(id));
 		});
 
-		$('#tasklist .taskactionbtn').live('click', function(){
+		$('#tasklist .taskactionbtn').live('mouseover', function(){
 			var id = parseInt(getLiTaskId(this));
 			if(id) taskContextMenu(this, id);
 			return false;
@@ -406,12 +406,12 @@ var mytinytodo = window.mytinytodo = _mtt = {
 
 		$("#tasklist").sortable({
 				items:'> :not(.task-completed)', cancel:'span,input,a,textarea',
-		 		delay:150, start:sortStart, update:orderChanged, 
-				placeholder:'mtt-task-placeholder'
+		 		delay:150, start:sortStart, update:orderChanged,
+				placeholder:'mtt-task-placeholder',opacity:0.5
 		});
 
-		$("#lists ul").sortable({delay:150, update:listOrderChanged}); 
-		this.applySingletab();
+		$("#lists ul").sortable({delay:150, update:listOrderChanged,opacity:0.5,tolerance:'pointer'});
+        this.applySingletab();
 
 		// AJAX Errors
 		$('#msg').ajaxSend(function(r,s){
@@ -578,7 +578,8 @@ var mytinytodo = window.mytinytodo = _mtt = {
 			tabSelect(openListId);
 
 			$('#page_tasks').show();
-
+            // enable droppable on tabs
+            $('#lists li').droppable({drop:itemDropped,hoverClass:'mtt-tabs-droppable',tolerance:'pointer'});
 		});
 
 		if(onInit) updateAccessStatus();
@@ -1515,16 +1516,18 @@ function orderChanged(event,ui)
 	// prepare param
 	var o = [];
 	var diff;
-	var replaceOW = taskList[sortOrder[h1[itemId]].split('_')[1]].orderIndex;
+	var replaceOW = h1[itemId] ? taskList[sortOrder[h1[itemId]].split('_')[1]].orderIndex : null;
 	for(var j in h0)
 	{
-		diff = h1[j] - h0[j];
-		if(diff != 0) {
-			var a = j.split('_');
-			if(j == itemId) diff = replaceOW - taskList[a[1]].orderIndex;
-			o.push({id:a[1], diff:diff});
-			taskList[a[1]].orderIndex += diff;
-		}
+        if (h1[j]) {
+            diff = h1[j] - h0[j];
+            if(diff != 0) {
+                var a = j.split('_');
+                if(j == itemId) diff = replaceOW - taskList[a[1]].orderIndex;
+                o.push({id:a[1], diff:diff});
+                taskList[a[1]].orderIndex += diff;
+            }
+        }
 	}
 
 	_mtt.db.request('changeOrder', {order:o});
@@ -1828,6 +1831,19 @@ function listOrderChanged(event, ui)
 	_mtt.db.request('changeListOrder', {order:order});
 	_mtt.doAction('listOrderChanged', {order:order});
 };
+
+function itemDropped(event, ui) {
+    if (ui.draggable[0].id.match(/^task/)) {
+        // this is a task moved here
+        var taskId=ui.draggable[0].id.split('_')[1];
+        var listId=$(this)[0].id.split('_')[1]
+        if (listId != curList.id) {
+            ui.draggable.remove();
+            moveTaskToList(taskId,listId);
+        }
+        return;
+    }
+}
 
 function showCompletedToggle()
 {
