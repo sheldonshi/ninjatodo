@@ -72,6 +72,13 @@ mytinytodoStorageAjax.prototype =
 	},
 
 
+    cloneTask: function(params, callback)
+    {
+        $.post(this.mtt.mttUrl+'ToDos/cloneTask',
+            { id:params.id}, callback, 'json');
+    },
+
+
 	editNote: function(params, callback)
 	{
 		$.post(this.mtt.mttUrl+'ToDos/editNote', {id:params.id, note: params.note}, callback, 'json');

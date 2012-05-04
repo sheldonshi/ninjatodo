@@ -1190,7 +1190,6 @@ function deleteTask(id)
 	}
 	_mtt.db.request('deleteTask', {id:id}, function(json){
 		if(!parseInt(json.total)) return;
-		var item = json.list[0];
 		taskOrder.splice($.inArray(id,taskOrder), 1);
 		$('#taskrow_'+id).fadeOut('normal', function(){ $(this).remove() });
 		changeTaskCnt(taskList[id], -1);
@@ -1288,6 +1287,18 @@ function editTask(id)
 	showEditForm();
 	return false;
 };
+
+    function cloneTask(id)
+    {
+        var item = taskList[id];
+        if(!item) return false;
+
+        _mtt.db.request('cloneTask', {id:id},
+            function(json){
+                loadTasks();
+            });
+        return false;
+    };
 
 function clearEditForm()
 {
@@ -1721,6 +1732,7 @@ function taskContextClick(el, menu)
 	}
 	switch(id) {
 		case 'cmenu_edit': editTask(taskId); break;
+        case 'cmenu_clone': cloneTask(taskId); break;
 		case 'cmenu_note': toggleTaskNote(taskId); break;
 		case 'cmenu_delete': deleteTask(taskId); break;
 		case 'cmenu_prio': setTaskPrio(taskId, parseInt(value)); break;
@@ -1838,10 +1850,9 @@ function itemDropped(event, ui) {
         var taskId=ui.draggable[0].id.split('_')[1];
         var listId=$(this)[0].id.split('_')[1]
         if (listId != curList.id) {
-            ui.draggable.remove();
+            ui.draggable.remove();// cause loading icon to never stop
             moveTaskToList(taskId,listId);
         }
-        return;
     }
 }
 

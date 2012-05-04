@@ -64,6 +64,7 @@ f_past=Overdue
 f_today=Today and tomorrow
 f_soon=Soon
 action_edit=Edit
+action_clone=Clone
 action_note=Edit Note
 action_delete=Delete
 action_priority=Priority

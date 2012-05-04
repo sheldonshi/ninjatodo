@@ -40,6 +40,33 @@ public class ToDos extends Controller {
         toDo.save();
         renderText(Utils.toJson(toDo));
     }
+    
+    /**
+     * clone a toDo. The new toDo will always be incompleted, has its own 
+     * created date and last updated date
+     */
+    public static void cloneTask(Long id) {
+        ToDo toDo = ToDo.findById(id);
+        ToDo newToDo = null;
+        if (toDo != null) {
+            newToDo = new ToDo();
+            newToDo.title = toDo.title;
+            newToDo.dateDue = toDo.dateDue;
+            newToDo.toDoList = toDo.toDoList;
+            newToDo.note = toDo.note;
+            newToDo.priority = toDo.priority;
+            if (toDo.tags != null) {
+                newToDo.tags = new ArrayList<Tag>();
+                for (Tag tag : toDo.tags) {
+                    newToDo.tags.add(tag);
+                }
+            }
+            newToDo.completed = false;
+            newToDo.orderIndex = toDo.orderIndex;
+            newToDo.save();
+        }
+        renderText(Utils.toJson(newToDo));
+    }
 
     /**
      *
