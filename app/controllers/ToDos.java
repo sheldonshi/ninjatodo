@@ -177,16 +177,6 @@ public class ToDos extends Controller {
     }
 
     /**
-     */
-    public static void tagCloud(Long list) {
-        List<Tag> tags = JPA.em()
-                .createQuery("select t from ToDo todo right join todo.tags t where todo.toDoList.id=" + list)
-                .getResultList();
-
-        renderText(Utils.toJson(tags));
-    }
-
-    /**
      * edit the note of a task
      */
     public static void editNote(Long id, String note) {

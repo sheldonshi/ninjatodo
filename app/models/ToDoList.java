@@ -47,6 +47,9 @@ public class ToDoList extends Model {
 
     @Column(name = "show_completed")
     public boolean showCompleted;
+
+    @Column(name = "notes_expanded")
+    public boolean notesExpanded;
     
     public ToDoList() {
         dateCreated = new Date();

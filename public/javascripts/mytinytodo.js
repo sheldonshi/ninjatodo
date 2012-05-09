@@ -4,7 +4,7 @@
 	Licensed under the GNU GPL v3 license. See file COPYRIGHT for details.
 */
 
-(function(){
+var ninjatodo = (function(){
 
 var taskList = new Array(), taskOrder = new Array();
 var filter = { completed:0, search:'', due:'' };
@@ -109,7 +109,12 @@ var mytinytodo = window.mytinytodo = _mtt = {
 
 		// handlers
 		$('.mtt-tabs-add-button').click(function(){
-			addList();
+            $("#addList-dialog-form").dialog( "open" );
+            $("#addList-dialog-form input").focus();
+            $('#addList-dialog-form form').submit(function () {
+                $('#addList-dialog-form').parent().find('button').first().trigger('click');
+                return false;
+            });
 		});
 
 		$('.mtt-tabs-select-button').click(function(event){
@@ -216,18 +221,6 @@ var mytinytodo = window.mytinytodo = _mtt = {
 		$('#tagcloudcontent .tag').live('click', function(){
 			addFilterTag($(this).attr('tag'), $(this).attr('tagid'));
 			if(_mtt.menus.tagcloud) _mtt.menus.tagcloud.close();
-			return false;
-		});	
-
-		$('#mtt-notes-show').click(function(){
-			toggleAllNotes(1);
-			this.blur();
-			return false;
-		});
-
-		$('#mtt-notes-hide').click(function(){
-			toggleAllNotes(0);
-			this.blur();
 			return false;
 		});
 
@@ -488,6 +481,49 @@ var mytinytodo = window.mytinytodo = _mtt = {
 		this.addAction('listAdded', slmenuOnListAdded);
 		this.addAction('listSelected', slmenuOnListSelected);
 		this.addAction('listHidden', slmenuOnListHidden);
+        //
+        $( "#addList-dialog-form" ).dialog({
+            autoOpen: false,
+            minHeight: 0,
+            width:270,
+            modal: true,
+            resizable: false,
+            buttons: [
+                {text:_mtt.lang.get('actionSave'), click:function() {
+                        if ($("#addList-dialog-form-name").val().trim().length > 0)
+                            addList($("#addList-dialog-form-name").val());
+                        $(this).dialog("close")
+                    }
+                },
+                {text:_mtt.lang.get('actionCancel'), click: function() {
+                    $( this ).dialog( "close" );
+                }}
+            ],
+            close: function() {
+            }
+        });
+        $( "#deleteConfirm-dialog-form" ).dialog({
+            autoOpen: false,
+            minHeight: 0,
+            width:270,
+            modal: true,
+            resizable: false,
+            buttons: [
+                {text:_mtt.lang.get('actionConfirm'), click:function() {
+                    var fn = $("#deleteConfirm-dialog-form-action").val();
+                    var arg = $("#deleteConfirm-dialog-form-id").val();
+                    if (fn=='deleteCurList') deleteCurList();
+                    else if (fn=='deleteTask') deleteTask(arg);
+                    else if (fn=='clearCompleted') clearCompleted();
+                    $(this).dialog( "close" );}
+                },
+                {text:_mtt.lang.get('actionCancel'), click: function() {
+                    $( this ).dialog( "close" );
+                }}
+            ],
+            close: function() {
+            }
+        });
 
 		return this;
 	},
@@ -559,6 +595,9 @@ var mytinytodo = window.mytinytodo = _mtt = {
 						'<a href="#list/'+item.id+'" title="'+item.name+'"><span>'+item.name+'</span>'+
 						'<div class="list-action"></div></a></li>';
 				});
+                if (tabLists.length()>1) {
+                    $("#list_all").removeClass('mtt-tabs-hidden');
+                }
 			}
 			
 			if(openListId) {
@@ -711,12 +750,9 @@ var mytinytodo = window.mytinytodo = _mtt = {
 
 };
 
-function addList()
+function addList(name)
 {
-	var r = prompt(_mtt.lang.get('addList'), _mtt.lang.get('addListDefault'));
-	if(r == null) return;
-
-	_mtt.db.request('addList', {name:r}, function(json){
+	_mtt.db.request('addList', {name:name}, function(json){
 		if(!parseInt(json.total)) return;
 		var item = json.list[0];
 		var i = tabLists.length();
@@ -747,12 +783,15 @@ function renameCurList()
 	});
 };
 
-function deleteCurList()
-{
-	if(!curList) return false;
-	var r = confirm(_mtt.lang.get('deleteList'));
-	if(!r) return;
+function confirmAction(messageKey, action, id) {
+    $("#deleteConfirm-dialog-form label").html(_mtt.lang.get(messageKey));
+    $("#deleteConfirm-dialog-form-action").val(action);
+    $("#deleteConfirm-dialog-form-id").val(id);
+    $("#deleteConfirm-dialog-form").dialog( "open" );
+};
 
+function deleteCurList() {
+    if(!curList) return false;
 	_mtt.db.request('deleteList', {list:curList.id}, function(json){
 		if(!parseInt(json.total)) return;
 		_mtt.loadLists();
@@ -832,8 +871,8 @@ function prepareTaskStr(item, noteExp)
 		'<div class="task-note-block">'+
 			'<div id="tasknote'+id+'" class="task-note"><span>'+(item.note ? prepareHtml(item.note) : '')+'</span></div>'+
 			'<div id="tasknotearea'+id+'" class="task-note-area"><textarea id="notetext'+id+'"></textarea>'+
-				'<span class="task-note-actions"><a href="#" class="mtt-action-note-save">'+_mtt.lang.get('actionNoteSave')+
-				'</a> | <a href="#" class="mtt-action-note-cancel">'+_mtt.lang.get('actionNoteCancel')+'</a></span></div>'+
+				'<span class="task-note-actions"><a href="#" class="mtt-action-note-save">'+_mtt.lang.get('actionSave')+
+				'</a> | <a href="#" class="mtt-action-note-cancel">'+_mtt.lang.get('actionCancel')+'</a></span></div>'+
 		'</div>'+
 		"</div></li>\n";
 };
@@ -906,7 +945,7 @@ function prepareItemStyleClass(item, noteExp) {
         }
     }
     styleClass += (item.note && item.note !=''?' task-has-note':'') +
-        ((curList.showNotes && item.note != '') || noteExp ? ' task-expanded' : '') + prepareTagsClass(item.tags);
+        ((curList.notesExpanded && item.note != '') || noteExp ? ' task-expanded' : '') + prepareTagsClass(item.tags);
     return styleClass;
 }
 
@@ -1100,16 +1139,19 @@ function setTaskview(v)
 };
 
 
-function toggleAllNotes(show)
+function toggleAllNotes()
 {
+    var show = !curList.notesExpanded;
 	for(var id in taskList)
 	{
 		if(taskList[id].note == '') continue;
 		if(show) $('#taskrow_'+id).addClass('task-expanded');
 		else $('#taskrow_'+id).removeClass('task-expanded');
 	}
-	curList.showNotes = show;
-	if(_mtt.options.saveShowNotes) _mtt.db.request('setShowNotesInList', {list:curList.id, shownotes:show}, function(json){});
+	curList.notesExpanded = show;
+    if(show) $('#btnExpandNotes').addClass('mtt-item-checked');
+    else $('#btnExpandNotes').removeClass('mtt-item-checked');
+	_mtt.db.request('setShowNotesInList', {list:curList.id}, function(json){});
 };
 
 
@@ -1166,15 +1208,15 @@ function listMenuClick(el, menu)
 {
 	if(!el.id) return;
 	switch(el.id) {
-		case 'btnAddList': addList(); break;
 		case 'btnRenameList': renameCurList(); break;
-		case 'btnDeleteList': deleteCurList(); break;
+		case 'btnDeleteList': confirmAction('deleteList', 'deleteCurList', ''); break;
 		case 'btnPublish': publishCurList(); break;
 		case 'btnExportCSV': exportCurList('csv'); break;
 		case 'btnExportICAL': exportCurList('ical'); break;
 		case 'btnRssFeed': feedCurList(); break;
 		case 'btnShowCompleted': showCompletedToggle(); break;
-		case 'btnClearCompleted': clearCompleted(); break;
+        case 'btnExpandNotes': toggleAllNotes(); break;
+		case 'btnClearCompleted': confirmAction('clearCompleted', 'clearCompleted', ''); break;
 		case 'sortByHand': setSort("DEFAULT"); break;
 		case 'sortByPrio': setSort("PRIORITY"); break;
 		case 'sortByDueDate': setSort("DUE_DATE"); break;
@@ -1185,9 +1227,6 @@ function listMenuClick(el, menu)
 
 function deleteTask(id)
 {
-	if(!confirm(_mtt.lang.get('confirmDelete'))) {
-		return false;
-	}
 	_mtt.db.request('deleteTask', {id:id}, function(json){
 		if(!parseInt(json.total)) return;
 		taskOrder.splice($.inArray(id,taskOrder), 1);
@@ -1734,7 +1773,7 @@ function taskContextClick(el, menu)
 		case 'cmenu_edit': editTask(taskId); break;
         case 'cmenu_clone': cloneTask(taskId); break;
 		case 'cmenu_note': toggleTaskNote(taskId); break;
-		case 'cmenu_delete': deleteTask(taskId); break;
+		case 'cmenu_delete': confirmAction('confirmDelete', 'deleteTask', taskId); break;
 		case 'cmenu_prio': setTaskPrio(taskId, parseInt(value)); break;
 		case 'cmenu_list':
 			if(menu.$caller && menu.$caller.attr('id')=='cmenu_move') moveTaskToList(taskId, value);
@@ -1829,6 +1868,8 @@ function tabmenuOnListSelected(list)
 	}
 	if(list.showCompleted) $('#btnShowCompleted').addClass('mtt-item-checked');
 	else $('#btnShowCompleted').removeClass('mtt-item-checked');
+    if (list.notesExpanded) $('#btnExpandNotes').addClass('mtt-item-checked');
+    else $('#btnExpandNotes').removeClass('mtt-item-checked');
 };
 
 
@@ -1868,8 +1909,6 @@ function showCompletedToggle()
 function clearCompleted()
 {
 	if(!curList) return false;
-	var r = confirm(_mtt.lang.get('clearCompleted'));
-	if(!r) return;
 	_mtt.db.request('clearCompletedInList', {list:curList.id}, function(json){
 		if(!parseInt(json.total)) return;
 		flag.tagsChanged = true;

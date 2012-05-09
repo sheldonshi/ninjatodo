@@ -3,8 +3,9 @@
 #
 confirmDelete=Are you sure you want to delete the task?
 confirmLeave=There can be unsaved data. Do you really want to leave?
-actionNoteSave=save
-actionNoteCancel=cancel
+actionConfirm=OK
+actionCancel=cancel
+actionSave=save
 error=Some error occurred (click for details)
 denied=Access denied
 invalidpass=Wrong password
@@ -77,6 +78,7 @@ list_rename=Rename list
 list_delete=Delete list
 list_publish=Publish list
 list_showcompleted=Show completed tasks
+list_expandnotes=Keep notes expanded
 list_clearcompleted=Clear completed tasks
 list_select=Select list
 list_export=Export

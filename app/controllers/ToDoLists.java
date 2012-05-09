@@ -106,6 +106,11 @@ public class ToDoLists extends Controller {
     public static void deleteList(Long list) {
         ToDoList toDoList = ToDoList.findById(list);
         if (toDoList != null) {
+            // first delete all tasks within the list
+            List<ToDo> todos = ToDo.find("byToDoList", toDoList).fetch();
+            for (ToDo todo : todos) {
+                todo.delete();
+            }
             toDoList.delete();
         }
 
@@ -124,6 +129,41 @@ public class ToDoLists extends Controller {
         }
 
         renderText(Utils.toJson(toDoList));
+    }
+
+    /**
+     * toggles notesExpanded boolean property of a list
+     */
+    public static void toggleNotesExpanded(Long list) {
+        ToDoList toDoList = ToDoList.findById(list);
+        if (toDoList != null) {
+            toDoList.notesExpanded = !toDoList.notesExpanded;
+            toDoList.save();
+        }
+
+        renderText(Utils.toJson(toDoList));
+    }
+
+    /**
+     * get all tags contained in a to do list. If an id of -1 is passed, it means all lists
+     *
+     */
+    public static void tagCloud(Long list) {
+        
+        List<Tag> tags = null;
+        if (list > 0) {
+            tags = JPA.em()
+                .createQuery("select t from ToDo todo right join todo.tags t where todo.toDoList.id=" + list)
+                .getResultList();
+        } else if (list == -1) {
+            List<Long> toDoListIds = JPA.em().createQuery("select id from ToDoList").getResultList(); // TODO eventually this will be constrained by project
+            tags = JPA.em()
+                    .createQuery("select t from ToDo todo right join todo.tags t where todo.toDoList.id in (" + 
+                            StringUtils.join(toDoListIds, ",") + ")")
+                    .getResultList();
+        }
+
+        renderText(Utils.toJson(tags));
     }
 
 }

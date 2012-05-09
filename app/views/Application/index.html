@@ -94,7 +94,6 @@ $().ready(function(){
 
 <h3>
 <span id="taskview" class="mtt-menu-button"><span class="btnstr">&{'tasks'}</span> (<span id="total">0</span>) <span class="arrdown"></span></span>
-<span class="mtt-notes-showhide">&{'notes'} <a href="#" id="mtt-notes-show">&{'notes_show'}</a> / <a href="#" id="mtt-notes-hide">&{'notes_hide'}</a></span>
 <span id="mtt_filters"></span>
 <span id="tagcloudbtn" class="mtt-menu-button">&{'tagcloud'} <span class="arrdown2"></span></span>
 </h3>
@@ -183,13 +182,8 @@ $().ready(function(){
 
 <div id="listmenucontainer" class="mtt-menu-container" style="display:none">
 <ul>
- <li class="mtt-need-list mtt-need-real-list" id="btnRenameList">&{'list_rename'}</li>
- <li class="mtt-need-list mtt-need-real-list" id="btnDeleteList">&{'list_delete'}</li>
- <li class="mtt-need-list mtt-need-real-list" id="btnClearCompleted">&{'list_clearcompleted'}</li>
- <li class="mtt-need-list mtt-need-real-list mtt-menu-indicator" submenu="listexportmenucontainer"><div class="submenu-icon"></div>&{'list_export'}</li>
- <li class="mtt-menu-delimiter mtt-need-real-list"></li>
- <li class="mtt-need-list mtt-need-real-list" id="btnPublish"><div class="menu-icon"></div>&{'list_publish'}</li>
- <li class="mtt-need-list mtt-need-real-list" id="btnRssFeed"><div class="menu-icon"></div>&{'list_rssfeed'}</li>
+    <li class="mtt-need-list" id="btnShowCompleted"><div class="menu-icon"></div>&{'list_showcompleted'}</li>
+    <li class="mtt-need-list" id="btnExpandNotes"><div class="menu-icon"></div>&{'list_expandnotes'}</li>
  <li class="mtt-menu-delimiter mtt-need-real-list"></li>
  <li class="mtt-need-list mtt-need-real-list sort-item" id="sortByHand"><div class="menu-icon"></div>&{'sortByHand'} <span class="mtt-sort-direction"></span></li>
  <li class="mtt-need-list sort-item" id="sortByDateCreated"><div class="menu-icon"></div>&{'sortByDateCreated'} <span class="mtt-sort-direction"></span></li>
@@ -197,7 +191,13 @@ $().ready(function(){
  <li class="mtt-need-list sort-item" id="sortByDueDate"><div class="menu-icon"></div>&{'sortByDueDate'} <span class="mtt-sort-direction"></span></li>
  <li class="mtt-need-list sort-item" id="sortByDateModified"><div class="menu-icon"></div>&{'sortByDateModified'} <span class="mtt-sort-direction"></span></li>
  <li class="mtt-menu-delimiter"></li>
- <li class="mtt-need-list" id="btnShowCompleted"><div class="menu-icon"></div>&{'list_showcompleted'}</li>
+    <li class="mtt-need-list mtt-need-real-list" id="btnClearCompleted">&{'list_clearcompleted'}</li>
+    <li class="mtt-need-list mtt-need-real-list" id="btnRenameList">&{'list_rename'}</li>
+    <li class="mtt-need-list mtt-need-real-list" id="btnDeleteList">&{'list_delete'}</li>
+    <li class="mtt-need-list mtt-need-real-list mtt-menu-indicator" submenu="listexportmenucontainer"><div class="submenu-icon"></div>&{'list_export'}</li>
+    <li class="mtt-menu-delimiter mtt-need-real-list"></li>
+    <li class="mtt-need-list mtt-need-real-list" id="btnPublish"><div class="menu-icon"></div>&{'list_publish'}</li>
+    <li class="mtt-need-list mtt-need-real-list" id="btnRssFeed"><div class="menu-icon"></div>&{'list_rssfeed'}</li>
 </ul>
 </div>
 
@@ -238,11 +238,29 @@ $().ready(function(){
  <li class="mtt-menu-delimiter slmenu-lists-begin mtt-need-list" ></li>
 </ul>
 </div>
-
 <div id="page_ajax" style="display:none"></div>
 
 </div>
 <div id="space"></div>
+</div>
+
+<div id="addList-dialog-form">
+    <form>
+        <fieldset>
+            <label for="addList-dialog-form-name">&{'addList'}</label>
+            <input type="text" name="name" id="addList-dialog-form-name" class="ui-widget-content"/>
+        </fieldset>
+    </form>
+</div>
+
+<div id="deleteConfirm-dialog-form">
+    <form>
+        <fieldset>
+            <label for="addList-dialog-form-name"></label>
+            <input type="hidden" name="action" id="deleteConfirm-dialog-form-action"/>
+            <input type="hidden" name="id" id="deleteConfirm-dialog-form-id"/>
+        </fieldset>
+    </form>
 </div>
 
 <div id="footer"><div id="footer_content">Source available at <strong><a href="http://www.github.com/sheldonshi/ninjatodo">Ninja To Do</a></strong></div></div>

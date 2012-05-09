@@ -11,6 +11,7 @@ body { margin:0px; padding:0px;  height:100%; min-height:100%; background-color:
 #container { height:auto !important;height:100%;min-height:100%;    }
 #mtt_body { padding:8px; padding-bottom:16px; }
 
+fieldset { padding:0; border:0; margin-top:5px; }
 
 td, th, input, textarea, select { font-family:arial; font-size:1em; }
 form { display: inline; }
@@ -60,7 +61,7 @@ a { color:#0000ff; cursor:pointer; text-decoration:underline; }
 #mtt_body.readonly li.mtt-tabs-selected span { margin-right:0; }
 .mtt-tabs-hidden { display:none; }
                      
-.mtt-tabs-alltasks { margin:1px 3px 0 3px; float:right; border-right:1px solid #ededed; background:#fbfbfb url(images/tab_hover.gif) no-repeat top left; }
+.mtt-tabs-alltasks { margin:1px 0 0 3px; float:right; border-right:1px solid #ededed; background:#fbfbfb url(images/tab_hover.gif) no-repeat top left; }
 .mtt-tabs-alltasks.mtt-tab a { padding:6px 2px 0px 6px; }
 .mtt-tabs-alltasks.mtt-tab.mtt-tabs-selected { border-left:none; border-right:1px solid #ededed; background:#ededed url(images/corner_left.gif) no-repeat top left; }
 
@@ -75,6 +76,7 @@ a { color:#0000ff; cursor:pointer; text-decoration:underline; }
  border-bottom:none;
  margin-top:1px;
  -moz-border-radius-topright:5px; -webkit-border-top-right-radius:5px; border-top-right-radius:5px;
+ display:none;
 }
 
 .mtt-tabs-button {
@@ -152,8 +154,6 @@ a { color:#0000ff; cursor:pointer; text-decoration:underline; }
 
 /* */
 #mtt_body.no-lists #page_tasks h3 > * { visibility:hidden; }
-.mtt-notes-showhide { font-size:0.8em; font-weight:normal; margin-left:2px; margin-right:2px; }
-.mtt-notes-showhide a { text-decoration:none; border-bottom:1px dotted; }
 
 #mtt_filters { font-size:0.8em; font-weight:normal; }
 .tag-filter { margin-left:3px; margin-right:3px; }
@@ -259,7 +259,6 @@ a.mtt-back-button { font-size:0.8em; }
 #priopopup .prio-pos-1:hover { border-color:#ff7700; }
 
 #tagcloudbtn { margin-right:2px; font-size:0.8em; font-weight:normal; padding:2px; float:right; }
-#mtt_body.show-all-tasks #tagcloudbtn { display:none; }
 #tagcloudload { display:none; height:24px; background:url(images/loading1_24.gif) center no-repeat; }
 #tagcloud {
  overflow: hidden; z-index:100; background-color:#f9f9f9; border:1px solid #cccccc; padding:5px;
@@ -353,3 +352,34 @@ li.mtt-item-hidden { display:none; }
 .mtt-settings-table th { text-align:left; width:210px; padding-left:8px; }
 .mtt-settings-table .descr { font-size:0.8em; font-weight:normal; color:#222; }
 .mtt-settings-table .in350 { min-width:350px; }
+
+/* jquery dialog */
+.ui-dialog { position: absolute; padding: .2em; width: 300px; overflow: hidden; }
+.ui-dialog .ui-dialog-titlebar { padding: .4em 1em; position: relative; display: none; }
+.ui-dialog .ui-dialog-content { position: relative; border: 0; padding: .5em 1em; margin: 0; background: none; overflow: auto; zoom: 1; }
+.ui-dialog .ui-dialog-buttonpane { text-align: left; border: 0; background-image: none; margin:0; padding: .0em 1em .5em .4em; }
+.ui-dialog .ui-dialog-buttonpane .ui-dialog-buttonset { float: right; }
+.ui-dialog .ui-dialog-buttonpane button { margin: .3em .4em .6em 0; cursor: pointer; }
+.ui-dialog input {width:240px; margin-top:4px;}
+.ui-dialog label {display: block;}
+
+.ui-corner-all, .ui-corner-top, .ui-corner-left, .ui-corner-tl { -moz-border-radius-topleft: 4px/*{cornerRadius}*/; -webkit-border-top-left-radius: 4px/*{cornerRadius}*/; -khtml-border-top-left-radius: 4px/*{cornerRadius}*/; border-top-left-radius: 4px/*{cornerRadius}*/; }
+.ui-corner-all, .ui-corner-top, .ui-corner-right, .ui-corner-tr { -moz-border-radius-topright: 4px/*{cornerRadius}*/; -webkit-border-top-right-radius: 4px/*{cornerRadius}*/; -khtml-border-top-right-radius: 4px/*{cornerRadius}*/; border-top-right-radius: 4px/*{cornerRadius}*/; }
+.ui-corner-all, .ui-corner-bottom, .ui-corner-left, .ui-corner-bl { -moz-border-radius-bottomleft: 4px/*{cornerRadius}*/; -webkit-border-bottom-left-radius: 4px/*{cornerRadius}*/; -khtml-border-bottom-left-radius: 4px/*{cornerRadius}*/; border-bottom-left-radius: 4px/*{cornerRadius}*/; }
+.ui-corner-all, .ui-corner-bottom, .ui-corner-right, .ui-corner-br { -moz-border-radius-bottomright: 4px/*{cornerRadius}*/; -webkit-border-bottom-right-radius: 4px/*{cornerRadius}*/; -khtml-border-bottom-right-radius: 4px/*{cornerRadius}*/; border-bottom-right-radius: 4px/*{cornerRadius}*/; }
+.ui-widget-content { border: 1px solid #aaaaaa/*{borderColorContent}*/; background: #ffffff/*{bgColorContent}*/ url(images/ui-bg_flat_75_ffffff_40x100.png)/*{bgImgUrlContent}*/ 50%/*{bgContentXPos}*/ 50%/*{bgContentYPos}*/ repeat-x/*{bgContentRepeat}*/; color: #222222/*{fcContent}*/; }
+.ui-widget-content a { color: #222222/*{fcContent}*/; }
+.ui-widget-header { border: 1px solid #aaaaaa/*{borderColorHeader}*/; background: #cccccc/*{bgColorHeader}*/ url(images/ui-bg_highlight-soft_75_cccccc_1x100.png)/*{bgImgUrlHeader}*/ 50%/*{bgHeaderXPos}*/ 50%/*{bgHeaderYPos}*/ repeat-x/*{bgHeaderRepeat}*/; color: #222222/*{fcHeader}*/; font-weight: bold; }
+.ui-widget-header a { color: #222222/*{fcHeader}*/; }
+/* dialog */
+.ui-state-default, .ui-widget-content .ui-state-default, .ui-widget-header .ui-state-default {
+    border: 1px solid #aaaaaa;
+    background: #ffffff;
+}
+.ui-widget-overlay {
+    opacity: .50 !important; /* Make sure to change both of these, as IE only sees the second one */
+    filter: Alpha(Opacity=50) !important;
+    background-color: #dedede !important; /* This will make it darker */
+}
+
+
