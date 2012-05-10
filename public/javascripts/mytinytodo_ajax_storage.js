@@ -137,6 +137,10 @@ mytinytodoStorageAjax.prototype =
 		$.getJSON(this.mtt.mttUrl+'ToDoLists/tagCloud?list='+params.list+'&rnd='+Math.random(), callback);
 	},
 
+    addTag: function(params, callback) {
+        $.post(this.mtt.mttUrl+'ToDos/addTag', {id:params.id,tags:params.tags}, callback, 'json');
+    },
+
 	moveTask: function(params, callback)
 	{
 		$.post(this.mtt.mttUrl+'ToDos/moveTask', { id:params.id, from:params.from, to:params.to }, callback, 'json');
@@ -146,7 +150,6 @@ mytinytodoStorageAjax.prototype =
 	{
 		$.post(this.mtt.mttUrl+'ajax.php?parseTaskStr', { list:params.list, title:params.title, tag:params.tag }, callback, 'json');
 	},
-	
 
 	// Lists
 	addList: function(params, callback)

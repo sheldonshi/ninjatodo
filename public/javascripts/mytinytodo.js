@@ -109,12 +109,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
 
 		// handlers
 		$('.mtt-tabs-add-button').click(function(){
-            $("#addList-dialog-form").dialog( "open" );
-            $("#addList-dialog-form input").focus();
-            $('#addList-dialog-form form').submit(function () {
-                $('#addList-dialog-form').parent().find('button').first().trigger('click');
-                return false;
-            });
+            singleInputDialog('addList', 'addList')
 		});
 
 		$('.mtt-tabs-select-button').click(function(event){
@@ -351,6 +346,15 @@ var mytinytodo = window.mytinytodo = _mtt = {
 		});
 
 		$('#tasklist .tag').live('click', function(event){
+            if ($(this).hasClass("addTag")) {
+                var id = getLiTaskId(this);
+                $("#singleInput-dialog-form-id").val(id);
+                $("#singleInput-dialog-form-name").val('');
+                // enable autocomplete on input
+                $("#singleInput-dialog-form-name").autocomplete('Tags/suggest', {scroll: false, multiple: true, selectFirst:false, max:8, extraParams:{project:_mtt.project}});
+                singleInputDialog('addTag', 'addTag');
+                return false;
+            }
 			clearTimeout(_mtt.timers.previewtag);
 			$('#tasklist li').removeClass('not-in-tagpreview');
 			addFilterTag($(this).attr('tag'), $(this).attr('tagid'), (event.metaKey || event.ctrlKey ? true : false) );
@@ -380,6 +384,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
 
 		if(this.options.tagPreview) {
 			$('#tasklist .tag').live('mouseover mouseout', function(event){
+                if ($(this).hasClass("addTag")) return false;
 				var cl = 'tag-id-' + $(this).attr('tagid');
 				var sel = (event.metaKey || event.ctrlKey) ? 'li.'+cl : 'li:not(.'+cl+')';
 				if(event.type == 'mouseover') {
@@ -482,17 +487,23 @@ var mytinytodo = window.mytinytodo = _mtt = {
 		this.addAction('listSelected', slmenuOnListSelected);
 		this.addAction('listHidden', slmenuOnListHidden);
         //
-        $( "#addList-dialog-form" ).dialog({
+        $( "#singleInput-dialog-form" ).dialog({
             autoOpen: false,
             minHeight: 0,
             width:270,
             modal: true,
             resizable: false,
+            overlay: {opacity:0.5},
             buttons: [
                 {text:_mtt.lang.get('actionSave'), click:function() {
-                        if ($("#addList-dialog-form-name").val().trim().length > 0)
-                            addList($("#addList-dialog-form-name").val());
+                        if ($("#singleInput-dialog-form-name").val().trim().length > 0) {
+                            if ($("#singleInput-dialog-form-fn").val()=='addList')
+                                addList($("#singleInput-dialog-form-name").val());
+                            else if ($("#singleInput-dialog-form-fn").val()=='addTag')
+                                addTagToTask($("#singleInput-dialog-form-id").val(), $("#singleInput-dialog-form-name").val());
+                        }
                         $(this).dialog("close")
+                        return false;
                     }
                 },
                 {text:_mtt.lang.get('actionCancel'), click: function() {
@@ -500,8 +511,15 @@ var mytinytodo = window.mytinytodo = _mtt = {
                 }}
             ],
             close: function() {
+                $("#ac_results").remove(); // remove suggestions
             }
         });
+        // enable enter to submit
+        $('#singleInput-dialog-form form').submit(function () {
+            $('#singleInput-dialog-form').parent().find('button').first().trigger('click');
+            return false;
+        });
+
         $( "#deleteConfirm-dialog-form" ).dialog({
             autoOpen: false,
             minHeight: 0,
@@ -510,7 +528,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
             resizable: false,
             buttons: [
                 {text:_mtt.lang.get('actionConfirm'), click:function() {
-                    var fn = $("#deleteConfirm-dialog-form-action").val();
+                    var fn = $("#deleteConfirm-dialog-form-fn").val();
                     var arg = $("#deleteConfirm-dialog-form-id").val();
                     if (fn=='deleteCurList') deleteCurList();
                     else if (fn=='deleteTask') deleteTask(arg);
@@ -767,6 +785,14 @@ function addList(name)
 	});
 };
 
+function addTagToTask(id, tag) {
+        _mtt.db.request('addTag', {id:id, tags:tag}, function(json){
+            if(!parseInt(json.total)) return;
+            // now add tag to the task
+            $("#taskrow_"+id+" .task-tags").replaceWith(prepareTagsStr(json.list[0]));
+        });
+};
+
 function renameCurList()
 {
 	if(!curList) return;
@@ -783,9 +809,9 @@ function renameCurList()
 	});
 };
 
-function confirmAction(messageKey, action, id) {
+function confirmAction(messageKey, fn, id) {
     $("#deleteConfirm-dialog-form label").html(_mtt.lang.get(messageKey));
-    $("#deleteConfirm-dialog-form-action").val(action);
+    $("#deleteConfirm-dialog-form-fn").val(fn);
     $("#deleteConfirm-dialog-form-id").val(id);
     $("#deleteConfirm-dialog-form").dialog( "open" );
 };
@@ -815,6 +841,12 @@ function publishCurList()
 	});
 };
 
+function singleInputDialog(messageKey, fn) {
+    $("#singleInput-dialog-form label").html(_mtt.lang.get(messageKey));
+    $("#singleInput-dialog-form-fn").val(fn);
+    $("#singleInput-dialog-form").dialog( "open" );
+    $("#singleInput-dialog-form-name").focus();
+}
 
 function loadTasks(opts)
 {
@@ -898,11 +930,7 @@ function preparePrio(prio,id)
 
 function prepareTagsStr(item)
 {
-//	if(!item.tags || item.tags == '') return '';
-//	var a = item.tags.split(',');
-//	if(!a.length) return '';
-//	var b = item.tags_ids.split(',')
-    if (!item.tags || item.tags.length == 0) return '';
+    if (!item.tags || item.tags.length == 0) return '<span class="task-tags"><a href="#" class="tag addTag">+</a></span>';
     var a = [];
     var b = [];
     for (var i in item.tags) {
@@ -912,7 +940,7 @@ function prepareTagsStr(item)
 	for(var i in a) {
 		a[i] = '<a href="#" class="tag" tag="'+a[i]+'" tagid="'+b[i]+'">'+a[i]+'</a>';
 	}
-	return '<span class="task-tags">'+a.join(', ')+'</span>';
+	return '<span class="task-tags">'+a.join(', ')+' <a href="#" class="tag addTag">+</a></span>';
 };
 
 function prepareTagsClass(tags)

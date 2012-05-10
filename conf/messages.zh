@@ -13,6 +13,7 @@ renameList=重命名列表
 deleteList=将会删除该列表中的全部任务\\n确认删除吗？
 clearCompleted=将会删除列表中所有已完成的项目\\n确认删除吗？
 settingsSaved=设置已保存，正在重新加载……
+addTag=添加标签
 
 htab_newtask=新建任务
 htab_search=搜索

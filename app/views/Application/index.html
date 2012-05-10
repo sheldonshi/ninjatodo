@@ -244,11 +244,13 @@ $().ready(function(){
 <div id="space"></div>
 </div>
 
-<div id="addList-dialog-form">
+<div id="singleInput-dialog-form">
     <form>
         <fieldset>
-            <label for="addList-dialog-form-name">&{'addList'}</label>
-            <input type="text" name="name" id="addList-dialog-form-name" class="ui-widget-content"/>
+            <label for="singleInput-dialog-form-name"></label>
+            <input type="hidden" name="fn" id="singleInput-dialog-form-fn"/>
+            <input type="hidden" name="id" id="singleInput-dialog-form-id"/>
+            <input type="text" name="name" id="singleInput-dialog-form-name" class="ui-widget-content"/>
         </fieldset>
     </form>
 </div>
@@ -256,8 +258,8 @@ $().ready(function(){
 <div id="deleteConfirm-dialog-form">
     <form>
         <fieldset>
-            <label for="addList-dialog-form-name"></label>
-            <input type="hidden" name="action" id="deleteConfirm-dialog-form-action"/>
+            <label for="deleteConfirm-dialog-form-fn"></label>
+            <input type="hidden" name="fn" id="deleteConfirm-dialog-form-fn"/>
             <input type="hidden" name="id" id="deleteConfirm-dialog-form-id"/>
         </fieldset>
     </form>

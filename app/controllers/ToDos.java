@@ -69,6 +69,20 @@ public class ToDos extends Controller {
     }
 
     /**
+     * Adds comma separated tags to existing tags of a to do task, does not check for duplicity
+     * @param id
+     * @param tags
+     */
+    public static void addTag(Long id, String tags) {
+        ToDo toDo = ToDo.findById(id);
+        if (toDo != null) {
+            addTagToToDo(tags, toDo);
+            toDo.save();
+        }
+        renderText(Utils.toJson(toDo));
+    }
+
+    /**
      *
      if(params.search && params.search != '') q += '&s='+encodeURIComponent(params.search);
      if(params.tag && params.tag != '') q += '&t='+encodeURIComponent(params.tag);
@@ -152,28 +166,42 @@ public class ToDos extends Controller {
         } else {
             toDo.tags = new ArrayList<Tag>();
         }
-        if (params.get("tags") != null) {
-            String[] tags = params.get("tags").split(",");
-            for (String t : tags) {
-                // first find if tag exists, if not, save it
-                t = t.trim();
-                // remove empty tag
-                if (t.length() > 0) {
-                    Tag existing = Tag.find("text=?", t).first();
-                    if (existing == null) {
-                        Tag tag = new Tag();
-                        tag.text = t;
-                        tag.project = Project.findById(1L);
-                        tag.save();
-                        existing = tag;
-                    }
-                    toDo.tags.add(existing);
-                }
-            }
-        }
+        addTagToToDo(params.get("tags"), toDo);
         toDo.save();
 
         renderText(Utils.toJson(toDo));
+    }
+
+    /**
+     * convenient method to add comma separated tags to todo
+     * @param tagsString
+     * @param toDo
+     */
+    private static void addTagToToDo(String tagsString, ToDo toDo) {
+        if (StringUtils.isEmpty(params.get("tags"))) {
+            return;
+        }
+        String[] tags = tagsString.split(",");
+        for (String t : tags) {
+            // first find if tag exists, if not, save it
+            t = t.trim();
+            // remove empty tag
+            if (t.length() > 0) {
+                Tag existing = Tag.find("text=?", t).first();
+                if (existing == null) {
+                    // save this tag if it has not been saved before
+                    Tag tag = new Tag();
+                    tag.text = t;
+                    tag.project = Project.findById(1L);
+                    tag.save();
+                    existing = tag;
+                }
+                if (toDo.tags == null) {
+                    toDo.tags = new ArrayList<Tag>();
+                }
+                toDo.tags.add(existing);
+            }
+        }
     }
 
     /**
