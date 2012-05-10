@@ -349,7 +349,6 @@ var mytinytodo = window.mytinytodo = _mtt = {
             if ($(this).hasClass("addTag")) {
                 var id = getLiTaskId(this);
                 $("#singleInput-dialog-form-id").val(id);
-                $("#singleInput-dialog-form-name").val('');
                 // enable autocomplete on input
                 $("#singleInput-dialog-form-name").autocomplete('Tags/suggest', {scroll: false, multiple: true, selectFirst:false, max:8, extraParams:{project:_mtt.project}});
                 singleInputDialog('addTag', 'addTag');
@@ -511,7 +510,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
                 }}
             ],
             close: function() {
-                $("#ac_results").remove(); // remove suggestions
+                $(".ac_results").remove(); // remove suggestions
             }
         });
         // enable enter to submit
@@ -843,6 +842,7 @@ function publishCurList()
 
 function singleInputDialog(messageKey, fn) {
     $("#singleInput-dialog-form label").html(_mtt.lang.get(messageKey));
+    $("#singleInput-dialog-form-name").val('');
     $("#singleInput-dialog-form-fn").val(fn);
     $("#singleInput-dialog-form").dialog( "open" );
     $("#singleInput-dialog-form-name").focus();
@@ -930,7 +930,7 @@ function preparePrio(prio,id)
 
 function prepareTagsStr(item)
 {
-    if (!item.tags || item.tags.length == 0) return '<span class="task-tags"><a href="#" class="tag addTag">+</a></span>';
+    if (!item.tags || item.tags.length == 0) return '<span class="task-tags"><a href="#" class="tag addTag">'+_mtt.lang.get('link.addTag')+'</a></span>';
     var a = [];
     var b = [];
     for (var i in item.tags) {
@@ -940,7 +940,7 @@ function prepareTagsStr(item)
 	for(var i in a) {
 		a[i] = '<a href="#" class="tag" tag="'+a[i]+'" tagid="'+b[i]+'">'+a[i]+'</a>';
 	}
-	return '<span class="task-tags">'+a.join(', ')+' <a href="#" class="tag addTag">+</a></span>';
+	return '<span class="task-tags">'+a.join(', ')+' <a href="#" class="tag addTag">'+_mtt.lang.get('link.addTag')+'</a></span>';
 };
 
 function prepareTagsClass(tags)

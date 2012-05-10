@@ -204,7 +204,7 @@ li.task-completed .task-title a { color:#777777; }
 a.taskactionbtn { display:block; float:right; height:15px; width:15px; text-decoration:none; background:url(images/icons.gif) 0 0 no-repeat; display:none; }
 li:hover a.taskactionbtn, a.taskactionbtn.mtt-menu-button-active { background-position:-16px 0; display:block;}
 a.addTag {display:none;}
-li:hover a.addTag {display: inline;}
+li:hover a.addTag {display: inline; color:#fff; background-color:#bbbbbb;}
 
 #tasklist.filter-past li, #tasklist.filter-today li, #tasklist.filter-soon li { display:none; }
 #tasklist.filter-past li.past, #tasklist.filter-today li.today, #tasklist.filter-soon li.soon { display:block; }
