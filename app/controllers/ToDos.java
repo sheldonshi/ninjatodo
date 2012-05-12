@@ -23,6 +23,7 @@ import java.util.List;
  */
 @With(LanguageFilter.class)
 public class ToDos extends Controller {
+    public static final Long ALL_LIST_ID = -1L;
 
     public static void newTask(Long list, String title) {
         ToDo toDo = new ToDo();
@@ -96,8 +97,10 @@ public class ToDos extends Controller {
         if (Boolean.TRUE.equals(changeShowCompleted)) {
             // showCompleted has been changed; update. TODO check permission
             ToDoList toDoList = ToDoList.findById(list);
-            toDoList.showCompleted = showCompleted;
-            toDoList.save();
+            if (toDoList != null) {
+                toDoList.showCompleted = showCompleted;
+                toDoList.save();
+            }
         }
         // store
         String sort = params.get("sort") != null && !params.get("sort").equals(JSConstant.STRING_UNDEFINED) ?
@@ -105,13 +108,15 @@ public class ToDos extends Controller {
 
         String querySortStr = " order by " + (sort != null ? sort : SortOrder.DEFAULT.getSqlSort());
         List<ToDo> tasks = new ArrayList<ToDo>();
-        if (!StringUtils.isEmpty(params.get("s"))) {
+        if (StringUtils.isNotEmpty(params.get("s"))) {
             String queryLikeStr = "%"+ params.get("s") + "%";
-            tasks = ToDo.find("toDoList.id=? and (title like ? or note like ?)" + (showCompleted ? "" : " and completed=false") + querySortStr, list, queryLikeStr, queryLikeStr).fetch();
-        } else if (list != -1) {
-            tasks = ToDo.find("toDoList.id=? " + (showCompleted ? "" : " and completed=false") + querySortStr, list).fetch();
+            String queryStr = (list == ALL_LIST_ID ? "" : "toDoList.id=" + list + " and ") +
+                    "(title like ? or note like ?)" + (showCompleted ? "" : " and completed=false");
+            tasks = ToDo.find(queryStr + querySortStr, queryLikeStr, queryLikeStr).fetch();
         } else {
-            tasks = ToDo.find(querySortStr).fetch();
+            String queryStr = (list == ALL_LIST_ID ? "1=1" : "toDoList.id=" + list) +
+                    (showCompleted ? "" : " and completed=false");
+            tasks = ToDo.find(queryStr + querySortStr).fetch();
         }
         // filter by tag now
         if (StringUtils.isNotEmpty(t)) {

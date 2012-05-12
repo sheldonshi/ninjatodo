@@ -109,7 +109,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
 
 		// handlers
 		$('.mtt-tabs-add-button').click(function(){
-            singleInputDialog('addList', 'addList')
+            singleInputDialog('addList', 'addList');
 		});
 
 		$('.mtt-tabs-select-button').click(function(event){
@@ -348,10 +348,8 @@ var mytinytodo = window.mytinytodo = _mtt = {
 		$('#tasklist .tag').live('click', function(event){
             if ($(this).hasClass("addTag")) {
                 var id = getLiTaskId(this);
-                $("#singleInput-dialog-form-id").val(id);
-                // enable autocomplete on input
-                $("#singleInput-dialog-form-name").autocomplete('Tags/suggest', {scroll: false, multiple: true, selectFirst:false, max:8, extraParams:{project:_mtt.project}});
-                singleInputDialog('addTag', 'addTag');
+                $("#addTag-dialog-form-id").val(id);
+                addTagDialog('addTag');
                 return false;
             }
 			clearTimeout(_mtt.timers.previewtag);
@@ -492,14 +490,10 @@ var mytinytodo = window.mytinytodo = _mtt = {
             width:270,
             modal: true,
             resizable: false,
-            overlay: {opacity:0.5},
             buttons: [
                 {text:_mtt.lang.get('actionSave'), click:function() {
                         if ($("#singleInput-dialog-form-name").val().trim().length > 0) {
-                            if ($("#singleInput-dialog-form-fn").val()=='addList')
-                                addList($("#singleInput-dialog-form-name").val());
-                            else if ($("#singleInput-dialog-form-fn").val()=='addTag')
-                                addTagToTask($("#singleInput-dialog-form-id").val(), $("#singleInput-dialog-form-name").val());
+                            addList($("#singleInput-dialog-form-name").val());
                         }
                         $(this).dialog("close")
                         return false;
@@ -510,7 +504,6 @@ var mytinytodo = window.mytinytodo = _mtt = {
                 }}
             ],
             close: function() {
-                $(".ac_results").remove(); // remove suggestions
             }
         });
         // enable enter to submit
@@ -518,6 +511,38 @@ var mytinytodo = window.mytinytodo = _mtt = {
             $('#singleInput-dialog-form').parent().find('button').first().trigger('click');
             return false;
         });
+
+        $( "#addTag-dialog-form" ).dialog({
+            autoOpen: false,
+            minHeight: 0,
+            width:270,
+            modal: true,
+            resizable: false,
+            buttons: [
+                {text:_mtt.lang.get('actionSave'), click:function() {
+                    if ($("#addTag-dialog-form-name").val().trim().length > 0) {
+                        addTagToTask($("#addTag-dialog-form-id").val(), $("#addTag-dialog-form-name").val());
+                    }
+                    $(this).dialog("close");
+                    return false;
+                }
+                },
+                {text:_mtt.lang.get('actionCancel'), click: function() {
+                    $( this ).dialog( "close" );
+                }}
+            ],
+            close: function() {
+                $(".ac_results").hide();
+                //$(".ac_results").html('');
+            }
+        });
+        // enable enter to submit
+        $('#addTag-dialog-form form').submit(function () {
+            $('#addTag-dialog-form').parent().find('button').first().trigger('click');
+            return false;
+        });
+        // enable autocomplete
+        $("#addTag-dialog-form-name").autocomplete('Tags/suggest', {scroll: false, multiple: true, selectFirst:false, max:8, extraParams:{project:_mtt.project}});
 
         $( "#deleteConfirm-dialog-form" ).dialog({
             autoOpen: false,
@@ -846,6 +871,13 @@ function singleInputDialog(messageKey, fn) {
     $("#singleInput-dialog-form-fn").val(fn);
     $("#singleInput-dialog-form").dialog( "open" );
     $("#singleInput-dialog-form-name").focus();
+}
+
+function addTagDialog(messageKey) {
+    $("#addTag-dialog-form label").html(_mtt.lang.get(messageKey));
+    $("#addTag-dialog-form-name").val('');
+    $("#addTag-dialog-form").dialog( "open" );
+    $("#addTag-dialog-form-name").focus();
 }
 
 function loadTasks(opts)
