@@ -339,7 +339,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
 			//return false;
 		});
 
-        $('#tasklist .task-toggle').live('mouseover', function(){
+        $('#tasklist .task-toggle').live('click', function(){
 			var id = getLiTaskId(this);
 			if(id) $('#taskrow_'+id).toggleClass('task-expanded');
 			return false;
