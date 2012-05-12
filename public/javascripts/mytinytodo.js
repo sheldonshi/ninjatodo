@@ -668,7 +668,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
 
 	duedatepickerformat: function()
 	{
-		if(!this.options.duedatepickerformat) return 'yy-mm-dd';
+		if(!this.options.duedatepickerformat) return 'yyyy-mm-dd';
 	
 		var s = this.options.duedatepickerformat.replace(/(.)/g, function(t,s) {
 			switch(t) {
@@ -946,6 +946,9 @@ function prepareHtml(s)
 {
     // escape html tags
     s = $("<div/>").text(s).html();
+    // nl2br
+    var breakTag = '<br/>';
+    s = s.replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1' + breakTag + '$2');
 	// make URLs clickable
 	s = s.replace(/(^|\s|>)(www\.([\w\#$%&~\/.\-\+;:=,\?\[\]@]+?))(,|\.|:|)?(?=\s|&quot;|&lt;|&gt;|\"|<|>|$)/gi, '$1<a href="http://$2" target="_blank">$2</a>$4');
 	return s.replace(/(^|\s|>)((?:http|https|ftp):\/\/([\w\#$%&~\/.\-\+;:=,\?\[\]@]+?))(,|\.|:|)?(?=\s|&quot;|&lt;|&gt;|\"|<|>|$)/ig, '$1<a href="$2" target="_blank">$2</a>$4');
