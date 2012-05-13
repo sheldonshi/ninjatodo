@@ -1021,7 +1021,7 @@ function prepareItemStyleClass(item, noteExp) {
         }
     }
     styleClass += (item.note && item.note !=''?' task-has-note':'') +
-        ((curList.notesExpanded && item.note != '') || noteExp ? ' task-expanded' : '') + prepareTagsClass(item.tags);
+        ((curList.notesExpanded && item.note && item.note != '') || noteExp ? ' task-expanded' : '') + prepareTagsClass(item.tags);
     return styleClass;
 }
 

@@ -25,7 +25,7 @@ mytinytodoStorageAjax.prototype =
 		if(!this[action]) throw "Unknown storage action: "+action;
 
 		this[action](params, function(json){
-			if(json.denied) mtt.errorDenied();
+			if(json && json.denied) mtt.errorDenied();
 			if(callback) callback.call(mtt, json)
 		});
 	},
