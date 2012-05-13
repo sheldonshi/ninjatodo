@@ -667,7 +667,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
 
 			$('#page_tasks').show();
             // enable droppable on tabs
-            $('#lists li').droppable({drop:itemDropped,hoverClass:'mtt-tabs-droppable',tolerance:'pointer'});
+            makeDroppable('#lists li');
 		});
 
 		if(onInit) updateAccessStatus();
@@ -811,12 +811,16 @@ function addList(name)
 					'<a href="#" title="'+item.name+'"><span>'+item.name+'</span>'+
 					'<div class="list-action"></div></a></li>');
             // enable droppable on tabs
-            $('#list_'+item.id).droppable({drop:itemDropped,hoverClass:'mtt-tabs-droppable',tolerance:'pointer'});
+            makeDroppable('#list_'+item.id);
 			mytinytodo.doAction('listAdded', item);
 		}
 		else _mtt.loadLists();
 	});
 };
+
+function makeDroppable(selector) {
+    $(selector).droppable({drop:itemDropped,hoverClass:'mtt-tabs-droppable',tolerance:'pointer'});
+}
 
 function addTagToTask(id, tag) {
         _mtt.db.request('addTag', {id:id, tags:tag}, function(json){
