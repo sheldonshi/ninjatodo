@@ -810,6 +810,8 @@ function addList(name)
 			$('#lists ul').append('<li id="list_'+item.id+'" class="mtt-tab">'+
 					'<a href="#" title="'+item.name+'"><span>'+item.name+'</span>'+
 					'<div class="list-action"></div></a></li>');
+            // enable droppable on tabs
+            $('#list_'+item.id).droppable({drop:itemDropped,hoverClass:'mtt-tabs-droppable',tolerance:'pointer'});
 			mytinytodo.doAction('listAdded', item);
 		}
 		else _mtt.loadLists();
