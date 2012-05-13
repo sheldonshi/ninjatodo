@@ -284,6 +284,18 @@ a.mtt-back-button { font-size:0.8em; }
 #tagcloudcancel span { background:url(images/buttons.png) 0 -32px no-repeat; }
 #tagcloudcancel span:hover { background-position:-16px -32px; }
 
+#helpdetail {
+    overflow: auto; z-index:100; background-color:#f9f9f9; border:1px solid #cccccc; padding:5px;
+    width:300px; margin:0px 7px 7px 7px;
+    -moz-box-shadow:1px 2px 5px rgba(0,0,0,0.5); -webkit-box-shadow:1px 2px 5px rgba(0,0,0,0.5);
+}
+#helpcontent ul { list-style: none; padding:0; margin:0; }
+#helpcontent li { margin:1px 0px; cursor:default; color:#000; white-space:nowrap; padding:0.15em 18px; position:relative; }
+
+#helpcancel { float:right; }
+#helpcancel span { background:url(images/buttons.png) 0 -32px no-repeat; }
+#helpcancel span:hover { background-position:-16px -32px; }
+
 #taskview { padding:2px; }
 
 .ui-datepicker { width:190px; z-index:202; border: 1px solid #cccccc; background: #ffffff; display:none; padding:2px; 

@@ -14,7 +14,12 @@ deleteList=将会删除该列表中的全部任务\\n确认删除吗？
 clearCompleted=将会删除列表中所有已完成的项目\\n确认删除吗？
 settingsSaved=设置已保存，正在重新加载……
 addTag=添加标签
-link.addTag=+标签
+a_addTag=+标签
+
+help_hover=鼠标悬浮－激活
+help_click=鼠标单点－选择
+help_dblclick=鼠标双点－改动
+help_drag=鼠标拖动－排序或移到其它列表
 
 htab_newtask=新建任务
 htab_search=搜索
@@ -86,6 +91,7 @@ alltags=所有标签:
 alltags_show=显示全部
 alltags_hide=隐藏全部
 a_settings=设置
+a_help=帮助
 rss_feed=RSS输出
 feed_title=%s
 feed_completed_tasks=已完成的任务

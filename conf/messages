@@ -17,7 +17,12 @@ deleteList=This will delete current list with all tasks in it.\\nAre you sure?
 clearCompleted=This will delete all completed tasks in the list.\\nAre you sure?
 settingsSaved=Settings saved. Reloading...
 addTag=Add tag
-link.addTag=+Tag
+a_addTag=+Tag
+
+help_hover=Mouse hover to activate</li>
+help_click=Click to select
+help_dblclick=Double click to edit
+help_drag=Drag to reorder or move to a different list
 
 htab_newtask=New task
 htab_search=Search
@@ -90,6 +95,7 @@ alltags=All tags:
 alltags_show=Show all
 alltags_hide=Hide all
 a_settings=Settings
+a_help=Help
 rss_feed=RSS Feed
 feed_title=%s
 feed_completed_tasks=Completed tasks

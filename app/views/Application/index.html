@@ -31,7 +31,8 @@ $().ready(function(){
  <div id="msg"><span class="msg-text"></span><div class="msg-details"></div></div>
  <div class="bar-menu">
  <span class="menu-owner" style="display:none">
-   <a href="#settings" id="settings">&{'a_settings'}</a>
+   <a href="#settings" id="settings">&{'a_settings'}</a> |
+   <a href="#settings" id="help">&{'a_help'}</a>
  </span>
  <span class="bar-delim" style="display:none"> | </span>
  <span id="bar_auth">
@@ -179,6 +180,17 @@ $().ready(function(){
  <div id="tagcloudcontent"></div>
 </div>
 
+<div id="helpdetail" style="display:none">
+    <a id="helpcancel" class="mtt-img-button"><span></span></a>
+    <div id="helpcontent">
+        <ul>
+            <li>&{'help_hover'}</li>
+            <li>&{'help_click'}</li>
+            <li>&{'help_dblclick'}</li>
+            <li>&{'help_drag'}</li>
+        </ul>
+    </div>
+</div>
 
 <div id="listmenucontainer" class="mtt-menu-container" style="display:none">
 <ul>

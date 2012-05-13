@@ -209,6 +209,13 @@ var mytinytodo = window.mytinytodo = _mtt = {
 			_mtt.menus.tagcloud.show(this);
 		});
 
+        $('#help').click(function(){
+            if(!_mtt.menus.help) _mtt.menus.help = new mttMenu('helpdetail', {
+                adjustWidth:true
+            });
+            _mtt.menus.help.show(this);
+        });
+
 		$('#tagcloudcancel').click(function(){
 			if(_mtt.menus.tagcloud) _mtt.menus.tagcloud.close();
 		});
@@ -965,7 +972,7 @@ function preparePrio(prio,id)
 
 function prepareTagsStr(item)
 {
-    if (!item.tags || item.tags.length == 0) return '<span class="task-tags"><a href="#" class="tag addTag">'+_mtt.lang.get('link.addTag')+'</a></span>';
+    if (!item.tags || item.tags.length == 0) return '<span class="task-tags"><a href="#" class="tag addTag">'+_mtt.lang.get('a_addTag')+'</a></span>';
     var a = [];
     var b = [];
     for (var i in item.tags) {
@@ -975,7 +982,7 @@ function prepareTagsStr(item)
 	for(var i in a) {
 		a[i] = '<a href="#" class="tag" tag="'+a[i]+'" tagid="'+b[i]+'">'+a[i]+'</a>';
 	}
-	return '<span class="task-tags">'+a.join(', ')+' <a href="#" class="tag addTag">'+_mtt.lang.get('link.addTag')+'</a></span>';
+	return '<span class="task-tags">'+a.join(', ')+' <a href="#" class="tag addTag">'+_mtt.lang.get('a_addTag')+'</a></span>';
 };
 
 function prepareTagsClass(tags)
