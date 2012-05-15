@@ -4,7 +4,6 @@ import play.mvc.*;
 
 import models.*;
 
-@With(LanguageFilter.class)
 public class Application extends Controller {
 
     public static void index() {

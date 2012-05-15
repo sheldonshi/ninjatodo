@@ -21,7 +21,6 @@ import java.util.List;
  * Time: 5:07 PM
  * To change this template use File | Settings | File Templates.
  */
-@With(LanguageFilter.class)
 public class ToDos extends Controller {
     public static final Long ALL_LIST_ID = -1L;
 

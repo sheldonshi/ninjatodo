@@ -18,7 +18,6 @@ import java.util.Map;
  * Time: 8:52 AM
  * To change this template use File | Settings | File Templates.
  */
-@With(LanguageFilter.class)
 public class Tags extends Controller {
     /**
      * return up to limit # of suggested tags that contains q

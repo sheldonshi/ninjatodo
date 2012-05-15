@@ -17,7 +17,6 @@ import java.util.List;
  * Time: 3:45 PM
  * To change this template use File | Settings | File Templates.
  */
-@With(LanguageFilter.class)
 public class ToDoLists extends Controller {
     /**
      * required json data structure on the UI {'list':[], 'total':..}
