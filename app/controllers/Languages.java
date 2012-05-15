@@ -29,7 +29,7 @@ public class Languages extends Controller {
         if (localMessages.get(language) == null) {
             // init language by converting messages properties into json string
             Properties properties = Messages.all(language);
-            if (properties == null) {
+            if (properties == null || properties.isEmpty()) {
                 properties = Messages.defaults;
             }
             localMessages.put(language, new Gson().toJson(properties));
