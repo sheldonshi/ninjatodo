@@ -15,6 +15,9 @@ import java.util.List;
  */
 public class LanguageFilter extends Controller {
     @Before
+    /**
+     * always makes sure there is a language setting in session
+     */
     public static void checkLanguage() {
         if (session.get("language") == null) {
             // browser settings may have multiple languages. for example, "zh-CN", "zh", "en-US", "en"
@@ -27,10 +30,10 @@ public class LanguageFilter extends Controller {
                         break;
                     }
                 }
-                session.put("languageInitRequired", true);
             }
-        } else {
-            session.put("languageInitRequired", false);
+            if (session.get("language") == null) {
+                session.put("language", "");  // "" indicate default
+            }
         }
     }
 }
