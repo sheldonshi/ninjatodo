@@ -1159,26 +1159,37 @@ function setSort(v, init)
 	}
 };
 
-
 function changeTaskCnt(task, dir, old)
 {
 	if(dir > 0) dir = 1;
 	else if(dir < 0) dir = -1;
-	if(dir == 0 && old != null && task.dueClass != old.dueClass) //on saveTask
+	if(dir == 0 && old != null && task.dateDueInDays != old.dateDueInDays) //on saveTask
 	{
-		if(old.dueClass != '') taskCnt[old.dueClass]--;
-		if(task.dueClass != '') taskCnt[task.dueClass]++;
+        changeTaskCntByDueDate(old, -1);
+        changeTaskCntByDueDate(task, 1);
 	}
 	else if(dir == 0 && old == null) //on comleteTask
 	{
 		if(!curList.showCompleted && task.completed) taskCnt.total--;
-		if(task.dueClass != '') taskCnt[task.dueClass] += task.completed ? -1 : 1;
+        changeTaskCntByDueDate(task, task.completed ? -1 : 1);
 	}
 	if(dir != 0) {
-		if(task.dueClass != '' && !task.completed) taskCnt[task.dueClass] += dir;
+		if(!task.completed) changeTaskCntByDueDate(task, dir);
 		taskCnt.total += dir;
 	}
 };
+
+function changeTaskCntByDueDate(task, dir) {
+    if (!task.dateDueInDays) {
+        return;
+    } else if (task.dateDueInDays <= 0) {
+        taskCnt['past']+=dir;
+    } else if (task.dateDueInDays < 2) {
+        taskCnt['today']+=dir;
+    } else if (task.dateDueInDays < 8) {
+        taskCnt['soon']+=dir;
+    }
+}
 
 function refreshTaskCnt()
 {
