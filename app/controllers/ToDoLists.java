@@ -8,6 +8,7 @@ import play.mvc.With;
 import utils.Utils;
 
 import javax.persistence.NoResultException;
+import javax.persistence.Query;
 import java.util.List;
 
 /**
@@ -144,7 +145,8 @@ public class ToDoLists extends Controller {
     }
 
     /**
-     * get all tags contained in a to do list. If an id of -1 is passed, it means all lists
+     * get all tags contained in a to do list. If an id of -1 is passed, it means all lists in the project
+     * TODO if list=-1, we should have project id and get tags under that project id
      *
      */
     public static void tagCloud(Long list) {
@@ -155,11 +157,13 @@ public class ToDoLists extends Controller {
                 .createQuery("select t from ToDo todo right join todo.tags t where todo.toDoList.id=" + list)
                 .getResultList();
         } else if (list == -1) {
-            List<Long> toDoListIds = JPA.em().createQuery("select id from ToDoList").getResultList(); // TODO eventually this will be constrained by project
-            tags = JPA.em()
-                    .createQuery("select t from ToDo todo right join todo.tags t where todo.toDoList.id in (" + 
-                            StringUtils.join(toDoListIds, ",") + ")")
-                    .getResultList();
+            Project project = Project.all().first();
+            if (project != null) {
+                Query query = JPA.em()
+                        .createQuery("select t from Tag t where project=:project");
+                query.setParameter("project", project);
+                tags = query.getResultList();
+            }
         }
 
         renderText(Utils.toJson(tags));
