@@ -209,13 +209,6 @@ var mytinytodo = window.mytinytodo = _mtt = {
 			_mtt.menus.tagcloud.show(this);
 		});
 
-        $('#help').click(function(){
-            if(!_mtt.menus.help) _mtt.menus.help = new mttMenu('helpdetail', {
-                adjustWidth:true
-            });
-            _mtt.menus.help.show(this);
-        });
-
 		$('#tagcloudcancel').click(function(){
 			if(_mtt.menus.tagcloud) _mtt.menus.tagcloud.close();
 		});
@@ -225,6 +218,17 @@ var mytinytodo = window.mytinytodo = _mtt = {
 			if(_mtt.menus.tagcloud) _mtt.menus.tagcloud.close();
 			return false;
 		});
+
+        $('#help').click(function(){
+            if(!_mtt.menus.help) _mtt.menus.help = new mttMenu('helpdetail', {
+                adjustWidth:true
+            });
+            _mtt.menus.help.show(this);
+        });
+
+        $('#helpcancel').click(function(){
+            if(_mtt.menus.help) _mtt.menus.help.close();
+        });
 
 		$('#taskviewcontainer li').click(function(){
 			if(this.id == 'view_tasks') setTaskview(0);
