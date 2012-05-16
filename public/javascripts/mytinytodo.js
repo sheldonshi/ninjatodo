@@ -836,6 +836,8 @@ function addTagToTask(id, tag) {
             if(!parseInt(json.total)) return;
             // now add tag to the task
             $("#taskrow_"+id+" .task-tags").replaceWith(prepareTagsStr(json.list[0]));
+            // update taskList
+            taskList[id]=json.list[0];
         });
 };
 
