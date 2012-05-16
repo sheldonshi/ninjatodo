@@ -19,10 +19,14 @@ settingsSaved=Settings saved. Reloading...
 addTag=Add tag
 a_addTag=+Tag
 
+help_desktop=Desktop:
+help_mobile=Mobile Browser:
 help_hover=Mouse hover to activate</li>
 help_click=Click to select
 help_dblclick=Double click to edit
 help_drag=Drag to reorder or move to a different list
+help_add=Click on "+" to add
+help_menu=Arrows on the right side are menus
 
 htab_newtask=New task
 htab_search=Search

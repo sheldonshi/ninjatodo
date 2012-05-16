@@ -16,10 +16,14 @@ settingsSaved=设置已保存，正在重新加载……
 addTag=添加标签
 a_addTag=+标签
 
+help_desktop=桌面浏览器：
+help_mobile=手机浏览器：
 help_hover=鼠标悬浮－激活
 help_click=鼠标单点－选择
 help_dblclick=鼠标双点－改动
 help_drag=鼠标拖动－排序或移到其它列表
+help_add="+"表示添加
+help_menu=右边箭头为菜单
 
 htab_newtask=新建任务
 htab_search=搜索
