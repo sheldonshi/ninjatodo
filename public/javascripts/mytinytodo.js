@@ -497,6 +497,9 @@ var mytinytodo = window.mytinytodo = _mtt = {
             width:270,
             modal: true,
             resizable: false,
+            open: function(event, ui) {
+                $(event.target).parent().css('top', '150px');
+            },
             buttons: [
                 {text:_mtt.lang.get('actionSave'), click:function() {
                         if ($("#singleInput-dialog-form-name").val().trim().length > 0) {
@@ -525,6 +528,9 @@ var mytinytodo = window.mytinytodo = _mtt = {
             width:270,
             modal: true,
             resizable: false,
+            open: function(event, ui) {
+                $(event.target).parent().css('top', '150px');
+            },
             buttons: [
                 {text:_mtt.lang.get('actionSave'), click:function() {
                     if ($("#addTag-dialog-form-name").val().trim().length > 0) {
@@ -557,6 +563,9 @@ var mytinytodo = window.mytinytodo = _mtt = {
             width:270,
             modal: true,
             resizable: false,
+            open: function(event, ui) {
+                $(event.target).parent().css('top', '150px');
+            },
             buttons: [
                 {text:_mtt.lang.get('actionConfirm'), click:function() {
                     var fn = $("#deleteConfirm-dialog-form-fn").val();
