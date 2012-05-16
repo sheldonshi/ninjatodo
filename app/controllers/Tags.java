@@ -40,31 +40,4 @@ public class Tags extends Controller {
         }
         renderText(returnString);
     }
-
-    /**
-     * return up to limit # of suggested tags that contains q
-     *
-     * @param project
-     * @param term
-     * @param limit
-     */
-    public static void suggest2(Long project, String term, Integer limit) {
-        if (limit == null) {
-            limit = 8;
-        }
-        String q = term;
-        List returnResults = new ArrayList();
-        if (StringUtils.isNotEmpty(q)) {
-            List<Tag> tags = Tag.find("project.id=? and text like '%" + StringEscapeUtils.escapeSql(q) + "%'", project).fetch(limit);
-            for (Tag tag : tags) {
-                Map returnMap = new HashMap();
-                returnMap.put("id", tag.id);
-                returnMap.put("label", tag.text);
-                returnMap.put("value", tag.text);
-                returnResults.add(returnMap);
-            }
-            renderJSON(returnResults);
-        }
-        renderText("");
-    }
 }
