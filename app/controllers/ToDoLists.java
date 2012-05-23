@@ -22,18 +22,19 @@ public class ToDoLists extends Controller {
     /**
      * required json data structure on the UI {'list':[], 'total':..}
      */
-    public static void loadLists() {
-        List toDoLists = ToDoList.find("order by orderIndex").fetch();
+    public static void loadLists(Long project) {
+        Project proj = Project.findById(project);
+        List toDoLists = proj != null ? ToDoList.find("project=? order by orderIndex", proj).fetch() : null;
         renderJSON(Utils.toJson(toDoLists));
     }
 
     /**
      * required json data structure on the UI {'list':[], 'total':..}
      */
-    public static void addList(String name) {
+    public static void addList(String name, Long project) {
         ToDoList toDoList = new ToDoList();
         toDoList.name = name;
-        toDoList.project = Project.all().first();
+        toDoList.project = Project.findById(project);
         toDoList.save();
         try {
             Integer lastOrderIndex = (Integer) JPA.em()
@@ -149,7 +150,7 @@ public class ToDoLists extends Controller {
      * TODO if list=-1, we should have project id and get tags under that project id
      *
      */
-    public static void tagCloud(Long list) {
+    public static void tagCloud(Long list, Long project) {
         
         List<Tag> tags = null;
         if (list > 0) {
@@ -157,11 +158,11 @@ public class ToDoLists extends Controller {
                 .createQuery("select t from ToDo todo right join todo.tags t where todo.toDoList.id=" + list)
                 .getResultList();
         } else if (list == -1) {
-            Project project = Project.all().first();
-            if (project != null) {
+            Project proj = Project.findById(project);
+            if (proj != null) {
                 Query query = JPA.em()
                         .createQuery("select t from Tag t where project=:project");
-                query.setParameter("project", project);
+                query.setParameter("project", proj);
                 tags = query.getResultList();
             }
         }

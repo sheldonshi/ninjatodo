@@ -191,12 +191,12 @@ public class ToDos extends Controller {
             t = t.trim();
             // remove empty tag
             if (t.length() > 0) {
-                Tag existing = Tag.find("text=?", t).first();
+                Tag existing = Tag.find("text=? and project=?", t, toDo.toDoList.project).first();
                 if (existing == null) {
                     // save this tag if it has not been saved before
                     Tag tag = new Tag();
                     tag.text = t;
-                    tag.project = Project.findById(1L);
+                    tag.project = toDo.toDoList.project;
                     tag.save();
                     existing = tag;
                 }

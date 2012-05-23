@@ -15,6 +15,8 @@ clearCompleted=将会删除列表中所有已完成的项目\\n确认删除吗�
 settingsSaved=设置已保存，正在重新加载……
 addTag=添加标签
 a_addTag=+标签
+myFirstProject=我的第一个项目
+addProject=新建项目
 
 help_desktop=桌面浏览器：
 help_mobile=手机浏览器：
@@ -131,3 +133,8 @@ set_submit=保存修改
 set_cancel=取消
 set_showdate=在任务列表中显示时间
 
+signup_usernameNotAvailable=已被使用
+signup_needMoreCharacters=需要继续输入
+signup_needAtLeastOneLetter=需要至少一个字母
+signup_needAtLeastOneNumber=需要至少一个数字
+signup_passwordPattern=至少6个字节，至少一个字母和一个数字

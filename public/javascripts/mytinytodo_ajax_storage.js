@@ -33,7 +33,7 @@ mytinytodoStorageAjax.prototype =
 
 	loadLists: function(params, callback)
 	{
-		$.getJSON(this.mtt.mttUrl+'ToDoLists/loadLists?rnd='+Math.random(), callback);
+		$.getJSON(this.mtt.mttUrl+'ToDoLists/loadLists?project='+params.project+'&rnd='+Math.random(), callback);
 	},
 
 
@@ -134,7 +134,7 @@ mytinytodoStorageAjax.prototype =
 
 	tagCloud: function(params, callback)
 	{
-		$.getJSON(this.mtt.mttUrl+'ToDoLists/tagCloud?list='+params.list+'&rnd='+Math.random(), callback);
+		$.getJSON(this.mtt.mttUrl+'ToDoLists/tagCloud?list='+params.list+'&project='+params.project+'&rnd='+Math.random(), callback);
 	},
 
     addTag: function(params, callback) {
@@ -154,9 +154,15 @@ mytinytodoStorageAjax.prototype =
 	// Lists
 	addList: function(params, callback)
 	{
-		$.post(this.mtt.mttUrl+'ToDoLists/addList', { name:params.name }, callback, 'json');
+		$.post(this.mtt.mttUrl+'ToDoLists/addList', { name:params.name,project:params.project }, callback, 'json');
 
 	},
+
+    addProject: function(params, callback)
+    {
+        $.post(this.mtt.mttUrl+'Projects/add', { title:params.title }, callback, 'json');
+
+    },
 
 	renameList:  function(params, callback)
 	{

@@ -192,6 +192,15 @@ var mytinytodo = window.mytinytodo = _mtt = {
 			_mtt.menus.taskview.show(this);
 		});
 
+        $('#projects a').live('click', function(){
+            if ($(this)[0].id.split('_').length > 1) {
+                _mtt.loadProject($(this)[0].id.split('_')[1]);
+            } else {
+                addProjectDialog();
+            }
+            return false;
+        });
+
 		$('#mtt_filters .tag-filter .mtt-filter-close').live('click', function(){
 			cancelTagFilter($(this).attr('tagid'));
 		});
@@ -320,7 +329,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
 			dayNamesMin:_mtt.lang.daysMin, dayNames:_mtt.lang.daysLong, monthNames:_mtt.lang.monthsLong
 		});
 
-		$("#edittags").autocomplete('Tags/suggest', {scroll: false, multiple: true, selectFirst:false, max:8, extraParams:{project:_mtt.project}});
+		$("#edittags").autocomplete('Tags/suggest', {scroll: false, multiple: true, selectFirst:false, max:8});
 
 		$('#taskedit_form').find('select,input,textarea').bind('change keypress', function(){
 			flag.editFormChanged = true;
@@ -507,7 +516,10 @@ var mytinytodo = window.mytinytodo = _mtt = {
             buttons: [
                 {text:_mtt.lang.get('actionSave'), click:function() {
                         if ($("#singleInput-dialog-form-name").val().trim().length > 0) {
-                            addList($("#singleInput-dialog-form-name").val());
+                            if ($("#singleInput-dialog-form-fn").val() == 'addList')
+                                addList($("#singleInput-dialog-form-name").val());
+                            else if ($("#singleInput-dialog-form-fn").val() == 'addProject')
+                                addProject($("#singleInput-dialog-form-name").val());
                         }
                         $(this).dialog("close")
                         return false;
@@ -559,7 +571,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
             return false;
         });
         // enable autocomplete
-        $("#addTag-dialog-form-name").autocomplete('Tags/suggest', {scroll: false, multiple: true, selectFirst:false, max:8, extraParams:{project:_mtt.project}});
+        $("#addTag-dialog-form-name").autocomplete('Tags/suggest', {scroll: false, multiple: true, selectFirst:false, max:8});
 
         $( "#deleteConfirm-dialog-form" ).dialog({
             autoOpen: false,
@@ -613,6 +625,15 @@ var mytinytodo = window.mytinytodo = _mtt = {
 		jQuery.extend(this.options, opts);
 	},
 
+    loadProject: function(projectId) {
+        this.project = projectId;
+        $('#mtt_body h2').html($('#project_'+this.project).html())
+        // refresh autocomplete params
+        $("#addTag-dialog-form-name").flushCache().setOptions({extraParams:{project:_mtt.project}});
+        $("#edittags").flushCache().setOptions({extraParams:{project:_mtt.project}});
+        this.loadLists(1);
+    },
+
 	loadLists: function(onInit)
 	{
 		if(filter.search != '') {
@@ -625,7 +646,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
 		
 		tabLists.clear();
 		
-		this.db.loadLists(null, function(res)
+		this.db.loadLists({project:this.project}, function(res)
 		{
 			var ti = '';
 			var openListId = 0;
@@ -812,9 +833,25 @@ var mytinytodo = window.mytinytodo = _mtt = {
 
 };
 
+function addProjectDialog() {
+    singleInputDialog('addProject', 'addProject');
+}
+
+function addProject(title) {
+    _mtt.db.request('addProject', {title:title}, function(json){
+        if(!parseInt(json.total)) return;
+        var htmlStr='';
+        $.each(json.list, function(i,item){
+            htmlStr += '<a href="#" id="project_'+item.id+'">'+item.title+'</a> | ';
+        });
+        htmlStr+='<a href="#" id="addProject">'+_mtt.lang.get('addProject')+'</a>';
+        $('#projects').html(htmlStr);
+    });
+}
+
 function addList(name)
 {
-	_mtt.db.request('addList', {name:name}, function(json){
+	_mtt.db.request('addList', {name:name,project:_mtt.project}, function(json){
 		if(!parseInt(json.total)) return;
 		var item = json.list[0];
 		var i = tabLists.length();
@@ -838,8 +875,16 @@ function makeDroppable(selector) {
 function addTagToTask(id, tag) {
         _mtt.db.request('addTag', {id:id, tags:tag}, function(json){
             if(!parseInt(json.total)) return;
+            var item = json.list[0];
             // now add tag to the task
-            $("#taskrow_"+id+" .task-tags").replaceWith(prepareTagsStr(json.list[0]));
+            $("#taskrow_"+id+" .task-tags").replaceWith(prepareTagsStr(item));
+            // add tag-id-# class to li
+            $("#taskrow_"+id).attr('class','');
+            if (item.tags && item.tags.length > 0) {
+                $.each(item.tags, function(i, tag) {
+                    $("#taskrow_"+id).addClass("tag-id-"+tag.id);
+                })
+            }
             // update taskList
             taskList[id]=json.list[0];
         });
@@ -1551,7 +1596,7 @@ function addEditTag(tag)
 
 function loadTags(listId, callback)
 {
-	_mtt.db.request('tagCloud', {list:listId}, function(json){
+	_mtt.db.request('tagCloud', {list:listId,project:_mtt.project}, function(json){
 		if(!parseInt(json.total)) tagsList = [];
 		else tagsList = json.list;
 		var cloud = '';

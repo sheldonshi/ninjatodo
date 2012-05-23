@@ -4,13 +4,7 @@ import play.data.validation.MaxSize;
 import play.data.validation.Required;
 import play.db.jpa.Model;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
+import javax.persistence.*;
 import java.util.Date;
 
 /**
@@ -33,11 +27,6 @@ public class Project extends Model {
     @JoinColumn(name="creator_id", nullable = false)
     public User creator;
 
-    @Required
-    @ManyToOne
-    @JoinColumn(name="administrator_id", nullable = false)
-    public User administrator;
-
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "date_created", nullable = true)
     public Date dateCreated;
@@ -45,6 +34,9 @@ public class Project extends Model {
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "last_updated", nullable = true)
     public Date lastUpdated;
+
+    @Transient
+    public boolean selected;
 
     public Project() {
         dateCreated = new Date();

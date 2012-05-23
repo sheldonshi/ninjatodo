@@ -4,7 +4,6 @@
 <script type="text/javascript">
 $().ready(function(){
 
-    mytinytodo.project = '${project.id}';
 	mytinytodo.mttUrl = "/";
 	mytinytodo.templateUrl = "/public/themes/default/";
 	mytinytodo.db = new mytinytodoStorageAjax(mytinytodo);
@@ -15,15 +14,22 @@ $().ready(function(){
 		singletab: false,
 		duedatepickerformat: "n/j/y",
 		firstdayofweek: 1,
-		autotag: true					}).loadLists(1);
+		autotag: true					}).loadProject(${selectedProject.id});
 });
 </script>
 
 <div id="wrapper">
 <div id="container">
-<div id="mtt_body">
+<div id="projects" style="width:100%;border-bottom:solid 1px;margin:0px 0px 5px 0px">
 
-<h2>${project.title}</h2>
+#{list items:projects, as:'project'}
+    <a href="#" id="project_${project.id}">${project.title}</a> |
+#{/list}
+    <a href="#" id="addProject">&{'addProject'}</a>
+    
+</div>
+<div id="mtt_body">
+<h2>${selectedProject.title}</h2>
 
 <div id="loading"></div>
 

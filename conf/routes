@@ -14,5 +14,14 @@ GET     /public/                                staticDir:public
 # Administration
 *       /admin                                  module:crud
 
+# social secure
+GET     /auth/signup                    security.SignUpController.signup
+POST    /auth/signup                    security.SignUpController.createAccount
+GET     /auth/isUnique                  security.SignUpController.isUnique
+*       /auth                           module:securesocial
+
+# captcha
+GET     /captcha    Application.captcha
+
 # Catch all
 *       /{controller}/{action}                  {controller}.{action}
