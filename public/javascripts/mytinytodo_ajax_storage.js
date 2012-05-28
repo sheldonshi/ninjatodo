@@ -30,6 +30,14 @@ mytinytodoStorageAjax.prototype =
 		});
 	},
 
+    invitations: function(params, callback) {
+        $.getJSON(this.mtt.mttUrl+'Invitations/index?project='+params.project+'&rnd='+Math.random(), callback);
+    },
+
+    invite: function(params, callback) {
+        $.post(this.mtt.mttUrl+'Invitations/invite',
+            { project:params.project, emails:params.emails }, callback, 'json');
+    },
 
 	loadLists: function(params, callback)
 	{
@@ -197,7 +205,23 @@ mytinytodoStorageAjax.prototype =
 	clearCompletedInList: function(params, callback)
 	{
 		$.post(this.mtt.mttUrl+'ToDoLists/clearCompletedInList', { list:params.list }, callback, 'json');
-	}
+	},
+
+    deleteInvitation: function(params, callback) {
+        $.post(this.mtt.mttUrl+'Invitations/delete', {id:params.id}, callback, 'json');
+    },
+
+    promoteToAdmin: function(params, callback) {
+        $.post(this.mtt.mttUrl+'Projects/promoteToAdmin', {participationIds:params.participations, projectId:params.project}, callback)
+    },
+
+    deleteAdmin: function(params, callback) {
+        $.post(this.mtt.mttUrl+'Projects/deleteAdmin', {participationId:params.id}, callback)
+    },
+
+    deleteMember: function(params, callback) {
+        $.post(this.mtt.mttUrl+'Projects/deleteMember', {participationId:params.id}, callback)
+    }
 
 };
 

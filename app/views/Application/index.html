@@ -20,14 +20,16 @@ $().ready(function(){
 
 <div id="wrapper">
 <div id="container">
-<div id="projects" style="width:100%;border-bottom:solid 1px;margin:0px 0px 5px 0px">
-
+<div id="projects" class="ui-corner-bl ui-corner-br lightblue_bg">
+    <span class="addProject">
+        &nbsp;&nbsp;<a href="#" id="addProject" class="weak">&{'a_addProject'}</a>&nbsp;&nbsp;:&nbsp;&nbsp;<a href="#" id="help" class="weak">&{'a_help'}</a>&nbsp;&nbsp;:&nbsp;&nbsp;<a href="@{securesocial.SecureSocial.logout}" class="weak">&{'a_signout'}</a>
+    </span>
 #{list items:projects, as:'project'}
-    <a href="#" id="project_${project.id}">${project.title}</a> |
+    <a href="#" id="project_${project.id}" class="weak">${project.title}</a>&nbsp;&nbsp;&nbsp;
 #{/list}
-    <a href="#" id="addProject">&{'addProject'}</a>
-    
+
 </div>
+
 <div id="mtt_body">
 <h2>${selectedProject.title}</h2>
 
@@ -37,8 +39,7 @@ $().ready(function(){
  <div id="msg"><span class="msg-text"></span><div class="msg-details"></div></div>
  <div class="bar-menu">
  <span class="menu-owner" style="display:none">
-   <a href="#settings" id="settings">&{'a_settings'}</a> |
-   <a href="#settings" id="help">&{'a_help'}</a>
+   <a href="#settings" id="settings">&{'a_settings'}</a>
  </span>
  <span class="bar-delim" style="display:none"> | </span>
  <span id="bar_auth">
@@ -61,8 +62,6 @@ $().ready(function(){
  </div>
  <div id="list_all" class="mtt-tab mtt-tabs-alltasks mtt-tabs-hidden"><a href="#alltasks"><span>&{'alltasks'}</span><div class="list-action"></div></a></div>
 </div>
-
-
 
 <div id="toolbar" class="mtt-htabs">
 
@@ -114,7 +113,7 @@ $().ready(function(){
 
 <div id="page_taskedit" style="display:none">
 
-<div><a href="#" class="mtt-back-button">&{'go_back'}</a></div>
+<div class="settings_close"><a href="#" class="mtt-back-button">&{'go_back'}</a></div>
 
 <h3 class="mtt-inadd">&{'add_task'}</h3>
 <h3 class="mtt-inedit">&{'edit_task'} <div id="taskedit-date" class="mtt-inedit">

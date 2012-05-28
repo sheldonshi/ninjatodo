@@ -153,7 +153,7 @@ a { color:#0000ff; cursor:pointer; text-decoration:underline; }
 
 
 /* */
-#mtt_body.no-lists #page_tasks h3 > * { visibility:hidden; }
+#mtt_body.no-lists #page_tasks h3 { visibility:hidden; }
 
 #mtt_filters { font-size:0.8em; font-weight:normal; }
 .tag-filter { margin-left:3px; margin-right:3px; }
@@ -397,5 +397,23 @@ li.mtt-item-hidden { display:none; }
     position: absolute;
     top: 0px;
 }
+
+#projects .addProject {float:right}
+#projects {margin:0px 8px 5px 8px;padding: 8px;}
+div.settings_close {float:right;padding-top:5px}
+
+.mtt-settings-table th .team-members {color:#888;font-weight:normal;font-size:0.8em;}
+span.team-members {padding:1px 2px 1px 4px;color:#888;font-weight:normal;}
+span.team-members .delete-team-member {position:relative;top:-1px}
+
+.lightblue_bg {background-color:#B5D5FF;}
+a.weak  {color:#888; text-decoration: none;font-size: 0.8em;}
+a.weak:hover {color:#444;text-decoration: underline;}
+.addToProject {display:none;margin:8px 0px 5px 0px;font-size:0.8em; color:#888;width: 50%;min-width:350px;}
+#addMemberToProject textarea {width:100%;display: block;height:50px; color:#888;}
+#pendingMembers .invitedEmail {margin:2px 0px;}
+#pendingMembers {margin-top:5px;}
+#pendingMembers a.deleteInvitedEmail {position:relative;top:-1px;}
+#addAdminToProject select {width: 100%;color:#888;}
 
 

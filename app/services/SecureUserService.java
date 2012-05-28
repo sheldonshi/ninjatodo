@@ -1,5 +1,6 @@
 package services;
 
+import controllers.securesocial.SecureSocial;
 import models.User;
 import play.libs.Codec;
 import securesocial.provider.SocialUser;
@@ -17,6 +18,13 @@ import java.util.UUID;
  * To change this template use File | Settings | File Templates.
  */
 public class SecureUserService implements UserService.Service {
+    
+    public static User getCurrentUser() {
+        SocialUser socialUser = SecureSocial.getCurrentUser();
+        User user = User.find("byUsername", socialUser.id.id).first();
+        return user;
+    }
+
     @Override
     public SocialUser find(UserId id) {
         User user = User.find("username=? and provider=?", id.id, id.provider).first();

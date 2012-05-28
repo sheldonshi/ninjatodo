@@ -1,0 +1,32 @@
+
+#{set hasNonAdmin:false /}
+#{list items:participations, as:'participation'}
+    #{if participation.role == models.Role.ADMIN}
+    <span class="team-members lightblue_bg">
+                    <a href="#" class="weak">${participation.user.fullName}</a>
+                    <span class="delete-team-member"><a href="#" id="deleteAdmin_${participation.id}" class="weak">x</a></span>
+                </span>&nbsp;&nbsp;&nbsp;
+    #{/if}
+    #{else}
+        #{set hasNonAdmin:true/}
+    #{/else}
+#{/list}
+#{if hasNonAdmin}
+<span class="team-members">
+   <a href="#" id="addAdmin" class="weak">&{'set_addadmin'}</a>
+</span>
+<div id="addAdminToProject" class="addToProject">
+    <div>&{'set_addadmin_instr'}</div>
+    <select multiple="multiple">
+        #{list items:participations, as:'participation'}
+            #{if participation.role != models.Role.ADMIN}
+                <option value="${participation.id}">${participation.user.fullName}</option>
+            #{/if}
+        #{/list}
+    </select>
+    <div class="addAdmin-actions">
+        <a href="#" class="ntt-action-promote">&{'actionPromote'}</a> |
+        <a href="#" class="ntt-action-cancel">&{'actionCancel'}</a>
+    </div>
+</div>
+#{/if}

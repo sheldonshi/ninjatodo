@@ -3,6 +3,7 @@ package models;
 import play.data.validation.MaxSize;
 import play.data.validation.Required;
 import play.db.jpa.Model;
+import play.libs.Codec;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -35,11 +36,20 @@ public class Project extends Model {
     @Column(name = "last_updated", nullable = true)
     public Date lastUpdated;
 
+    @Required
+    @Enumerated(EnumType.STRING)
+    public Visibility visibility = Visibility.PRIVATE;
+
+    @Required
+    @Column(name = "uuid", nullable = false, unique = true)
+    public String uuid;
+
     @Transient
     public boolean selected;
 
     public Project() {
         dateCreated = new Date();
         lastUpdated = dateCreated;
+        uuid = Codec.UUID();
     }
 }

@@ -1,5 +1,7 @@
 
-<div><a href="#" class="mtt-back-button">&{'go_back'}</a></div>
+<script src="@{'/public/javascripts/ninjatodo_edit.js'}" type="text/javascript" charset="${_response_encoding}"></script>
+
+<div class="settings_close"><a href="#" class="mtt-back-button">&{'go_back'}</a></div>
 
 <h3>&{'set_header'}</h3>
 
@@ -9,8 +11,48 @@
 
 <table class="mtt-settings-table">
     <tr>
-        <th>&{'set_title'}<br/><span class="descr">&{'set_title_descr'}</span></th>
+        <th>&{'set_title'}</th>
         <td> <input name="title" value="${project.title}" class="in350" /> </td>
+    </tr>
+    <tr>
+        <th>&{'set_visibility'}</th>
+        <td>
+            <input type="radio" name="visibility" value="${models.Visibility.PRIVATE.name()}" #{if project.visibility.equals(models.Visibility.PRIVATE)}checked="true"#{/if}> &{'set_private'} <br/>
+            <input type="radio" name="visibility" value="${models.Visibility.LINK.name()}" #{if project.visibility.equals(models.Visibility.LINK)}checked="true"#{/if}> &{'set_linkonly'} <a href="${project.uuid}">${project.uuid}</a><br/>
+            <input type="radio" name="visibility" value="${models.Visibility.PUBLIC.name()}" #{if project.visibility.equals(models.Visibility.PUBLIC)}checked="true"#{/if}> &{'set_public'} <br/>
+        </td>
+    </tr>
+    <tr>
+        <th>&{'set_teammember'}
+            <div class="team-members">&{'set_teammember_instr'}</div></th>
+        <td>
+            <div id="memberList">
+            #{list items:participations, as:'participation'}
+                <span class="team-members lightblue_bg">
+                    <a href="#" class="weak">${participation.user.fullName}</a>
+                    <span class="delete-team-member"><a href="#" id="deleteMember_${participation.id}" class="weak">x</a></span>
+                </span>&nbsp;&nbsp;&nbsp;
+            #{/list}
+            <span class="team-members">
+                <a href="#" id="addMember" class="weak">&{'set_addmember'}</a>
+            </span>
+            <div id="addMemberToProject" class="addToProject">
+                <div>&{'set_addmember_instr'}</div>
+                <textarea></textarea>
+                <div class="addMember-actions"><a href="#" class="ntt-action-invite">&{'actionInvite'}</a> |
+                    <a href="#" class="ntt-action-cancel">&{'actionCancel'}</a></div>
+            </div>
+            </div>
+        </td>
+    </tr>
+    <tr>
+        <th>&{'set_teamadmin'}
+            <div class="team-members">&{'set_teamadmin_instr'}</div></th>
+        <td>
+            <div id="adminList">
+            #{include '/Projects/administrators.html' /}
+            </div>
+        </td>
     </tr>
     <tr><td colspan="2" class="form-buttons">
 

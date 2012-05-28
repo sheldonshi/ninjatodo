@@ -195,10 +195,13 @@ var mytinytodo = window.mytinytodo = _mtt = {
         $('#projects a').live('click', function(){
             if ($(this)[0].id.split('_').length > 1) {
                 _mtt.loadProject($(this)[0].id.split('_')[1]);
-            } else {
+                return false;
+            } else if ($(this)[0].id=='addProject') {
                 addProjectDialog();
+                return false;
+            } else {
+                return true;
             }
-            return false;
         });
 
 		$('#mtt_filters .tag-filter .mtt-filter-close').live('click', function(){
@@ -589,6 +592,9 @@ var mytinytodo = window.mytinytodo = _mtt = {
                     if (fn=='deleteCurList') deleteCurList();
                     else if (fn=='deleteTask') deleteTask(arg);
                     else if (fn=='clearCompleted') clearCompleted();
+                    else if (fn=='deleteInvitation') _mtt.deleteInvitation(arg);
+                    else if (fn=='deleteAdmin') _mtt.deleteAdmin(arg);
+                    else if (fn=='deleteMember') _mtt.deleteMember(arg);
                     $(this).dialog( "close" );}
                 },
                 {text:_mtt.lang.get('actionCancel'), click: function() {
@@ -829,8 +835,14 @@ var mytinytodo = window.mytinytodo = _mtt = {
 		if(p.list) this.options.openList = p.list;
 		
 		return p;
-	}
+	},
 
+    confirmAction: function(messageKey, fn, id) {
+        $("#deleteConfirm-dialog-form label").html(_mtt.lang.get(messageKey));
+        $("#deleteConfirm-dialog-form-fn").val(fn);
+        $("#deleteConfirm-dialog-form-id").val(id);
+        $("#deleteConfirm-dialog-form").dialog( "open" );
+    }
 };
 
 function addProjectDialog() {
@@ -840,12 +852,13 @@ function addProjectDialog() {
 function addProject(title) {
     _mtt.db.request('addProject', {title:title}, function(json){
         if(!parseInt(json.total)) return;
-        var htmlStr='';
+        var htmlStr='<span class="addProject">&nbsp;&nbsp;<a href="#" id="addProject">'+_mtt.lang.get('a_addProject')+'</a></span>';
         $.each(json.list, function(i,item){
-            htmlStr += '<a href="#" id="project_'+item.id+'">'+item.title+'</a> | ';
+            if (i==0) _mtt.project=item.id;
+            htmlStr += '<a href="#" id="project_'+item.id+'">'+item.title+'</a>&nbsp;&nbsp;&nbsp;';
         });
-        htmlStr+='<a href="#" id="addProject">'+_mtt.lang.get('addProject')+'</a>';
         $('#projects').html(htmlStr);
+        this.loadProject(_mtt.project);
     });
 }
 
@@ -904,13 +917,6 @@ function renameCurList()
 		$('#lists ul>.mtt-tabs-selected>a').attr('title', item.name).find('span').html(item.name);
 		mytinytodo.doAction('listRenamed', item);
 	});
-};
-
-function confirmAction(messageKey, fn, id) {
-    $("#deleteConfirm-dialog-form label").html(_mtt.lang.get(messageKey));
-    $("#deleteConfirm-dialog-form-fn").val(fn);
-    $("#deleteConfirm-dialog-form-id").val(id);
-    $("#deleteConfirm-dialog-form").dialog( "open" );
 };
 
 function deleteCurList() {
@@ -1356,14 +1362,14 @@ function listMenuClick(el, menu)
 	if(!el.id) return;
 	switch(el.id) {
 		case 'btnRenameList': renameCurList(); break;
-		case 'btnDeleteList': confirmAction('deleteList', 'deleteCurList', ''); break;
+		case 'btnDeleteList': _mtt.confirmAction('deleteList', 'deleteCurList', ''); break;
 		case 'btnPublish': publishCurList(); break;
 		case 'btnExportCSV': exportCurList('csv'); break;
 		case 'btnExportICAL': exportCurList('ical'); break;
 		case 'btnRssFeed': feedCurList(); break;
 		case 'btnShowCompleted': showCompletedToggle(); break;
         case 'btnExpandNotes': toggleAllNotes(); break;
-		case 'btnClearCompleted': confirmAction('clearCompleted', 'clearCompleted', ''); break;
+		case 'btnClearCompleted': _mtt.confirmAction('clearCompleted', 'clearCompleted', ''); break;
 		case 'sortByHand': setSort("DEFAULT"); break;
 		case 'sortByPrio': setSort("PRIORITY"); break;
 		case 'sortByDueDate': setSort("DUE_DATE"); break;
@@ -1920,7 +1926,7 @@ function taskContextClick(el, menu)
 		case 'cmenu_edit': editTask(taskId); break;
         case 'cmenu_clone': cloneTask(taskId); break;
 		case 'cmenu_note': toggleTaskNote(taskId); break;
-		case 'cmenu_delete': confirmAction('confirmDelete', 'deleteTask', taskId); break;
+		case 'cmenu_delete': _mtt.confirmAction('confirmDelete', 'deleteTask', taskId); break;
 		case 'cmenu_prio': setTaskPrio(taskId, parseInt(value)); break;
 		case 'cmenu_list':
 			if(menu.$caller && menu.$caller.attr('id')=='cmenu_move') moveTaskToList(taskId, value);
