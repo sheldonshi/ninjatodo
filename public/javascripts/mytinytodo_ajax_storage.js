@@ -191,6 +191,11 @@ mytinytodoStorageAjax.prototype =
 	{
 	    $.post(this.mtt.mttUrl+'ToDoLists/toggleNotesExpanded', { list:params.list },  callback, 'json');
 	},
+
+    setWritableByAllMembers: function(params, callback)
+    {
+        $.post(this.mtt.mttUrl+'ToDoLists/toggleWritableByAllMembers', { list:params.list },  callback, 'json');
+    },
 	
 	setHideList: function(params, callback)
 	{

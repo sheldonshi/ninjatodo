@@ -145,6 +145,16 @@ public class ToDoLists extends Controller {
         renderText(Utils.toJson(toDoList));
     }
 
+    public static void toggleWritableByAllMembers(Long list) {
+        ToDoList toDoList = ToDoList.findById(list);
+        if (toDoList != null) {
+            toDoList.writableByAllMembers = !toDoList.writableByAllMembers;
+            toDoList.save();
+        }
+
+        renderText(Utils.toJson(toDoList));
+    }
+
     /**
      * get all tags contained in a to do list. If an id of -1 is passed, it means all lists in the project
      * TODO if list=-1, we should have project id and get tags under that project id

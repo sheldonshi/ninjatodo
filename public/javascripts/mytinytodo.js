@@ -595,6 +595,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
                     if (fn=='deleteCurList') deleteCurList();
                     else if (fn=='deleteTask') deleteTask(arg);
                     else if (fn=='clearCompleted') clearCompleted();
+                    else if (fn=='toggleWritable') toggleWritable();
                     else if (fn=='deleteInvitation') _mtt.deleteInvitation(arg);
                     else if (fn=='deleteAdmin') _mtt.deleteAdmin(arg);
                     else if (fn=='deleteMember') _mtt.deleteMember(arg);
@@ -1381,6 +1382,7 @@ function listMenuClick(el, menu)
 		case 'btnShowCompleted': showCompletedToggle(); break;
         case 'btnExpandNotes': toggleAllNotes(); break;
 		case 'btnClearCompleted': _mtt.confirmAction('clearCompleted', 'clearCompleted', ''); break;
+        case 'btnWritableByAllMembers': toggleWritableDialog(); break;
 		case 'sortByHand': setSort("DEFAULT"); break;
 		case 'sortByPrio': setSort("PRIORITY"); break;
 		case 'sortByDueDate': setSort("DUE_DATE"); break;
@@ -2034,6 +2036,8 @@ function tabmenuOnListSelected(list)
 	else $('#btnShowCompleted').removeClass('mtt-item-checked');
     if (list.notesExpanded) $('#btnExpandNotes').addClass('mtt-item-checked');
     else $('#btnExpandNotes').removeClass('mtt-item-checked');
+    if (list.writableByAllMembers) $('#btnWritableByAllMembers').addClass('mtt-item-checked');
+    else $('#btnWritableByAllMembers').removeClass('mtt-item-checked');
 };
 
 
@@ -2079,6 +2083,22 @@ function clearCompleted()
 		if(curList.showCompleted) loadTasks();
 	});
 };
+
+function toggleWritableDialog() {
+    if(!curList) return false;
+    if(curList.writableByAllMembers) _mtt.confirmAction('toggleWritableOff', 'toggleWritable', '')
+    else _mtt.confirmAction('toggleWritableOn', 'toggleWritable', '')
+}
+
+function toggleWritable() {
+    if(!curList) return false;
+    _mtt.db.request('setWritableByAllMembers', {list:curList.id}, function(json){
+        if(!parseInt(json.total)) return;
+        curList.writableByAllMembers = json.list[0].writableByAllMembers;
+        if(curList.writableByAllMembers) $('#btnWritableByAllMembers').addClass('mtt-item-checked');
+        else $('#btnWritableByAllMembers').removeClass('mtt-item-checked');
+    });
+}
 
 function tasklistClick(e)
 {
