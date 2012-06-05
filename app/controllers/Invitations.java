@@ -1,19 +1,19 @@
 package controllers;
 
-import com.sun.corba.se.impl.logging.UtilSystemException;
 import controllers.securesocial.SecureSocial;
-import models.Invitation;
-import models.Project;
-import models.User;
+import controllers.security.SignUpController;
+import models.*;
+import notifiers.Mails;
 import play.data.validation.Required;
 import play.db.jpa.JPA;
+import play.mvc.Before;
 import play.mvc.Controller;
+import play.mvc.Scope;
 import play.mvc.With;
-import securesocial.provider.SocialUser;
-import services.MailService;
 import services.SecureUserService;
 import utils.Utils;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,26 +28,38 @@ import java.util.Map;
 @With(SecureSocial.class)
 public class Invitations extends Controller {
 
+    @Before
+    static void checkAccess() throws Throwable {
+        Projects.checkAccess();
+    }
     /**
      * gets all pending acceptance invitations for a project
-     * @param project
+     * @param projectId
      */
-    public static void index(Long project) {
-        Project proj = Project.findById(project);
+    public static void index(Long projectId) {
+        Project proj = Project.findById(projectId);
         renderText(Utils.toJson(getInvitations(proj)));
     }
 
     /**
      * Invites someone to join a project by email
      * @param emails
-     * @param project
+     * @param projectId
      */
-    public static void invite(@Required String emails, @Required Long project) {
+    public static void invite(@Required String emails, @Required Long projectId) {
         String[] emailArray = emails.split(",");
         User user = SecureUserService.getCurrentUser();
-        Project proj = Project.findById(project);
-        MailService.sendInvitationEmail(emailArray, proj, user);
-        renderText(Utils.toJson(getInvitations(proj)));
+        Project project = Project.findById(projectId);
+        // send email to all recipients
+        List<String> sendList = new ArrayList<String>();
+        for (String email : emailArray) {
+            email = email.trim(); // remove white spaces
+            // then check whether email is valid
+            if (validation.email(email).error == null && Mails.sendInvitationEmail(email, project, user)) {
+                sendList.add(email);
+            }
+        }
+        renderText(Utils.toJson(getInvitations(project)));
     }
 
     /**
@@ -62,14 +74,18 @@ public class Invitations extends Controller {
     }
 
     /**
-     * delete an invitation (revoke)
+     * delete an invitation (revoke). Can only delete an invitation with a project != null
      * @param id
      */
-    public static void delete(@Required Long id) {
+    public static void delete(@Required Long id, @Required Long projectId) {
         Invitation invitation = Invitation.findById(id);
-        invitation.delete();
-        Map returnMap = new HashMap();
-        returnMap.put("id", id);
-        renderJSON(returnMap);
+        if (invitation.project != null && invitation.project.id == projectId) {
+            invitation.delete();
+            Map returnMap = new HashMap();
+            returnMap.put("id", id);
+            renderJSON(returnMap);
+        } else {
+            // do nothing
+        }
     }
 }

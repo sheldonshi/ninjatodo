@@ -161,4 +161,8 @@ signup_usernameNotAvailable=Not available
 signup_needMoreCharacters=Need more characters
 signup_needAtLeastOneLetter=At least one letter required
 signup_needAtLeastOneNumber=At least one number required
+signup_emailAlreadyInUse=Already in use
 signup_passwordPattern=At least 6 characters, with at least one letter and one number
+
+sendInvitationEmail_hello=Hello, %s invites you join Ninja To Do project "%s".
+sendInvitationEmail_url=Click %s to join.

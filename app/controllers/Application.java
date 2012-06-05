@@ -18,12 +18,11 @@ public class Application extends Controller {
     public static void index() {
         SocialUser socialUser = SecureSocial.getCurrentUser();
         User user = User.find("byUsername", socialUser.id.id).first();
-        List<Project> projects = Projects.getProjects(user);
-        if (projects.isEmpty()) {
-            projects.add(Projects.addProject(user, Messages.get("myFirstProject")));
+        List<Participation> participations = Projects.getParticipations(user);
+        if (participations.isEmpty()) {
+            participations.add(Projects.addProject(user, Messages.get("myFirstProject")));
         }
-        Project selectedProject = projects.get(0);
-        render(projects, selectedProject);
+        render(participations);
     }
 
     /**

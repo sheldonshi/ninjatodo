@@ -18,6 +18,7 @@ GET     /public/                                staticDir:public
 GET     /auth/signup                    security.SignUpController.signup
 POST    /auth/signup                    security.SignUpController.createAccount
 GET     /auth/isUnique                  security.SignUpController.isUnique
+GET     /auth/joinByInvite              security.SignUpController.join
 *       /auth                           module:securesocial
 
 # captcha

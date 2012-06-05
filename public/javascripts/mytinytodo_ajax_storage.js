@@ -31,12 +31,12 @@ mytinytodoStorageAjax.prototype =
 	},
 
     invitations: function(params, callback) {
-        $.getJSON(this.mtt.mttUrl+'Invitations/index?project='+params.project+'&rnd='+Math.random(), callback);
+        $.getJSON(this.mtt.mttUrl+'Invitations/index?projectId='+params.project+'&rnd='+Math.random(), callback);
     },
 
     invite: function(params, callback) {
         $.post(this.mtt.mttUrl+'Invitations/invite',
-            { project:params.project, emails:params.emails }, callback, 'json');
+            { projectId:params.project, emails:params.emails }, callback, 'json');
     },
 
 	loadLists: function(params, callback)
@@ -208,7 +208,7 @@ mytinytodoStorageAjax.prototype =
 	},
 
     deleteInvitation: function(params, callback) {
-        $.post(this.mtt.mttUrl+'Invitations/delete', {id:params.id}, callback, 'json');
+        $.post(this.mtt.mttUrl+'Invitations/delete', {id:params.id, projectId:params.project}, callback, 'json');
     },
 
     promoteToAdmin: function(params, callback) {
@@ -216,11 +216,11 @@ mytinytodoStorageAjax.prototype =
     },
 
     deleteAdmin: function(params, callback) {
-        $.post(this.mtt.mttUrl+'Projects/deleteAdmin', {participationId:params.id}, callback)
+        $.post(this.mtt.mttUrl+'Projects/deleteAdmin', {participationId:params.id, projectId:params.project}, callback)
     },
 
     deleteMember: function(params, callback) {
-        $.post(this.mtt.mttUrl+'Projects/deleteMember', {participationId:params.id}, callback)
+        $.post(this.mtt.mttUrl+'Projects/deleteMember', {participationId:params.id, projectId:params.project}, callback)
     }
 
 };

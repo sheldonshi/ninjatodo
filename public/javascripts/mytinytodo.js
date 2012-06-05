@@ -57,6 +57,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
 		touchDevice: false
 	},
     project: '',
+    role: '',
 
 	timers: {
 		previewtag: 0
@@ -194,7 +195,9 @@ var mytinytodo = window.mytinytodo = _mtt = {
 
         $('#projects a').live('click', function(){
             if ($(this)[0].id.split('_').length > 1) {
-                _mtt.loadProject($(this)[0].id.split('_')[1]);
+                var attrs = $(this)[0].id.split('_');
+                _mtt.role=attrs[2];
+                _mtt.loadProject(attrs[1]);
                 return false;
             } else if ($(this)[0].id=='addProject') {
                 addProjectDialog();
@@ -632,8 +635,14 @@ var mytinytodo = window.mytinytodo = _mtt = {
 	},
 
     loadProject: function(projectId) {
-        this.project = projectId;
-        $('#mtt_body h2').html($('#project_'+this.project).html())
+        _mtt.project = projectId;
+        if ($('#project_'+_mtt.project+'_USER').length > 0) {
+            $('#mtt_body h2').html($('#project_'+_mtt.project+'_USER').html());
+            $('#settings').hide();
+        } else if ($('#project_'+_mtt.project+"_ADMIN").length > 0) {
+            $('#mtt_body h2').html($('#project_'+_mtt.project+'_ADMIN').html());
+            $('#settings').show();
+        }
         // refresh autocomplete params
         $("#addTag-dialog-form-name").flushCache().setOptions({extraParams:{project:_mtt.project}});
         $("#edittags").flushCache().setOptions({extraParams:{project:_mtt.project}});
@@ -686,6 +695,8 @@ var mytinytodo = window.mytinytodo = _mtt = {
 				});
                 if (tabLists.length()>1) {
                     $("#list_all").removeClass('mtt-tabs-hidden');
+                } else {
+                    $('#list_all').addClass('mtt-tabs-hidden');
                 }
 			}
 			
@@ -854,8 +865,8 @@ function addProject(title) {
         if(!parseInt(json.total)) return;
         var htmlStr='<span class="addProject">&nbsp;&nbsp;<a href="#" id="addProject">'+_mtt.lang.get('a_addProject')+'</a></span>';
         $.each(json.list, function(i,item){
-            if (i==0) _mtt.project=item.id;
-            htmlStr += '<a href="#" id="project_'+item.id+'">'+item.title+'</a>&nbsp;&nbsp;&nbsp;';
+            if (i==0) _mtt.project=item.project.id;
+            htmlStr += '<a href="#" id="project_'+item.project.id+'_'+item.role+'">'+item.project.title+'</a>&nbsp;&nbsp;&nbsp;';
         });
         $('#projects').html(htmlStr);
         this.loadProject(_mtt.project);

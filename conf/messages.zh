@@ -157,3 +157,6 @@ signup_needMoreCharacters=需要继续输入
 signup_needAtLeastOneLetter=需要至少一个字母
 signup_needAtLeastOneNumber=需要至少一个数字
 signup_passwordPattern=至少6个字节，至少一个字母和一个数字
+
+sendInvitationEmail_hello=您好，%s邀请您加入 Ninja To Do 项目"%s".
+sendInvitationEmail_url=点击 %s 加入。

@@ -20,9 +20,7 @@ import java.util.UUID;
 public class SecureUserService implements UserService.Service {
     
     public static User getCurrentUser() {
-        SocialUser socialUser = SecureSocial.getCurrentUser();
-        User user = User.find("byUsername", socialUser.id.id).first();
-        return user;
+        return User.loadBySocialUser(SecureSocial.getCurrentUser());
     }
 
     @Override
@@ -33,17 +31,20 @@ public class SecureUserService implements UserService.Service {
     }
 
     @Override
-    public void save(SocialUser user) {
-        //To change body of implemented methods use File | Settings | File Templates.
+    public void save(SocialUser socialUser) {
+        User user = new User();
+        user.pack(socialUser);
+        user.validateAndSave();
     }
 
     @Override
     public String createActivation(SocialUser socialUser) {
-        User user = new User();
-        user.pack(socialUser);
-        user.verifyCode = Codec.UUID();
-        user.validateAndSave();
-        return user.verifyCode;
+        User user = User.loadBySocialUser(socialUser);
+        if (user != null) {
+            return user.verifyCode;
+        } else {
+            return null;
+        }
     }
 
     @Override

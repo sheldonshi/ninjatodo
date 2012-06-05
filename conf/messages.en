@@ -163,3 +163,6 @@ signup_needAtLeastOneLetter=At least one letter required
 signup_needAtLeastOneNumber=At least one number required
 signup_passwordPattern=At least 6 characters, with at least one letter and one number
 securesocial.wrongUserPass=Username and password do not match.
+
+sendInvitationEmail_hello=Hello, %s invites you join Ninja To Do project "%s".
+sendInvitationEmail_url=Click %s to join.

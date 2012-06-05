@@ -14,7 +14,7 @@ $().ready(function(){
 		singletab: false,
 		duedatepickerformat: "n/j/y",
 		firstdayofweek: 1,
-		autotag: true					}).loadProject(${selectedProject.id});
+		autotag: true					}).loadProject(${participations[0].project.id});
 });
 </script>
 
@@ -24,14 +24,14 @@ $().ready(function(){
     <span class="addProject">
         &nbsp;&nbsp;<a href="#" id="addProject" class="weak">&{'a_addProject'}</a>&nbsp;&nbsp;:&nbsp;&nbsp;<a href="#" id="help" class="weak">&{'a_help'}</a>&nbsp;&nbsp;:&nbsp;&nbsp;<a href="@{securesocial.SecureSocial.logout}" class="weak">&{'a_signout'}</a>
     </span>
-#{list items:projects, as:'project'}
-    <a href="#" id="project_${project.id}" class="weak">${project.title}</a>&nbsp;&nbsp;&nbsp;
+#{list items:participations, as:'participation'}
+    <a href="#" id="project_${participation.project.id}_${participation.role}" class="weak">${participation.project.title}</a>&nbsp;&nbsp;&nbsp;
 #{/list}
 
 </div>
 
 <div id="mtt_body">
-<h2>${selectedProject.title}</h2>
+<h2></h2>
 
 <div id="loading"></div>
 

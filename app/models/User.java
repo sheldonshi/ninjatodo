@@ -7,6 +7,7 @@ import play.data.validation.MaxSize;
 import play.data.validation.MinSize;
 import play.data.validation.Required;
 import play.db.jpa.Model;
+import play.libs.Codec;
 import securesocial.provider.AuthenticationMethod;
 import securesocial.provider.ProviderType;
 import securesocial.provider.SocialUser;
@@ -99,7 +100,7 @@ public class User extends Model {
         userId.provider = this.provider;
         socialUser.id = userId;
         socialUser.accessToken = this.accessToken;
-        socialUser.authMethod = AuthenticationMethod.OAUTH2;
+        socialUser.authMethod = AuthenticationMethod.USER_PASSWORD;
         socialUser.avatarUrl = this.avatar;
         socialUser.displayName = this.fullName;
         socialUser.email = this.email;
@@ -122,7 +123,21 @@ public class User extends Model {
         this.avatar = socialUser.avatarUrl;
         this.email = socialUser.email;
         this.isEmailVerified = socialUser.isEmailVerified;
+        // only set verify code when email has not been verified
+        if (!socialUser.isEmailVerified) {
+            this.verifyCode = Codec.UUID();
+        } else {
+            this.verifyCode = null;
+        }
         this.dateLastLogin = socialUser.lastAccess;
         this.password = socialUser.password;
+    }
+    
+    public static User loadBySocialUser(SocialUser socialUser) {
+        if (socialUser != null) {
+            return User.find("byUsername", socialUser.id.id).first();
+        } else {
+            return null;
+        }
     }
 }

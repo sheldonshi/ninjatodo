@@ -1,5 +1,6 @@
 package models;
 
+import json.JsonExclude;
 import play.data.validation.Required;
 import play.db.jpa.Model;
 
@@ -25,6 +26,7 @@ public class Participation extends Model {
     @Required
     @ManyToOne
     @JoinColumn(name="user_id", nullable = false)
+    @JsonExclude
     public User user;
 
     @Required

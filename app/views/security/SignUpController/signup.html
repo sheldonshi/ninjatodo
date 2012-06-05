@@ -121,17 +121,7 @@ $(document).ready(function() {
                     </span>
                 </div>
             </div>
-            <div class="clearfix #{ifError 'password'} error #{/ifError}">
-                <label for="password">&{'securesocial.password2'}</label>
-                <div class="input">
-                    <input id="password2" class="large" name="password2" type="password" value="${flash.password}"/>
-                    <span class="help-inline">
-                        #{ifError 'password'}
-                        #{error 'password'/}
-                    #{/ifError}
-                    </span>
-                </div>
-            </div>
+            <input name="${controllers.security.SignUpController.INVITATION_UUID}" type="hidden" value="${flash.invitationUuid}"/>
 
             <div class="actions">
                 <input type="submit" value="Create Account" class="btn primary">

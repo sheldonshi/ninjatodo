@@ -83,19 +83,19 @@
     };
 
     _mtt.deleteInvitation = function(id) {
-        _mtt.db.request('deleteInvitation', {id:id}, function(json){
+        _mtt.db.request('deleteInvitation', {id:id, project:_mtt.project}, function(json){
             $('#invited_'+json.id).remove();
         });
     };
 
     _mtt.deleteAdmin = function(id) {
-        _mtt.db.request('deleteAdmin', {id:id}, function(text){
+        _mtt.db.request('deleteAdmin', {id:id, project:_mtt.project}, function(text){
             if (text.length>0) $('#deleteAdmin_'+text).parent().parent().remove();
         });
     };
 
     _mtt.deleteMember = function(id) {
-        _mtt.db.request('deleteMember', {id:id}, function(text){
+        _mtt.db.request('deleteMember', {id:id, project:_mtt.project}, function(text){
             if (text.length>0) $('#deleteMember_'+text).parent().parent().remove();
         });
     };
