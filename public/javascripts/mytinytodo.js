@@ -1724,7 +1724,7 @@ function orderChanged(event,ui)
 		h1[n[j]] = j;
 		taskOrder[j] = parseInt(n[j].split('_')[1]);
 	}
-
+    if (Object.keys(h0).length != Object.keys(h1).length) return; // move to another list
 	// prepare param
 	var o = [];
 	var diff;
