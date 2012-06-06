@@ -75,7 +75,7 @@ mytinytodoStorageAjax.prototype =
 	editTask: function(params, callback)
 	{
 		$.post(this.mtt.mttUrl+'ToDos/saveFullTask',
-			{ id:params.id, title:params.title, note:params.note, prio:params.prio, tags:params.tags, duedate:params.duedate },
+			{ taskId:params.id, title:params.title, note:params.note, prio:params.prio, tags:params.tags, duedate:params.duedate },
 			callback, 'json');
 	},
 
@@ -83,31 +83,31 @@ mytinytodoStorageAjax.prototype =
     cloneTask: function(params, callback)
     {
         $.post(this.mtt.mttUrl+'ToDos/cloneTask',
-            { id:params.id}, callback, 'json');
+            { taskId:params.id}, callback, 'json');
     },
 
 
 	editNote: function(params, callback)
 	{
-		$.post(this.mtt.mttUrl+'ToDos/editNote', {id:params.id, note: params.note}, callback, 'json');
+		$.post(this.mtt.mttUrl+'ToDos/editNote', {taskId:params.id, note: params.note}, callback, 'json');
 	},
 
 
 	completeTask: function(params, callback)
 	{
-		$.post(this.mtt.mttUrl+'ToDos/completeTask', { id:params.id, completed:params.completed }, callback, 'json');
+		$.post(this.mtt.mttUrl+'ToDos/completeTask', { taskId:params.id, completed:params.completed }, callback, 'json');
 	},
 
 
 	deleteTask: function(params, callback)
 	{
-		$.post(this.mtt.mttUrl+'ToDos/deleteTask', { id:params.id }, callback, 'json');
+		$.post(this.mtt.mttUrl+'ToDos/deleteTask', { taskId:params.id }, callback, 'json');
 	},
 
 
 	setPrio: function(params, callback)
 	{
-		$.getJSON(this.mtt.mttUrl+'ToDos/setPriority?id='+params.id+'&prio='+params.prio+'&rnd='+Math.random(), callback);
+		$.getJSON(this.mtt.mttUrl+'ToDos/setPriority?taskId='+params.id+'&prio='+params.prio+'&rnd='+Math.random(), callback);
 	},
 
 	
@@ -129,8 +129,8 @@ mytinytodoStorageAjax.prototype =
 		}
         var paramMap = {};
         for (var key in order) {
-            if (!paramMap.id && order[key].length == 1) {
-                paramMap.id = order[key][0];
+            if (!paramMap.taskId && order[key].length == 1) {
+                paramMap.taskId = order[key][0];
             } else if (key > 0) {
                 paramMap.back = order[key];
             } else if (key < 0) {
@@ -146,12 +146,12 @@ mytinytodoStorageAjax.prototype =
 	},
 
     addTag: function(params, callback) {
-        $.post(this.mtt.mttUrl+'ToDos/addTag', {id:params.id,tags:params.tags}, callback, 'json');
+        $.post(this.mtt.mttUrl+'ToDos/addTag', {taskId:params.id,tags:params.tags}, callback, 'json');
     },
 
 	moveTask: function(params, callback)
 	{
-		$.post(this.mtt.mttUrl+'ToDos/moveTask', { id:params.id, from:params.from, to:params.to }, callback, 'json');
+		$.post(this.mtt.mttUrl+'ToDos/moveTask', { taskId:params.id, from:params.from, to:params.to }, callback, 'json');
 	},
 
 	parseTaskStr: function(params, callback)

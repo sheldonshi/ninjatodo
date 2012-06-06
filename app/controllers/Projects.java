@@ -202,7 +202,8 @@ public class Projects extends Controller {
     private static Project getProject() {
         String projectId = Scope.Params.current().get("projectId");
         String listId = Scope.Params.current().get("list");
-        // get the project first
+        String toDoId = Scope.Params.current().get("taskId");
+        // get the project first. if not available, get list. if not available get task
         Project project = null;
         if (projectId != null) {
             project = Project.findById(Long.valueOf(projectId));
@@ -210,6 +211,11 @@ public class Projects extends Controller {
             ToDoList toDoList = ToDoList.findById(Long.valueOf(listId));
             if (toDoList != null) {
                 project = toDoList.project;
+            }
+        } else if (toDoId != null) {
+            ToDo toDo = ToDo.findById(Long.valueOf(toDoId));
+            if (toDo != null) {
+                project = toDo.toDoList.project;
             }
         }
         return project;

@@ -62,8 +62,8 @@ public class ToDos extends Controller {
      * clone a toDo. The new toDo will always be incompleted, has its own 
      * created date and last updated date
      */
-    public static void cloneTask(Long id) {
-        ToDo toDo = ToDo.findById(id);
+    public static void cloneTask(Long taskId) {
+        ToDo toDo = ToDo.findById(taskId);
         ToDo newToDo = null;
         if (toDo != null) {
             newToDo = new ToDo();
@@ -87,11 +87,11 @@ public class ToDos extends Controller {
 
     /**
      * Adds comma separated tags to existing tags of a to do task, does not check for duplicity
-     * @param id
+     * @param taskId
      * @param tags
      */
-    public static void addTag(Long id, String tags) {
-        ToDo toDo = ToDo.findById(id);
+    public static void addTag(Long taskId, String tags) {
+        ToDo toDo = ToDo.findById(taskId);
         if (toDo != null) {
             addTagToToDo(tags, toDo);
             toDo.save();
@@ -154,8 +154,8 @@ public class ToDos extends Controller {
         renderText(Utils.toJson(tasks));
     }
 
-    public static void completeTask(Long id, boolean completed) {
-        ToDo toDo = ToDo.findById(id);
+    public static void completeTask(Long taskId, boolean completed) {
+        ToDo toDo = ToDo.findById(taskId);
         toDo.completed = completed;
         toDo.save();
         renderText(Utils.toJson(toDo));
@@ -165,12 +165,12 @@ public class ToDos extends Controller {
      *
      * @param list the primary key of ToDoList
      */
-    public static void saveFullTask(Long list, Long id) {
+    public static void saveFullTask(Long list, Long taskId) {
         ToDo toDo = null;
-        if (id == null) {
+        if (taskId == null) {
             toDo = new ToDo();
         } else {
-            toDo = ToDo.findById(id);
+            toDo = ToDo.findById(taskId);
             list = toDo.toDoList.id;
         }
         toDo.title = params.get("title");
@@ -231,8 +231,8 @@ public class ToDos extends Controller {
     /**
      * edit the note of a task
      */
-    public static void editNote(Long id, String note) {
-        ToDo toDo = ToDo.findById(id);
+    public static void editNote(Long taskId, String note) {
+        ToDo toDo = ToDo.findById(taskId);
         if (toDo != null) {
             toDo.note = note;
             toDo.save();
@@ -244,8 +244,8 @@ public class ToDos extends Controller {
     /**
      * delete a task completely
      */
-    public static void deleteTask(Long id) {
-        ToDo toDo = ToDo.findById(id);
+    public static void deleteTask(Long taskId) {
+        ToDo toDo = ToDo.findById(taskId);
         if (toDo != null) {
             toDo.delete();
         }
@@ -256,8 +256,8 @@ public class ToDos extends Controller {
     /**
      * delete a task completely
      */
-    public static void setPriority(Long id, int prio) {
-        ToDo toDo = ToDo.findById(id);
+    public static void setPriority(Long taskId, int prio) {
+        ToDo toDo = ToDo.findById(taskId);
         if (toDo != null) {
             toDo.priority = prio;
             toDo.save();
@@ -268,12 +268,12 @@ public class ToDos extends Controller {
 
     /**
      * move a task from the current list with id = from to a list with id = to
-     * @param id
+     * @param taskId
      * @param from
      * @param to
      */
-    public static void moveTask(Long id, Long from, Long to) {
-        ToDo toDo = ToDo.findById(id);
+    public static void moveTask(Long taskId, Long from, Long to) {
+        ToDo toDo = ToDo.findById(taskId);
         ToDoList newToDoList = ToDoList.findById(to);
         if (toDo != null && toDo.toDoList.id == from && newToDoList != null) {
             toDo.toDoList = newToDoList;
@@ -286,9 +286,9 @@ public class ToDos extends Controller {
     /**
      * changes order of a task
      */
-    public static void changeOrder(Long id, Long[] back, Long[] forward) {
+    public static void changeOrder(Long taskId, Long[] back, Long[] forward) {
         if (back != null && back.length > 0) {
-            ToDo currentToDo = ToDo.findById(id);
+            ToDo currentToDo = ToDo.findById(taskId);
             ToDo pushedToDo = ToDo.findById(back[0]);
             if (currentToDo != null && pushedToDo != null) {
                 currentToDo.orderIndex = pushedToDo.orderIndex;
@@ -297,7 +297,7 @@ public class ToDos extends Controller {
             JPA.em().createQuery("update ToDo t set t.orderIndex = t.orderIndex + 1 where t.id in (" + StringUtils.join(back, ",") + ")")
                     .executeUpdate();
         } else if (forward != null && forward.length > 0) {
-            ToDo currentToDo = ToDo.findById(id);
+            ToDo currentToDo = ToDo.findById(taskId);
             ToDo pushedToDo = ToDo.findById(forward[forward.length - 1]);
             if (currentToDo != null && pushedToDo != null) {
                 currentToDo.orderIndex = pushedToDo.orderIndex;
