@@ -2374,8 +2374,7 @@ function logout()
 function showSettings()
 {
 	if(_mtt.pages.current.page == 'ajax' && _mtt.pages.current.pageClass == 'settings') return false;
-	$('#page_ajax').load(_mtt.mttUrl+'Projects/edit?id=' + _mtt.project,null,function(){
-		//showhide($('#page_ajax').addClass('mtt-page-settings'), $('#page_tasks'));
+	$('#page_ajax').load(_mtt.mttUrl+'Projects/edit?projectId=' + _mtt.project,null,function(){
 		_mtt.pageSet('ajax','settings');
 	})
 	return false;

@@ -36,10 +36,10 @@ public class Projects extends Controller {
 
     /**
      * prepares for the edit setting screen
-     * @param id
+     * @param projectId
      */
-    public static void edit(Long id) {
-        Project project = Project.findById(id);
+    public static void edit(Long projectId) {
+        Project project = Project.findById(projectId);
         List<Participation> participations = Participation.find("byProject", project).fetch();
         render(project, participations);
     }
