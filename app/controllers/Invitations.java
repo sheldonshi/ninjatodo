@@ -30,7 +30,7 @@ public class Invitations extends Controller {
 
     @Before
     static void checkAccess() throws Throwable {
-        Projects.checkAccess();
+        Projects.checkAdmin();
     }
     /**
      * gets all pending acceptance invitations for a project

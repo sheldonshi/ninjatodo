@@ -34,6 +34,12 @@ public class ToDoList extends Model {
 
     @Required
     @ManyToOne
+    @JoinColumn(name="creator_id", nullable = false)
+    @JsonExclude
+    public User creator;
+
+    @Required
+    @ManyToOne
     @JoinColumn(name="project_id", nullable = false)
     @JsonExclude
     public Project project;
@@ -50,9 +56,6 @@ public class ToDoList extends Model {
 
     @Column(name = "notes_expanded")
     public boolean notesExpanded;
-
-    @Column(name = "writable_by_all_members")
-    public boolean writableByAllMembers;
     
     public ToDoList() {
         dateCreated = new Date();

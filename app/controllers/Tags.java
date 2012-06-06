@@ -3,6 +3,7 @@ package controllers;
 import models.Tag;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
+import play.mvc.Before;
 import play.mvc.Controller;
 import play.mvc.With;
 
@@ -19,6 +20,15 @@ import java.util.Map;
  * To change this template use File | Settings | File Templates.
  */
 public class Tags extends Controller {
+
+    /**
+     * Check whether the project has the user as a member
+     */
+    @Before
+    static void checkAccess() {
+        Projects.checkMembership();
+    }
+
     /**
      * return up to limit # of suggested tags that contains q
      *

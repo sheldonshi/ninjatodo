@@ -1,10 +1,12 @@
 package controllers;
 
+import controllers.securesocial.SecureSocial;
 import models.*;
 import org.apache.commons.lang.StringUtils;
 import play.db.jpa.JPA;
+import play.mvc.Before;
 import play.mvc.Controller;
-import play.mvc.With;
+import play.mvc.Scope;
 import utils.Utils;
 
 import javax.persistence.NoResultException;
@@ -19,22 +21,44 @@ import java.util.List;
  * To change this template use File | Settings | File Templates.
  */
 public class ToDoLists extends Controller {
+
+    /**
+     * Check whether the project is visible to the user
+     */
+    @Before(only = {"loadLists"})
+     static void checkReadAccess() {
+        Projects.checkVisibility();
+    }
+
+    /**
+     * Check whether the project has the user as a member
+     */
+    @Before(unless = {"loadLists"})
+    static void checkWriteAccess() {
+        Projects.checkMembership();
+    }
+    
     /**
      * required json data structure on the UI {'list':[], 'total':..}
+     * <p/>
+     * this requires visibility to the project
      */
-    public static void loadLists(Long project) {
-        Project proj = Project.findById(project);
+    public static void loadLists(Long projectId) {
+        Project proj = Project.findById(projectId);
         List toDoLists = proj != null ? ToDoList.find("project=? order by orderIndex", proj).fetch() : null;
         renderJSON(Utils.toJson(toDoLists));
     }
 
     /**
      * required json data structure on the UI {'list':[], 'total':..}
+     * <p/>
+     * This requires to be project member
      */
-    public static void addList(String name, Long project) {
+    public static void addList(String name, Long projectId) {
         ToDoList toDoList = new ToDoList();
         toDoList.name = name;
-        toDoList.project = Project.findById(project);
+        toDoList.project = Project.findById(projectId);
+        toDoList.creator = User.loadBySocialUser(SecureSocial.getCurrentUser());
         toDoList.save();
         try {
             Integer lastOrderIndex = (Integer) JPA.em()
@@ -50,6 +74,7 @@ public class ToDoLists extends Controller {
 
     /**
      * rename a list
+     * requires to be the owner of list
      */
     public static void renameList(Long list, String name) {
         ToDoList toDoList = ToDoList.findById(list);
@@ -63,6 +88,7 @@ public class ToDoLists extends Controller {
 
     /**
      * clear (delete) a list. only if all tasks are completed
+     * requires to be the owner of list
      */
     public static void clearCompletedInList(Long list) {
         int count = 0;
@@ -84,7 +110,9 @@ public class ToDoLists extends Controller {
 
 
     /**
-     * changes order of a list. has to use native query because case when then won't work otherwise
+     * changes order of a list. has to use native query because case when then won't work otherwise.
+     * <p/>
+     * should be user specific
      */
     public static void changeListOrder(Long[] order) {
         int count = 0;
@@ -103,6 +131,8 @@ public class ToDoLists extends Controller {
 
     /**
      * delete a list
+     * <p/>
+     * must be the owner of the list or admin of project
      */
     public static void deleteList(Long list) {
         ToDoList toDoList = ToDoList.findById(list);
@@ -120,6 +150,8 @@ public class ToDoLists extends Controller {
 
     /**
      * sets new sort order of a list
+     * <p/>
+     * should be user specific
      */
     public static void setListSortOrder(Long list, String sort) {
         ToDoList toDoList = ToDoList.findById(list);
@@ -134,6 +166,8 @@ public class ToDoLists extends Controller {
 
     /**
      * toggles notesExpanded boolean property of a list
+     * <p/>
+     * should be user specific
      */
     public static void toggleNotesExpanded(Long list) {
         ToDoList toDoList = ToDoList.findById(list);
@@ -145,22 +179,14 @@ public class ToDoLists extends Controller {
         renderText(Utils.toJson(toDoList));
     }
 
-    public static void toggleWritableByAllMembers(Long list) {
-        ToDoList toDoList = ToDoList.findById(list);
-        if (toDoList != null) {
-            toDoList.writableByAllMembers = !toDoList.writableByAllMembers;
-            toDoList.save();
-        }
-
-        renderText(Utils.toJson(toDoList));
-    }
-
     /**
      * get all tags contained in a to do list. If an id of -1 is passed, it means all lists in the project
      * TODO if list=-1, we should have project id and get tags under that project id
      *
+     * <p/>
+     * check visibility
      */
-    public static void tagCloud(Long list, Long project) {
+    public static void tagCloud(Long list, Long projectId) {
         
         List<Tag> tags = null;
         if (list > 0) {
@@ -168,7 +194,7 @@ public class ToDoLists extends Controller {
                 .createQuery("select t from ToDo todo right join todo.tags t where todo.toDoList.id=" + list)
                 .getResultList();
         } else if (list == -1) {
-            Project proj = Project.findById(project);
+            Project proj = Project.findById(projectId);
             if (proj != null) {
                 Query query = JPA.em()
                         .createQuery("select t from Tag t where project=:project");
@@ -179,5 +205,4 @@ public class ToDoLists extends Controller {
 
         renderText(Utils.toJson(tags));
     }
-
 }

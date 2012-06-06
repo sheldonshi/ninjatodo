@@ -595,7 +595,6 @@ var mytinytodo = window.mytinytodo = _mtt = {
                     if (fn=='deleteCurList') deleteCurList();
                     else if (fn=='deleteTask') deleteTask(arg);
                     else if (fn=='clearCompleted') clearCompleted();
-                    else if (fn=='toggleWritable') toggleWritable();
                     else if (fn=='deleteInvitation') _mtt.deleteInvitation(arg);
                     else if (fn=='deleteAdmin') _mtt.deleteAdmin(arg);
                     else if (fn=='deleteMember') _mtt.deleteMember(arg);
@@ -645,8 +644,8 @@ var mytinytodo = window.mytinytodo = _mtt = {
             $('#settings').show();
         }
         // refresh autocomplete params
-        $("#addTag-dialog-form-name").flushCache().setOptions({extraParams:{project:_mtt.project}});
-        $("#edittags").flushCache().setOptions({extraParams:{project:_mtt.project}});
+        $("#addTag-dialog-form-name").flushCache().setOptions({extraParams:{projectId:_mtt.project}});
+        $("#edittags").flushCache().setOptions({extraParams:{projectId:_mtt.project}});
         this.loadLists(1);
     },
 
@@ -694,11 +693,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
 						'<a href="#list/'+item.id+'" title="'+item.name+'"><span>'+item.name+'</span>'+
 						'<div class="list-action"></div></a></li>';
 				});
-                if (tabLists.length()>1) {
-                    $("#list_all").removeClass('mtt-tabs-hidden');
-                } else {
-                    $('#list_all').addClass('mtt-tabs-hidden');
-                }
+                checkAllListsTab();
 			}
 			
 			if(openListId) {
@@ -890,6 +885,7 @@ function addList(name)
 			mytinytodo.doAction('listAdded', item);
 		}
 		else _mtt.loadLists();
+        checkAllListsTab();
 	});
 };
 
@@ -983,6 +979,7 @@ function loadTasks(opts)
 
 	_mtt.db.request('loadTasks', {
 		list: curList.id,
+        project: _mtt.project,
         showCompleted: curList.showCompleted,
 		sort: curList.sort,
 		search: filter.search,
@@ -1382,7 +1379,6 @@ function listMenuClick(el, menu)
 		case 'btnShowCompleted': showCompletedToggle(); break;
         case 'btnExpandNotes': toggleAllNotes(); break;
 		case 'btnClearCompleted': _mtt.confirmAction('clearCompleted', 'clearCompleted', ''); break;
-        case 'btnWritableByAllMembers': toggleWritableDialog(); break;
 		case 'sortByHand': setSort("DEFAULT"); break;
 		case 'sortByPrio': setSort("PRIORITY"); break;
 		case 'sortByDueDate': setSort("DUE_DATE"); break;
@@ -2036,8 +2032,6 @@ function tabmenuOnListSelected(list)
 	else $('#btnShowCompleted').removeClass('mtt-item-checked');
     if (list.notesExpanded) $('#btnExpandNotes').addClass('mtt-item-checked');
     else $('#btnExpandNotes').removeClass('mtt-item-checked');
-    if (list.writableByAllMembers) $('#btnWritableByAllMembers').addClass('mtt-item-checked');
-    else $('#btnWritableByAllMembers').removeClass('mtt-item-checked');
 };
 
 
@@ -2083,22 +2077,6 @@ function clearCompleted()
 		if(curList.showCompleted) loadTasks();
 	});
 };
-
-function toggleWritableDialog() {
-    if(!curList) return false;
-    if(curList.writableByAllMembers) _mtt.confirmAction('toggleWritableOff', 'toggleWritable', '')
-    else _mtt.confirmAction('toggleWritableOn', 'toggleWritable', '')
-}
-
-function toggleWritable() {
-    if(!curList) return false;
-    _mtt.db.request('setWritableByAllMembers', {list:curList.id}, function(json){
-        if(!parseInt(json.total)) return;
-        curList.writableByAllMembers = json.list[0].writableByAllMembers;
-        if(curList.writableByAllMembers) $('#btnWritableByAllMembers').addClass('mtt-item-checked');
-        else $('#btnWritableByAllMembers').removeClass('mtt-item-checked');
-    });
-}
 
 function tasklistClick(e)
 {
@@ -2267,6 +2245,13 @@ function hideTab(listId)
 	}
 }
 
+function checkAllListsTab() {
+    if (tabLists.length()>1) {
+        $("#list_all").removeClass('mtt-tabs-hidden');
+    } else {
+        $('#list_all').addClass('mtt-tabs-hidden');
+    }
+}
 /*
 	Errors and Info messages
 */

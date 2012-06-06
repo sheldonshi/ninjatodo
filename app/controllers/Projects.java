@@ -31,12 +31,7 @@ public class Projects extends Controller {
      */
     @Before(unless={"add"})
     static void checkAccess() throws Throwable {
-        User user = User.loadBySocialUser(SecureSocial.getCurrentUser());
-        String id = Scope.Params.current().get("projectId");
-        Project project = Project.findById(Long.valueOf(id));
-        if (Participation.find("project=? and user=? and role=?", project, user, Role.ADMIN).first() == null) {
-            throw new RuntimeException("");
-        }
+        checkAdmin();
     }
 
     /**
@@ -157,5 +152,71 @@ public class Projects extends Controller {
         participation.role = Role.ADMIN;
         participation.save();
         return participation;
+    }
+
+    /**
+     * Check whether the project has the user as a member
+     */
+    static void checkMembership() {
+        if (isMember(getProject())) {
+            return; // member of a non-public project
+        } else {
+            throw new RuntimeException();   // no permission
+        }
+    }
+
+    /**
+     * checks whether this user is an admin of the project
+     * @throws Throwable
+     */
+    static void checkAdmin() {
+        User user = User.loadBySocialUser(SecureSocial.getCurrentUser());
+        String id = Scope.Params.current().get("projectId");
+        Project project = Project.findById(Long.valueOf(id));
+        if (Participation.find("project=? and user=? and role=?", project, user, Role.ADMIN).first() == null) {
+            throw new RuntimeException();
+        }
+    }
+
+    /**
+     * Check whether the project is visible to the user
+     */
+    static void checkVisibility() {
+        Project project = getProject();
+        // check the visibility of the project
+        if (project.visibility.equals(Visibility.PUBLIC)) {
+            return; // public project
+        } else if (project.visibility.equals(Visibility.LINK) && false) {
+            // TODO deal with a private link
+        } else if (isMember(project)) {
+            return; // member of a non-public project
+        } else {
+            throw new RuntimeException();   // no permission
+        }
+    }
+
+    /**
+     * gets the Project from projectId or list id
+     * @return
+     */
+    private static Project getProject() {
+        String projectId = Scope.Params.current().get("projectId");
+        String listId = Scope.Params.current().get("list");
+        // get the project first
+        Project project = null;
+        if (projectId != null) {
+            project = Project.findById(Long.valueOf(projectId));
+        } else if (listId != null) {
+            ToDoList toDoList = ToDoList.findById(Long.valueOf(listId));
+            if (toDoList != null) {
+                project = toDoList.project;
+            }
+        }
+        return project;
+    }
+
+    private static boolean isMember(Project project) {
+        User user = User.loadBySocialUser(SecureSocial.getCurrentUser());
+        return Participation.find("project=? and user=?", project, user).first() != null;
     }
 }

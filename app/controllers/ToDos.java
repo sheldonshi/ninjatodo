@@ -3,6 +3,7 @@ package controllers;
 import models.*;
 import org.apache.commons.lang.StringUtils;
 import play.db.jpa.JPA;
+import play.mvc.Before;
 import play.mvc.Controller;
 import play.mvc.With;
 import utils.JSConstant;
@@ -23,6 +24,22 @@ import java.util.List;
  */
 public class ToDos extends Controller {
     public static final Long ALL_LIST_ID = -1L;
+
+    /**
+     * Check whether the project is visible to the user
+     */
+    @Before(only = {"loadTasks"})
+    static void checkReadAccess() {
+        Projects.checkVisibility();
+    }
+
+    /**
+     * Check whether the project has the user as a member
+     */
+    @Before(unless = {"loadTasks"})
+    static void checkWriteAccess() {
+        Projects.checkMembership();
+    }
 
     public static void newTask(Long list, String title) {
         ToDo toDo = new ToDo();
@@ -106,14 +123,17 @@ public class ToDos extends Controller {
                 params.get("sort") : null;
 
         String querySortStr = " order by " + (sort != null ? sort : SortOrder.DEFAULT.getSqlSort());
+        // if a valid list id is passed, filter by list, otherwise, filter by project
+        String projectFilterStr = "toDoList.project.id=" + params.get("projectId");
+        String listFilterStr = "toDoList.id=" + list;
         List<ToDo> tasks = new ArrayList<ToDo>();
         if (StringUtils.isNotEmpty(params.get("s"))) {
             String queryLikeStr = "%"+ params.get("s") + "%";
-            String queryStr = (list == ALL_LIST_ID ? "" : "toDoList.id=" + list + " and ") +
-                    "(title like ? or note like ?)" + (showCompleted ? "" : " and completed=false");
+            String queryStr = (list == ALL_LIST_ID ? projectFilterStr : listFilterStr) +
+                    " and (title like ? or note like ?)" + (showCompleted ? "" : " and completed=false");
             tasks = ToDo.find(queryStr + querySortStr, queryLikeStr, queryLikeStr).fetch();
         } else {
-            String queryStr = (list == ALL_LIST_ID ? "1=1" : "toDoList.id=" + list) +
+            String queryStr = (list == ALL_LIST_ID ? projectFilterStr : listFilterStr) +
                     (showCompleted ? "" : " and completed=false");
             tasks = ToDo.find(queryStr + querySortStr).fetch();
         }

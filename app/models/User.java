@@ -1,5 +1,6 @@
 package models;
 
+import json.JsonExclude;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import play.data.validation.Email;
@@ -51,12 +52,14 @@ public class User extends Model {
     @Required
     @Email
     @Column(name = "email", nullable = false)
+    @JsonExclude
     public String email;
 
     @Column(name = "email_verified", nullable = false)
     public boolean isEmailVerified;
     
     @Column(name = "password", nullable = true)
+    @JsonExclude
     public String password;
 
     @Version
@@ -82,6 +85,7 @@ public class User extends Model {
     public String avatar;
 
     @Column(name = "verify_code", nullable = true)
+    @JsonExclude
     public String verifyCode;
     
     public User() {

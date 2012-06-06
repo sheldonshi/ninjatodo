@@ -41,7 +41,7 @@ mytinytodoStorageAjax.prototype =
 
 	loadLists: function(params, callback)
 	{
-		$.getJSON(this.mtt.mttUrl+'ToDoLists/loadLists?project='+params.project+'&rnd='+Math.random(), callback);
+		$.getJSON(this.mtt.mttUrl+'ToDoLists/loadLists?projectId='+params.project+'&rnd='+Math.random(), callback);
 	},
 
 
@@ -53,7 +53,7 @@ mytinytodoStorageAjax.prototype =
 		if(params.setCompl && params.setCompl != 0) q += '&changeShowCompleted=1';
 		q += '&rnd='+Math.random();
 
-		$.getJSON(this.mtt.mttUrl+'ToDos/loadTasks?list='+params.list+'&showCompleted='+params.showCompleted+'&sort='+params.sort+q, callback);
+		$.getJSON(this.mtt.mttUrl+'ToDos/loadTasks?projectId='+params.project+'&list='+params.list+'&showCompleted='+params.showCompleted+'&sort='+params.sort+q, callback);
 	},
 
 
@@ -142,7 +142,7 @@ mytinytodoStorageAjax.prototype =
 
 	tagCloud: function(params, callback)
 	{
-		$.getJSON(this.mtt.mttUrl+'ToDoLists/tagCloud?list='+params.list+'&project='+params.project+'&rnd='+Math.random(), callback);
+		$.getJSON(this.mtt.mttUrl+'ToDoLists/tagCloud?list='+params.list+'&projectId='+params.project+'&rnd='+Math.random(), callback);
 	},
 
     addTag: function(params, callback) {
@@ -162,7 +162,7 @@ mytinytodoStorageAjax.prototype =
 	// Lists
 	addList: function(params, callback)
 	{
-		$.post(this.mtt.mttUrl+'ToDoLists/addList', { name:params.name,project:params.project }, callback, 'json');
+		$.post(this.mtt.mttUrl+'ToDoLists/addList', { name:params.name,projectId:params.project }, callback, 'json');
 
 	},
 
@@ -191,11 +191,6 @@ mytinytodoStorageAjax.prototype =
 	{
 	    $.post(this.mtt.mttUrl+'ToDoLists/toggleNotesExpanded', { list:params.list },  callback, 'json');
 	},
-
-    setWritableByAllMembers: function(params, callback)
-    {
-        $.post(this.mtt.mttUrl+'ToDoLists/toggleWritableByAllMembers', { list:params.list },  callback, 'json');
-    },
 	
 	setHideList: function(params, callback)
 	{
