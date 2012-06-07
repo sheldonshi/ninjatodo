@@ -1739,16 +1739,13 @@ function orderChanged(event,ui)
 	var o = [];
 	var diff;
 	var replaceOW = h1[itemId] ? taskList[sortOrder[h1[itemId]].split('_')[1]].orderIndex : null;
-	for(var j in h0)
-	{
-        if (h1[j]) {
-            diff = h1[j] - h0[j];
-            if(diff != 0) {
-                var a = j.split('_');
-                if(j == itemId) diff = replaceOW - taskList[a[1]].orderIndex;
-                o.push({id:a[1], diff:diff});
-                taskList[a[1]].orderIndex += diff;
-            }
+	for(var j in h0) {
+        diff = h1[j] - h0[j];
+        if(diff != 0) {
+            var a = j.split('_');
+            if(j == itemId) diff = replaceOW - taskList[a[1]].orderIndex;
+            o.push({id:a[1], diff:diff});
+            taskList[a[1]].orderIndex += diff;
         }
 	}
 

@@ -7,7 +7,7 @@ package models;
  * Time: 8:27 AM
  * To change this template use File | Settings | File Templates.
  */
-public enum SortOrder {
+public enum Sort {
     DEFAULT("completed"),
     PRIORITY_DESC("completed, priority desc, dueDate, orderIndex"),
     DUE_DATE_DESC("completed, dueDate desc, priority, orderIndex"),
@@ -20,7 +20,7 @@ public enum SortOrder {
 
     private String sqlSort;
     
-    private SortOrder(String sqlSort) {
+    private Sort(String sqlSort) {
         this.sqlSort = sqlSort;
     }
     
