@@ -6,7 +6,6 @@ import org.apache.commons.lang.StringUtils;
 import play.db.jpa.JPA;
 import play.mvc.Before;
 import play.mvc.Controller;
-import play.mvc.Scope;
 import utils.Utils;
 
 import javax.persistence.NoResultException;
@@ -153,11 +152,11 @@ public class ToDoLists extends Controller {
      * <p/>
      * should be user specific
      */
-    public static void setListSortOrder(Long list, String sort) {
+    public static void setListSort(Long list, String sort) {
         ToDoList toDoList = ToDoList.findById(list);
-        SortOrder sortOrder = SortOrder.valueOf(sort);
+        Sort sortOrder = Sort.valueOf(sort);
         if (toDoList != null) {
-            toDoList.sortOrder = sortOrder;
+            toDoList.sort = sortOrder;
             toDoList.save();
         }
 

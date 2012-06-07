@@ -5,7 +5,6 @@ import org.apache.commons.lang.StringUtils;
 import play.db.jpa.JPA;
 import play.mvc.Before;
 import play.mvc.Controller;
-import play.mvc.With;
 import utils.JSConstant;
 import utils.Utils;
 
@@ -118,11 +117,10 @@ public class ToDos extends Controller {
                 toDoList.save();
             }
         }
-        // store
-        String sort = params.get("sort") != null && !params.get("sort").equals(JSConstant.STRING_UNDEFINED) ?
-                params.get("sort") : null;
+        // treat undefined sort parameter as null
+        String sort = JSConstant.STRING_UNDEFINED.equals(params.get("sort")) ? null : params.get("sort");
 
-        String querySortStr = " order by " + (sort != null ? sort : SortOrder.DEFAULT.getSqlSort());
+        String querySortStr = " order by " + (sort != null ? Sort.valueOf(sort).getSqlSort() : Sort.DEFAULT.getSqlSort());
         // if a valid list id is passed, filter by list, otherwise, filter by project
         String projectFilterStr = "toDoList.project.id=" + params.get("projectId");
         String listFilterStr = "toDoList.id=" + list;
@@ -284,10 +282,14 @@ public class ToDos extends Controller {
     }
 
     /**
-     * changes order of a task
+     * changes order of a task. Arguments back and forward are mutually exclusive.
+     * @param taskId - the id of the single task being dragged and moved
+     * @param back - the list of ids of tasks that are being pushed back
+     * @param forward - the list of ids of tasks that are being pushed forward
      */
     public static void changeOrder(Long taskId, Long[] back, Long[] forward) {
         if (back != null && back.length > 0) {
+            // push the single task being dragged to the first of the tasks that are being moved back
             ToDo currentToDo = ToDo.findById(taskId);
             ToDo pushedToDo = ToDo.findById(back[0]);
             if (currentToDo != null && pushedToDo != null) {
@@ -297,6 +299,7 @@ public class ToDos extends Controller {
             JPA.em().createQuery("update ToDo t set t.orderIndex = t.orderIndex + 1 where t.id in (" + StringUtils.join(back, ",") + ")")
                     .executeUpdate();
         } else if (forward != null && forward.length > 0) {
+            // push the single task being dragged to the last of tasks that are being moved forward
             ToDo currentToDo = ToDo.findById(taskId);
             ToDo pushedToDo = ToDo.findById(forward[forward.length - 1]);
             if (currentToDo != null && pushedToDo != null) {

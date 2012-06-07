@@ -2,7 +2,6 @@ package models;
 
 import json.JsonExclude;
 import play.data.validation.MaxSize;
-import play.data.validation.MinSize;
 import play.data.validation.Required;
 import play.db.jpa.Model;
 
@@ -47,9 +46,10 @@ public class ToDoList extends Model {
     @Column(name = "order_index", nullable = false)
     public int orderIndex;
 
-    @Column(name = "sort_order", nullable = true)
+    @Required
+    @Column(name = "sort", nullable = false)
     @Enumerated(EnumType.STRING)
-    public SortOrder sortOrder;
+    public Sort sort = Sort.DEFAULT;
 
     @Column(name = "show_completed")
     public boolean showCompleted;

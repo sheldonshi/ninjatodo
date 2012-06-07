@@ -8,7 +8,7 @@ package models;
  * To change this template use File | Settings | File Templates.
  */
 public enum Sort {
-    DEFAULT("completed"),
+    DEFAULT("completed, orderIndex"),
     PRIORITY_DESC("completed, priority desc, dueDate, orderIndex"),
     DUE_DATE_DESC("completed, dueDate desc, priority, orderIndex"),
     DATE_CREATED_DESC("completed, dateCreated desc, priority, orderIndex"),
