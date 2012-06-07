@@ -39,7 +39,7 @@ public class Utils {
         returnObj.put("total", list.size());
 
         return (new GsonBuilder())
-                .setDateFormat("MM/dd/yy")
+                .setDateFormat("MM/dd/yyyy HH:mm:ss")
                 .setExclusionStrategies(new ExclusionStrategy() {
             @Override
             public boolean shouldSkipField(FieldAttributes field) {

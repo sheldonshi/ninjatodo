@@ -992,6 +992,9 @@ function loadTasks(opts)
 		var tasks = '';
 		$.each(json.list, function(i,item){
 			tasks += prepareTaskStr(item);
+            item.dateCreatedMillis = getMillis(item.dateCreated);
+            item.lastUpdatedMillis = getMillis(item.lastUpdated);
+            item.dateDueMillis = getMillis(item.dateDue);
 			taskList[item.id] = item;
 			taskOrder.push(parseInt(item.id));
 			changeTaskCnt(item, 1);
@@ -1126,38 +1129,39 @@ function changeTaskOrder(id)
 	id = parseInt(id);
 	if(taskOrder.length < 2) return;
 	var oldOrder = taskOrder.slice();
+    var direction = curList.sort && curList.sort.match(/DESC$/) ? -1 : 1;
 	// sortByHand
-	if(!curList.sortOrder || curList.sortOrder == "DEFAULT") taskOrder.sort( function(a,b){
+	if(!curList.sort || curList.sort == "DEFAULT") taskOrder.sort( function(a,b){
 			if(taskList[a].completed != taskList[b].completed) return taskList[a].completed-taskList[b].completed;
 			return taskList[a].orderIndex-taskList[b].orderIndex
 		});
 	// sortByPrio
-	else if(curList.sortOrder == "PRIORITY") taskOrder.sort( function(a,b){
+	else if(curList.sort.match(/^PRIORITY/)) taskOrder.sort( function(a,b){
 			if(taskList[a].completed != taskList[b].completed) return taskList[a].completed-taskList[b].completed;
-			if(taskList[a].prio != taskList[b].prio) return taskList[b].prio-taskList[a].prio;
-			if(taskList[a].dueInt != taskList[b].dueInt) return taskList[a].dueInt-taskList[b].dueInt;
-			return taskList[a].ow-taskList[b].ow; 
+			if(taskList[a].priority != taskList[b].priority) return (taskList[b].priority-taskList[a].priority) * direction;
+			if(taskList[a].dateDueMillis != taskList[b].dateDueMillis) return taskList[a].dateDueMillis-taskList[b].dateDueMillis;
+			return taskList[a].orderIndex-taskList[b].orderIndex;
 		});
 	// sortByDueDate
-	else if(curList.sortOrder == "DUE_DATE") taskOrder.sort( function(a,b){
+	else if(curList.sort.match(/^DUE_DATE/)) taskOrder.sort( function(a,b){
 			if(taskList[a].completed != taskList[b].completed) return taskList[a].completed-taskList[b].completed;
-			if(taskList[a].dueInt != taskList[b].dueInt) return taskList[a].dueInt-taskList[b].dueInt;
-			if(taskList[a].prio != taskList[b].prio) return taskList[b].prio-taskList[a].prio;
-			return taskList[a].ow-taskList[b].ow; 
+			if(taskList[a].dateDueMillis != taskList[b].dateDueMillis) return (taskList[a].dateDueMillis-taskList[b].dateDueMillis) * direction;
+			if(taskList[a].priority != taskList[b].priority) return taskList[b].priority-taskList[a].priority;
+			return taskList[a].orderIndex-taskList[b].orderIndex;
 		});
 	// sortByDateCreated
-	else if(curList.sortOrder == "DATE_CREATED") taskOrder.sort( function(a,b){
+	else if(curList.sort.match(/^DATE_CREATED/)) taskOrder.sort( function(a,b){
 			if(taskList[a].completed != taskList[b].completed) return taskList[a].completed-taskList[b].completed;
-			if(taskList[a].dateInt != taskList[b].dateInt) return taskList[a].dateInt-taskList[b].dateInt;
-			if(taskList[a].prio != taskList[b].prio) return taskList[b].prio-taskList[a].prio;
-			return taskList[a].ow-taskList[b].ow; 
+			if(taskList[a].dateCreatedMillis != taskList[b].dateCreatedMillis) return (taskList[a].dateCreatedMillis-taskList[b].dateCreatedMillis) * direction;
+			if(taskList[a].priority != taskList[b].priority) return taskList[b].priority-taskList[a].priority;
+			return taskList[a].orderIndex-taskList[b].orderIndex;
 		});
 	// sortByDateModified
-	else if(curList.sortOrder == "LAST_UPDATED") taskOrder.sort( function(a,b){
+	else if(curList.sort.match(/^LAST_UPDATED/)) taskOrder.sort( function(a,b){
 			if(taskList[a].completed != taskList[b].completed) return taskList[a].completed-taskList[b].completed;
-			if(taskList[a].dateEditedInt != taskList[b].dateEditedInt) return taskList[a].dateEditedInt-taskList[b].dateEditedInt;
-			if(taskList[a].prio != taskList[b].prio) return taskList[b].prio-taskList[a].prio;
-			return taskList[a].ow-taskList[b].ow; 
+			if(taskList[a].lastUpdatedMillis != taskList[b].lastUpdatedMillis) return (taskList[a].lastUpdatedMillis-taskList[b].lastUpdatedMillis) * direction;
+			if(taskList[a].priority != taskList[b].priority) return taskList[b].priority-taskList[a].priority;
+			return taskList[a].orderIndex-taskList[b].orderIndex;
 		});
 	else return;
 	if(oldOrder.toString() == taskOrder.toString()) return;
@@ -1217,15 +1221,21 @@ function setSort(v, init)
 {
 	$('#listmenucontainer .sort-item').removeClass('mtt-item-checked').children('.mtt-sort-direction').text('');
 	if(v == "DEFAULT") $('#sortByHand').addClass('mtt-item-checked');
-	else if(v=="PRIORITY") $('#sortByPrio').addClass('mtt-item-checked').children('.mtt-sort-direction').text(v==1 ? '↑' : '↓');
-	else if(v=="DUE_DATE") $('#sortByDueDate').addClass('mtt-item-checked').children('.mtt-sort-direction').text(v==2 ? '↑' : '↓');
-	else if(v=="DATE_CREATED") $('#sortByDateCreated').addClass('mtt-item-checked').children('.mtt-sort-direction').text(v==3 ? '↓' : '↑');
-	else if(v=="LAST_UPDATED") $('#sortByDateModified').addClass('mtt-item-checked').children('.mtt-sort-direction').text(v==4 ? '↓' : '↑');
+	else if(v=="PRIORITY_DESC") $('#sortByPrio').addClass('mtt-item-checked').children('.mtt-sort-direction').text('↓');
+    else if(v=="PRIORITY_ASC") $('#sortByPrio').addClass('mtt-item-checked').children('.mtt-sort-direction').text('↑');
+	else if(v=="DUE_DATE_DESC") $('#sortByDueDate').addClass('mtt-item-checked').children('.mtt-sort-direction').text('↓');
+    else if(v=="DUE_DATE_ASC") $('#sortByDueDate').addClass('mtt-item-checked').children('.mtt-sort-direction').text('↑');
+	else if(v=="DATE_CREATED_DESC") $('#sortByDateCreated').addClass('mtt-item-checked').children('.mtt-sort-direction').text('↓');
+    else if(v=="DATE_CREATED_ASC") $('#sortByDateCreated').addClass('mtt-item-checked').children('.mtt-sort-direction').text('↑');
+	else if(v=="LAST_UPDATED_DESC") $('#sortByDateModified').addClass('mtt-item-checked').children('.mtt-sort-direction').text('↓');
+    else if(v=="LAST_UPDATED_ASC") $('#sortByDateModified').addClass('mtt-item-checked').children('.mtt-sort-direction').text('↑');
 	else return;
 
 	curList.sort = v;
-	if(v == "DEFAULT" && !flag.readOnly) $("#tasklist").sortable('enable');
-	else $("#tasklist").sortable('disable');
+	if(v == "DEFAULT" && !flag.readOnly)
+        $("#tasklist").sortable('enable');
+	else
+        $("#tasklist").sortable('disable');
 	
 	if(!init)
 	{
@@ -1380,10 +1390,10 @@ function listMenuClick(el, menu)
         case 'btnExpandNotes': toggleAllNotes(); break;
 		case 'btnClearCompleted': _mtt.confirmAction('clearCompleted', 'clearCompleted', ''); break;
 		case 'sortByHand': setSort("DEFAULT"); break;
-		case 'sortByPrio': setSort("PRIORITY"); break;
-		case 'sortByDueDate': setSort("DUE_DATE"); break;
-		case 'sortByDateCreated': setSort("DATE_CREATED"); break;
-		case 'sortByDateModified': setSort("LAST_UPDATED"); break;
+		case 'sortByPrio': setSort(curList.sort=='PRIORITY_DESC' ? 'PRIORITY_ASC' : 'PRIORITY_DESC'); break;
+		case 'sortByDueDate': setSort(curList.sort=='DUE_DATE_DESC' ? 'DUE_DATE_ASC' : 'DUE_DATE_DESC'); break;
+		case 'sortByDateCreated': setSort(curList.sort=='DATE_CREATED_DESC' ? 'DATE_CREATED_ASC' : 'DATE_CREATED_DESC'); break;
+		case 'sortByDateModified': setSort(curList.sort=='LAST_UPDATED_DESC' ? 'LAST_UPDATED_ASC' : 'LAST_UPDATED_DESC'); break;
 	}
 };
 
@@ -2250,6 +2260,18 @@ function checkAllListsTab() {
         $("#list_all").removeClass('mtt-tabs-hidden');
     } else {
         $('#list_all').addClass('mtt-tabs-hidden');
+    }
+}
+
+function getMillis(date) {
+    if (!date) return 0;
+    var dayHour = date.split(" ");
+    var day = dayHour[0].split("/");
+    var hour = dayHour.length > 1 ? dayHour[1].split(":") : null;
+    if (hour) {
+        return new Date(day[2], day[1]-1, day[0], hour[0], hour[1], hour[2]).getTime();
+    } else {
+        return new Date(day[2], day[1]-1, day[0]).getTime();
     }
 }
 /*

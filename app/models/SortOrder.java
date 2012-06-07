@@ -9,10 +9,14 @@ package models;
  */
 public enum SortOrder {
     DEFAULT("completed"),
-    PRIORITY("completed, priority, dueDate, orderIndex"),
-    DUE_DATE("completed, dueDate, priority, orderIndex"),
-    DATE_CREATED("completed, dateCreated, priority, orderIndex"),
-    LAST_UPDATED("completed, lastUpdated, priority, orderIndex");
+    PRIORITY_DESC("completed, priority desc, dueDate, orderIndex"),
+    DUE_DATE_DESC("completed, dueDate desc, priority, orderIndex"),
+    DATE_CREATED_DESC("completed, dateCreated desc, priority, orderIndex"),
+    LAST_UPDATED_DESC("completed, lastUpdated desc, priority, orderIndex"),
+    PRIORITY_ASC("completed, priority asc, dueDate, orderIndex"),
+    DUE_DATE_ASC("completed, dueDate asc, priority, orderIndex"),
+    DATE_CREATED_ASC("completed, dateCreated asc, priority, orderIndex"),
+    LAST_UPDATED_ASC("completed, lastUpdated asc, priority, orderIndex");
 
     private String sqlSort;
     
