@@ -13,6 +13,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Created by IntelliJ IDEA.
@@ -23,6 +25,8 @@ import java.util.List;
  */
 public class ToDos extends Controller {
     public static final Long ALL_LIST_ID = -1L;
+    // this is based on twitter-text-java
+    public static final Pattern VALID_HASHTAG = Pattern.compile("(^|[^&0-9\\uff10-\\uff19_a-z\\u00c0-\\u00d6\\u00d8-\\u00f6\\u00f8-\\u00ff\\u0100-\\u024f\\u0253\\u0254\\u0256\\u0257\\u0259\\u025b\\u0263\\u0268\\u026f\\u0272\\u0289\\u028b\\u02bb\\u0300-\\u036f\\u1e00-\\u1eff\\u0400-\\u04ff\\u0500-\\u0527\\u2de0-\\u2dff\\ua640-\\ua69f\\u0591-\\u05bf\\u05c1-\\u05c2\\u05c4-\\u05c5\\u05c7\\u05d0-\\u05ea\\u05f0-\\u05f4\\ufb1d-\\ufb28\\ufb2a-\\ufb36\\ufb38-\\ufb3c\\ufb3e\\ufb40-\\ufb41\\ufb43-\\ufb44\\ufb46-\\ufb4f\\u0610-\\u061a\\u0620-\\u065f\\u066e-\\u06d3\\u06d5-\\u06dc\\u06de-\\u06e8\\u06ea-\\u06ef\\u06fa-\\u06fc\\u06ff\\u0750-\\u077f\\u08a0\\u08a2-\\u08ac\\u08e4-\\u08fe\\ufb50-\\ufbb1\\ufbd3-\\ufd3d\\ufd50-\\ufd8f\\ufd92-\\ufdc7\\ufdf0-\\ufdfb\\ufe70-\\ufe74\\ufe76-\\ufefc\\u200c\\u0e01-\\u0e3a\\u0e40-\\u0e4e\\u1100-\\u11ff\\u3130-\\u3185\\uA960-\\uA97F\\uAC00-\\uD7AF\\uD7B0-\\uD7FF\\p{InHiragana}\\p{InKatakana}\\p{InCJKUnifiedIdeographs}\\u3003\\u3005\\u303b\\uff21-\\uff3a\\uff41-\\uff5a\\uff66-\\uff9f\\uffa1-\\uffdc])(#|＃)([0-9\\uff10-\\uff19_a-z\\u00c0-\\u00d6\\u00d8-\\u00f6\\u00f8-\\u00ff\\u0100-\\u024f\\u0253\\u0254\\u0256\\u0257\\u0259\\u025b\\u0263\\u0268\\u026f\\u0272\\u0289\\u028b\\u02bb\\u0300-\\u036f\\u1e00-\\u1eff\\u0400-\\u04ff\\u0500-\\u0527\\u2de0-\\u2dff\\ua640-\\ua69f\\u0591-\\u05bf\\u05c1-\\u05c2\\u05c4-\\u05c5\\u05c7\\u05d0-\\u05ea\\u05f0-\\u05f4\\ufb1d-\\ufb28\\ufb2a-\\ufb36\\ufb38-\\ufb3c\\ufb3e\\ufb40-\\ufb41\\ufb43-\\ufb44\\ufb46-\\ufb4f\\u0610-\\u061a\\u0620-\\u065f\\u066e-\\u06d3\\u06d5-\\u06dc\\u06de-\\u06e8\\u06ea-\\u06ef\\u06fa-\\u06fc\\u06ff\\u0750-\\u077f\\u08a0\\u08a2-\\u08ac\\u08e4-\\u08fe\\ufb50-\\ufbb1\\ufbd3-\\ufd3d\\ufd50-\\ufd8f\\ufd92-\\ufdc7\\ufdf0-\\ufdfb\\ufe70-\\ufe74\\ufe76-\\ufefc\\u200c\\u0e01-\\u0e3a\\u0e40-\\u0e4e\\u1100-\\u11ff\\u3130-\\u3185\\uA960-\\uA97F\\uAC00-\\uD7AF\\uD7B0-\\uD7FF\\p{InHiragana}\\p{InKatakana}\\p{InCJKUnifiedIdeographs}\\u3003\\u3005\\u303b\\uff21-\\uff3a\\uff41-\\uff5a\\uff66-\\uff9f\\uffa1-\\uffdc]*[a-z\\u00c0-\\u00d6\\u00d8-\\u00f6\\u00f8-\\u00ff\\u0100-\\u024f\\u0253\\u0254\\u0256\\u0257\\u0259\\u025b\\u0263\\u0268\\u026f\\u0272\\u0289\\u028b\\u02bb\\u0300-\\u036f\\u1e00-\\u1eff\\u0400-\\u04ff\\u0500-\\u0527\\u2de0-\\u2dff\\ua640-\\ua69f\\u0591-\\u05bf\\u05c1-\\u05c2\\u05c4-\\u05c5\\u05c7\\u05d0-\\u05ea\\u05f0-\\u05f4\\ufb1d-\\ufb28\\ufb2a-\\ufb36\\ufb38-\\ufb3c\\ufb3e\\ufb40-\\ufb41\\ufb43-\\ufb44\\ufb46-\\ufb4f\\u0610-\\u061a\\u0620-\\u065f\\u066e-\\u06d3\\u06d5-\\u06dc\\u06de-\\u06e8\\u06ea-\\u06ef\\u06fa-\\u06fc\\u06ff\\u0750-\\u077f\\u08a0\\u08a2-\\u08ac\\u08e4-\\u08fe\\ufb50-\\ufbb1\\ufbd3-\\ufd3d\\ufd50-\\ufd8f\\ufd92-\\ufdc7\\ufdf0-\\ufdfb\\ufe70-\\ufe74\\ufe76-\\ufefc\\u200c\\u0e01-\\u0e3a\\u0e40-\\u0e4e\\u1100-\\u11ff\\u3130-\\u3185\\uA960-\\uA97F\\uAC00-\\uD7AF\\uD7B0-\\uD7FF\\p{InHiragana}\\p{InKatakana}\\p{InCJKUnifiedIdeographs}\\u3003\\u3005\\u303b\\uff21-\\uff3a\\uff41-\\uff5a\\uff66-\\uff9f\\uffa1-\\uffdc][0-9\\uff10-\\uff19_a-z\\u00c0-\\u00d6\\u00d8-\\u00f6\\u00f8-\\u00ff\\u0100-\\u024f\\u0253\\u0254\\u0256\\u0257\\u0259\\u025b\\u0263\\u0268\\u026f\\u0272\\u0289\\u028b\\u02bb\\u0300-\\u036f\\u1e00-\\u1eff\\u0400-\\u04ff\\u0500-\\u0527\\u2de0-\\u2dff\\ua640-\\ua69f\\u0591-\\u05bf\\u05c1-\\u05c2\\u05c4-\\u05c5\\u05c7\\u05d0-\\u05ea\\u05f0-\\u05f4\\ufb1d-\\ufb28\\ufb2a-\\ufb36\\ufb38-\\ufb3c\\ufb3e\\ufb40-\\ufb41\\ufb43-\\ufb44\\ufb46-\\ufb4f\\u0610-\\u061a\\u0620-\\u065f\\u066e-\\u06d3\\u06d5-\\u06dc\\u06de-\\u06e8\\u06ea-\\u06ef\\u06fa-\\u06fc\\u06ff\\u0750-\\u077f\\u08a0\\u08a2-\\u08ac\\u08e4-\\u08fe\\ufb50-\\ufbb1\\ufbd3-\\ufd3d\\ufd50-\\ufd8f\\ufd92-\\ufdc7\\ufdf0-\\ufdfb\\ufe70-\\ufe74\\ufe76-\\ufefc\\u200c\\u0e01-\\u0e3a\\u0e40-\\u0e4e\\u1100-\\u11ff\\u3130-\\u3185\\uA960-\\uA97F\\uAC00-\\uD7AF\\uD7B0-\\uD7FF\\p{InHiragana}\\p{InKatakana}\\p{InCJKUnifiedIdeographs}\\u3003\\u3005\\u303b\\uff21-\\uff3a\\uff41-\\uff5a\\uff66-\\uff9f\\uffa1-\\uffdc]*)");
 
     /**
      * Check whether the project is visible to the user
@@ -44,19 +48,35 @@ public class ToDos extends Controller {
         ToDo toDo = new ToDo();
         toDo.title = title;
         toDo.toDoList = ToDoList.findById(list);
-        try {
-            Integer lastOrderIndex = (Integer) JPA.em()
-                    .createQuery("select orderIndex from ToDo order by orderIndex desc")
-                    .setMaxResults(1)
-                    .getSingleResult();
-            toDo.orderIndex = lastOrderIndex + 1;
-        } catch (NoResultException nre) {
-            // orderIndex should remain the default 0
+        toDo.orderIndex = getNextOrderIndex(toDo.toDoList);
+        // convert hashtags in title into tags, and remove them from title
+        List<String> hashtags = parseHashtags(toDo);
+        if (!hashtags.isEmpty()) {
+            addTagToToDo(StringUtils.join(hashtags, ","), toDo);
         }
         toDo.save();
         renderText(Utils.toJson(toDo));
     }
-    
+
+    /**
+     * get the next order index of the list for a new task
+     * @param toDoList
+     * @return
+     */
+    private static int getNextOrderIndex(ToDoList toDoList) {
+            try {
+                Integer firstOrderIndex = (Integer) JPA.em()
+                        .createQuery("select orderIndex from ToDo where toDoList =:toDoList order by orderIndex")
+                        .setParameter("toDoList", toDoList)
+                        .setMaxResults(1)
+                        .getSingleResult();
+                return firstOrderIndex - 1;
+            } catch (NoResultException nre) {
+                // orderIndex should remain the default 0
+                return 0;
+            }
+    }
+
     /**
      * clone a toDo. The new toDo will always be incompleted, has its own 
      * created date and last updated date
@@ -175,6 +195,7 @@ public class ToDos extends Controller {
         toDo.priority = Integer.parseInt(params.get("prio"));
         toDo.note = params.get("note");
         toDo.toDoList = ToDoList.findById(list);
+        toDo.orderIndex = getNextOrderIndex(toDo.toDoList);
         if (params.get("duedate") != null && params.get("duedate").length() > 0) {
             try {
                 toDo.dateDue = (new SimpleDateFormat("MM/dd/yy")).parse(params.get("duedate"));
@@ -195,12 +216,32 @@ public class ToDos extends Controller {
     }
 
     /**
+     * parse out hashtags into an array and remove hashtags from task title
+     * @param toDo
+     * @return
+     */
+    private static List<String> parseHashtags(ToDo toDo) {
+
+        List<String> hashtags = new ArrayList<String>();
+        Matcher matcher = VALID_HASHTAG.matcher(toDo.title);
+        boolean foundHashtags = false;
+        while (matcher.find()) {
+            foundHashtags = true;
+            hashtags.add(toDo.title.substring(matcher.start() + 2, matcher.end()));
+        }
+        if (foundHashtags) {
+            toDo.title = matcher.replaceAll("");
+        }
+        return hashtags;
+    }
+
+    /**
      * convenient method to add comma separated tags to todo
      * @param tagsString
      * @param toDo
      */
     private static void addTagToToDo(String tagsString, ToDo toDo) {
-        if (StringUtils.isEmpty(params.get("tags"))) {
+        if (StringUtils.isEmpty(tagsString)) {
             return;
         }
         String[] tags = tagsString.split(",");
