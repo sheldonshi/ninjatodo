@@ -23,13 +23,13 @@ import java.util.List;
 public class Projects extends Controller {
 
     /**
-     * this checks whether a user has admin role to a project
+     * this checks whether a user has ownership role to a project
      *
      * @throws Throwable
      */
     @Before(unless={"add"})
     static void checkAccess() throws Throwable {
-        checkAdmin();
+        checkOwnership();
     }
 
     /**
@@ -145,7 +145,7 @@ public class Projects extends Controller {
         Participation participation = new Participation();
         participation.project = project;
         participation.user = user;
-        participation.role = Role.WRITE;
+        participation.role = Role.OWN;
         participation.save();
         return participation;
     }
@@ -165,11 +165,11 @@ public class Projects extends Controller {
      * checks whether this user is an admin of the project
      * @throws Throwable
      */
-    static void checkAdmin() {
+    static void checkOwnership() {
         User user = User.loadBySocialUser(SecureSocial.getCurrentUser());
         String id = Scope.Params.current().get("projectId");
         Project project = Project.findById(Long.valueOf(id));
-        if (Participation.find("project=? and user=? and role=?", project, user, Role.WRITE).first() == null) {
+        if (Participation.find("project=? and user=? and role=?", project, user, Role.OWN).first() == null) {
             throw new RuntimeException();
         }
     }
