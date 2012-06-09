@@ -15,14 +15,6 @@
         <td> <input name="title" value="${project.title}" class="in350" /> </td>
     </tr>
     <tr>
-        <th>&{'set_visibility'}</th>
-        <td>
-            <input type="radio" name="visibility" value="${models.Visibility.PRIVATE.name()}" #{if project.visibility.equals(models.Visibility.PRIVATE)}checked="true"#{/if}> &{'set_private'} <br/>
-            <input type="radio" name="visibility" value="${models.Visibility.LINK.name()}" #{if project.visibility.equals(models.Visibility.LINK)}checked="true"#{/if}> &{'set_linkonly'} <a href="${project.uuid}">${project.uuid}</a><br/>
-            <input type="radio" name="visibility" value="${models.Visibility.PUBLIC.name()}" #{if project.visibility.equals(models.Visibility.PUBLIC)}checked="true"#{/if}> &{'set_public'} <br/>
-        </td>
-    </tr>
-    <tr>
         <th>&{'set_teammember'}
             <div class="team-members">&{'set_teammember_instr'}</div></th>
         <td>

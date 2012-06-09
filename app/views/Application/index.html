@@ -22,12 +22,14 @@ $().ready(function(){
 <div id="container">
 <div id="projects" class="ui-corner-bl ui-corner-br lightblue_bg">
     <span class="addProject">
-        &nbsp;&nbsp;<a href="#" id="addProject" class="weak">&{'a_addProject'}</a>&nbsp;&nbsp;:&nbsp;&nbsp;<a href="#" id="help" class="weak">&{'a_help'}</a>&nbsp;&nbsp;:&nbsp;&nbsp;<a href="@{securesocial.SecureSocial.logout}" class="weak">&{'a_signout'}</a>
+        &nbsp;&nbsp;&nbsp;${participations[0].user.username}&nbsp;&nbsp;&nbsp;&nbsp;<a href="#" id="help" class="weak">&{'a_help'}</a>&nbsp;&nbsp;:&nbsp;&nbsp;<a href="@{securesocial.SecureSocial.logout}" class="weak">&{'a_signout'}</a>
     </span>
+    <span id="projectList">
 #{list items:participations, as:'participation'}
     <a href="#" id="project_${participation.project.id}_${participation.role}" class="weak">${participation.project.title}</a>&nbsp;&nbsp;&nbsp;
 #{/list}
-
+    </span>
+    <a href="#" id="addProject" class="weak">&{'a_addProject'}</a>&nbsp;&nbsp;&nbsp;
 </div>
 
 <div id="mtt_body">

@@ -636,11 +636,14 @@ var mytinytodo = window.mytinytodo = _mtt = {
 
     loadProject: function(projectId) {
         _mtt.project = projectId;
-        if ($('#project_'+_mtt.project+'_USER').length > 0) {
-            $('#mtt_body h2').html($('#project_'+_mtt.project+'_USER').html());
+        if ($('#project_'+_mtt.project+'_WRITE').length > 0) {
+            $('#mtt_body h2').html($('#project_'+_mtt.project+'_WRITE').html());
             $('#settings').hide();
-        } else if ($('#project_'+_mtt.project+"_ADMIN").length > 0) {
-            $('#mtt_body h2').html($('#project_'+_mtt.project+'_ADMIN').html());
+        } else if ($('#project_'+_mtt.project+'_READ').length > 0) {
+            $('#mtt_body h2').html($('#project_'+_mtt.project+'_READ').html());
+            $('#settings').hide();
+        } else if ($('#project_'+_mtt.project+"_OWN").length > 0) {
+            $('#mtt_body h2').html($('#project_'+_mtt.project+'_OWN').html());
             $('#settings').show();
         }
         // refresh autocomplete params
@@ -859,12 +862,12 @@ function addProjectDialog() {
 function addProject(title) {
     _mtt.db.request('addProject', {title:title}, function(json){
         if(!parseInt(json.total)) return;
-        var htmlStr='<span class="addProject">&nbsp;&nbsp;<a href="#" id="addProject">'+_mtt.lang.get('a_addProject')+'</a></span>';
+        var htmlStr='';
         $.each(json.list, function(i,item){
             if (i==0) _mtt.project=item.project.id;
-            htmlStr += '<a href="#" id="project_'+item.project.id+'_'+item.role+'">'+item.project.title+'</a>&nbsp;&nbsp;&nbsp;';
+            htmlStr += '<a href="#" id="project_'+item.project.id+'_'+item.role+'" class="weak">'+item.project.title+'</a>&nbsp;&nbsp;&nbsp;';
         });
-        $('#projects').html(htmlStr);
+        $('#projectList').html(htmlStr);
         this.loadProject(_mtt.project);
     });
 }

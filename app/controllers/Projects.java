@@ -7,8 +7,6 @@ import play.mvc.Before;
 import play.mvc.Controller;
 import play.mvc.Scope;
 import play.mvc.With;
-import securesocial.provider.SocialUser;
-import securesocial.provider.UserId;
 import services.SecureUserService;
 import utils.Utils;
 
@@ -49,12 +47,10 @@ public class Projects extends Controller {
      *
      * @param id
      * @param title
-     * @param visibility
      */
-    public static void save(Long id, String title, Visibility visibility) {
+    public static void save(Long id, String title) {
         Project project = Project.findById(id);
         project.title = title;
-        project.visibility = visibility;
         project.save();
         renderText("{\"saved\":\"true\"}");
     }
@@ -76,8 +72,8 @@ public class Projects extends Controller {
         if (project != null) {
             for (Long participationId : participationIds) {
                 Participation participation = Participation.findById(participationId);
-                if (participation != null && participation.role.equals(Role.USER) && participation.project.equals(project)) {
-                    participation.role = Role.ADMIN;
+                if (participation != null && participation.role.equals(Role.READ) && participation.project.equals(project)) {
+                    participation.role = Role.WRITE;
                     participation.save();
                 }
             }
@@ -90,9 +86,9 @@ public class Projects extends Controller {
         Participation participation = Participation.findById(participationId);
 
         // TODO check permission
-        if (participation != null && participation.role.equals(Role.ADMIN) && 
+        if (participation != null && participation.role.equals(Role.WRITE) &&
                 participation.project.id == projectId) {
-            participation.role = Role.USER;
+            participation.role = Role.READ;
             participation.save();
             renderText(participationId);
         }
@@ -116,7 +112,7 @@ public class Projects extends Controller {
     static List<Participation> getAdministrators(Project project) {
         List<Participation> participations = JPA.em()
                 .createQuery("select p from Participation p where p.project=:project and p.role=:role order by p.dateCreated")
-                .setParameter("project", project).setParameter("role", Role.ADMIN).getResultList();
+                .setParameter("project", project).setParameter("role", Role.WRITE).getResultList();
         return participations;
     }
 
@@ -149,7 +145,7 @@ public class Projects extends Controller {
         Participation participation = new Participation();
         participation.project = project;
         participation.user = user;
-        participation.role = Role.ADMIN;
+        participation.role = Role.WRITE;
         participation.save();
         return participation;
     }
@@ -173,7 +169,7 @@ public class Projects extends Controller {
         User user = User.loadBySocialUser(SecureSocial.getCurrentUser());
         String id = Scope.Params.current().get("projectId");
         Project project = Project.findById(Long.valueOf(id));
-        if (Participation.find("project=? and user=? and role=?", project, user, Role.ADMIN).first() == null) {
+        if (Participation.find("project=? and user=? and role=?", project, user, Role.WRITE).first() == null) {
             throw new RuntimeException();
         }
     }

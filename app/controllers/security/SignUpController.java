@@ -122,7 +122,7 @@ public class SignUpController extends Controller {
                         Participation participation = new Participation();
                         participation.project = invitation.project;
                         participation.user = user;
-                        participation.role = Role.USER;
+                        participation.role = Role.READ;
                         participation.save();
                     }
                 }
