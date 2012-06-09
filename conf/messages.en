@@ -14,7 +14,6 @@ invalidpass=Wrong password
 tagfilter=Tag:
 addList=Create new list
 addListDefault=To Do
-renameList=Rename list
 deleteList=This will delete current list with all tasks in it. Are you sure?
 deleteInvitation=This will delete the invitation. Are you sure?
 deleteMember=This will remove the user from this project. Are you sure?

@@ -917,7 +917,7 @@ function addTagToTask(id, tag) {
 function renameCurList()
 {
 	if(!curList) return;
-	var r = prompt(_mtt.lang.get('renameList'), dehtml(curList.name));
+	var r = prompt(_mtt.lang.get('list_rename'), dehtml(curList.name));
 	if(r == null || r == '') return;
 
 	_mtt.db.request('renameList', {list:curList.id, name:r}, function(json){
