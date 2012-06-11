@@ -116,13 +116,13 @@ public class SignUpController extends Controller {
             UserService.save(socialUser);
             if (invitation != null) {
                 // assign the user to the project member if the signup is from a project invite
-                if (invitation.project != null) {
+                if (invitation.project != null && invitation.role != null) {
                     User user = User.loadBySocialUser(socialUser);
                     if (user != null) {
                         Participation participation = new Participation();
                         participation.project = invitation.project;
                         participation.user = user;
-                        participation.role = Role.READ;
+                        participation.role = invitation.role;
                         participation.save();
                     }
                 }

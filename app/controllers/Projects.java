@@ -39,17 +39,18 @@ public class Projects extends Controller {
     public static void edit(Long projectId) {
         Project project = Project.findById(projectId);
         List<Participation> participations = Participation.find("byProject", project).fetch();
-        render(project, participations);
+        List<Invitation> invitations = Invitation.find("byProject", project).fetch();
+        render(project, participations, invitations);
     }
 
     /**
      * save the edited settings
      *
-     * @param id
+     * @param projectId
      * @param title
      */
-    public static void save(Long id, String title) {
-        Project project = Project.findById(id);
+    public static void save(Long projectId, String title) {
+        Project project = Project.findById(projectId);
         project.title = title;
         project.save();
         renderText("{\"saved\":\"true\"}");

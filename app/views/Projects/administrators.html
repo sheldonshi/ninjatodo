@@ -1,7 +1,7 @@
 
 #{set hasNonAdmin:false /}
 #{list items:participations, as:'participation'}
-    #{if participation.role == models.Role.OWN}
+    #{if participation.role == models.Role.WRITE}
     <span class="team-members lightblue_bg">
                     <a href="#" class="weak">${participation.user.fullName}</a>
                     <span class="delete-team-member"><a href="#" id="deleteAdmin_${participation.id}" class="weak">x</a></span>
@@ -19,7 +19,7 @@
     <div>&{'set_addadmin_instr'}</div>
     <select multiple="multiple">
         #{list items:participations, as:'participation'}
-            #{if participation.role != models.Role.OWN}
+            #{if participation.role != models.Role.WRITE}
                 <option value="${participation.id}">${participation.user.fullName}</option>
             #{/if}
         #{/list}

@@ -46,7 +46,7 @@ public class Invitations extends Controller {
      * @param emails
      * @param projectId
      */
-    public static void invite(@Required String emails, @Required Long projectId) {
+    public static void invite(@Required String emails, @Required Long projectId, Role role) {
         String[] emailArray = emails.split(",");
         User user = SecureUserService.getCurrentUser();
         Project project = Project.findById(projectId);
@@ -55,7 +55,7 @@ public class Invitations extends Controller {
         for (String email : emailArray) {
             email = email.trim(); // remove white spaces
             // then check whether email is valid
-            if (validation.email(email).error == null && Mails.sendInvitationEmail(email, project, user)) {
+            if (validation.email(email).error == null && Mails.sendInvitationEmail(email, project, user, role)) {
                 sendList.add(email);
             }
         }

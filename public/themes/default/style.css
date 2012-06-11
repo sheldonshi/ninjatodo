@@ -410,10 +410,10 @@ span.team-members .delete-team-member {position:relative;top:-1px}
 a.weak  {color:#888; text-decoration: none;font-size: 0.8em;}
 a.weak:hover {color:#444;text-decoration: underline;}
 .addToProject {display:none;margin:8px 0px 5px 0px;font-size:0.8em; color:#888;width: 50%;min-width:350px;}
-#addMemberToProject textarea {width:100%;display: block;height:50px; color:#888;}
-#pendingMembers .invitedEmail {margin:2px 0px;}
-#pendingMembers {margin-top:5px;}
-#pendingMembers a.deleteInvitedEmail {position:relative;top:-1px;}
+.addToProject textarea {width:100%;display: block;height:50px; color:#888;}
+.pendingMembers .invitedEmail {margin:2px 0px;}
+.pendingMembers {margin-top:5px;}
+.pendingMembers a.deleteInvitedEmail {position:relative;top:-1px;}
 #addAdminToProject select {width: 100%;color:#888;}
 
 

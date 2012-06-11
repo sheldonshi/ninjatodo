@@ -20,16 +20,18 @@
         <td>
             <div id="memberList">
             #{list items:participations, as:'participation'}
-                <span class="team-members lightblue_bg">
+            #{if participation.role==models.Role.READ}
+                <span><span class="team-members lightblue_bg">
                     <a href="#" class="weak">${participation.user.fullName}</a>
                     <span class="delete-team-member"><a href="#" id="deleteMember_${participation.id}" class="weak">x</a></span>
-                </span>&nbsp;&nbsp;&nbsp;
+                </span>&nbsp;&nbsp;&nbsp;</span>
+            #{/if}
             #{/list}
-            <span class="team-members">
-                <a href="#" id="addMember" class="weak">&{'set_addmember'}</a>
+            <span class="team-members inviteToProject">
+                <a href="#" id="addReader" class="weak">&{'set_addReader'}</a>
             </span>
-            <div id="addMemberToProject" class="addToProject">
-                <div>&{'set_addmember_instr'}</div>
+            <div id="addToProject_READ" class="addToProject">
+                <div>&{'set_addReader_instr'}</div>
                 <textarea></textarea>
                 <div class="addMember-actions"><a href="#" class="ntt-action-invite">&{'actionInvite'}</a> |
                     <a href="#" class="ntt-action-cancel">&{'actionCancel'}</a></div>
@@ -42,7 +44,48 @@
             <div class="team-members">&{'set_teamadmin_instr'}</div></th>
         <td>
             <div id="adminList">
-            #{include '/Projects/administrators.html' /}
+                #{list items:participations, as:'participation'}
+                    #{if participation.role==models.Role.WRITE}
+                    <span><span class="team-members lightblue_bg">
+                    <a href="#" class="weak">${participation.user.fullName}</a>
+                    <span class="delete-team-member"><a href="#" id="deleteMember_${participation.id}" class="weak">x</a></span>
+                    </span>&nbsp;&nbsp;&nbsp;</span>
+                    #{/if}
+                #{/list}
+                <span class="team-members inviteToProject">
+                <a href="#" id="addWriter" class="weak">&{'set_addWriter'}</a>
+            </span>
+                <div id="addToProject_WRITE" class="addToProject">
+                    <div>&{'set_addWriter_instr'}</div>
+                    <textarea></textarea>
+                    <div class="addMember-actions"><a href="#" class="ntt-action-invite">&{'actionInvite'}</a> |
+                        <a href="#" class="ntt-action-cancel">&{'actionCancel'}</a></div>
+                </div>
+            </div>
+        </td>
+    </tr>
+    <tr>
+        <th>&{'set_teamowner'}
+            <div class="team-members">&{'set_teamowner_instr'}</div></th>
+        <td>
+            <div id="ownerList">
+                #{list items:participations, as:'participation'}
+                #{if participation.role==models.Role.OWN}
+                    <span><span class="team-members lightblue_bg">
+                    <a href="#" class="weak">${participation.user.fullName}</a>
+                    <span class="delete-team-member"><a href="#" id="deleteMember_${participation.id}" class="weak">x</a></span>
+                </span>&nbsp;&nbsp;&nbsp;</span>
+                #{/if}
+                #{/list}
+                <span class="team-members inviteToProject">
+                <a href="#" id="addOwner" class="weak">&{'set_addOwner'}</a>
+            </span>
+                <div id="addToProject_OWN" class="addToProject">
+                    <div>&{'set_addOwner_instr'}</div>
+                    <textarea></textarea>
+                    <div class="addMember-actions"><a href="#" class="ntt-action-invite">&{'actionInvite'}</a> |
+                        <a href="#" class="ntt-action-cancel">&{'actionCancel'}</a></div>
+                </div>
             </div>
         </td>
     </tr>

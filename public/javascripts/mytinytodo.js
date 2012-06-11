@@ -483,7 +483,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
 			return false;
 		});
 		
-		$(".mtt-back-button").live('click', function(){ _mtt.pageBack(); this.blur(); return false; } );
+		$(".mtt-back-button").live('click', function(){ _mtt.pageBack(); this.blur(); $('#settings').show(); return false; } );
 
 		$(window).bind('beforeunload', function() {
 			if(_mtt.pages.current.page == 'taskedit' && flag.editFormChanged) {
@@ -2398,6 +2398,7 @@ function showSettings()
 	if(_mtt.pages.current.page == 'ajax' && _mtt.pages.current.pageClass == 'settings') return false;
 	$('#page_ajax').load(_mtt.mttUrl+'Projects/edit?projectId=' + _mtt.project,null,function(){
 		_mtt.pageSet('ajax','settings');
+        $('#settings').hide();
 	})
 	return false;
 }
@@ -2406,7 +2407,7 @@ function saveSettings(frm)
 {
 	if(!frm) return false;
 	var params = { save:'ajax' };
-    params["id"] = _mtt.project;
+    params["projectId"] = _mtt.project;
 	$(frm).find("input:text,input:password,input:checked,select").filter(":enabled").each(function() { params[this.name || '__'] = this.value; }); 
 	$(frm).find(":submit").attr('disabled','disabled').blur();
 	$.post(_mtt.mttUrl+'Projects/save', params, function(json){

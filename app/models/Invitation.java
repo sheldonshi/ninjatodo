@@ -48,6 +48,10 @@ public class Invitation extends Model {
     @Column(name = "date_created", nullable = true)
     public Date dateCreated;
 
+    @Column(name="role", nullable = true)
+    @Enumerated(EnumType.STRING)
+    public Role role;
+
     public Invitation() {
         dateCreated = new Date();
     }

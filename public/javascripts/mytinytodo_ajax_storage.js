@@ -36,7 +36,7 @@ mytinytodoStorageAjax.prototype =
 
     invite: function(params, callback) {
         $.post(this.mtt.mttUrl+'Invitations/invite',
-            { projectId:params.project, emails:params.emails }, callback, 'json');
+            { projectId:params.project, emails:params.emails, role:params.role }, callback, 'json');
     },
 
 	loadLists: function(params, callback)

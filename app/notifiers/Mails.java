@@ -2,6 +2,7 @@ package notifiers;
 
 import models.Invitation;
 import models.Project;
+import models.Role;
 import models.User;
 import play.Play;
 import play.data.validation.Email;
@@ -28,7 +29,7 @@ public class Mails extends Mailer {
     private static final String INVITATIONS_JOIN = "security.SignUpController.join";
     private static final String INVITED_CODE = "code";
 
-    public static boolean sendInvitationEmail(String email, Project project, User fromUser) {
+    public static boolean sendInvitationEmail(String email, Project project, User fromUser, Role role) {
 
         setSubject(Messages.get("mail_invitation_subject"));
         setFrom(Play.configuration.getProperty(SECURESOCIAL_MAILER_FROM));
@@ -57,6 +58,7 @@ public class Mails extends Mailer {
                 invitation.project = project;
                 invitation.toEmail = email;
                 invitation.uuid = uuid;
+                invitation.role = role;
                 invitation.save();
                 return true;
             } catch (MailException me) {
