@@ -52,7 +52,7 @@
         var str = '';
         $.each(json.list, function (i, item) {
             if (elemId=='addToProject_' + item.role) {
-                str += "<div id='invited_"+item.id+"' class='invitedEmail'>" + item.toEmail + " " +"<a href='#' class='deleteInvitedEmail weak'>X</a></div>";
+                str += "<div id='invited_"+item.id+"' class='invitedEmail'>" + item.toEmail + " <a href='#' class='deleteInvitedEmail weak'>X</a></div>";
             }
         });
         if (str != '') {
@@ -68,12 +68,6 @@
     _mtt.deleteInvitation = function(id) {
         _mtt.db.request('deleteInvitation', {id:id, project:_mtt.project}, function(json){
             $('#invited_'+json.id).remove();
-        });
-    };
-
-    _mtt.deleteAdmin = function(id) {
-        _mtt.db.request('deleteAdmin', {id:id, project:_mtt.project}, function(text){
-            if (text.length>0) $('#deleteAdmin_'+text).parent().parent().remove();
         });
     };
 

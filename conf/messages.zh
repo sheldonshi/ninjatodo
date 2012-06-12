@@ -14,7 +14,6 @@ addListDefault=任务
 deleteList=您确认删除此列表及其全部任务吗？
 deleteInvitation=您确认删除此邀请吗？
 deleteMember=您确认排除此成员吗？
-deleteAdmin=您确认将此管理员降为普通成员吗？
 clearCompleted=您确认删除此列表中所有已完成的项目吗？
 settingsSaved=设置已保存，正在重新加载……
 addTag=添加标签

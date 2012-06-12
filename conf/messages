@@ -17,7 +17,6 @@ addListDefault=To Do
 deleteList=This will delete current list with all tasks in it. Are you sure?
 deleteInvitation=This will delete the invitation. Are you sure?
 deleteMember=This will remove the user from this project. Are you sure?
-deleteAdmin=This will demote the Administrator to a regular member. Are you sure?
 clearCompleted=This will delete all completed tasks in the list. Are you sure?
 settingsSaved=Settings saved. Reloading...
 addTag=Add tag

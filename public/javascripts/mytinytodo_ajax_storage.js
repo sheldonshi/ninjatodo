@@ -215,10 +215,6 @@ mytinytodoStorageAjax.prototype =
         $.post(this.mtt.mttUrl+'Projects/promoteToAdmin', {participationIds:params.participations, projectId:params.project}, callback)
     },
 
-    deleteAdmin: function(params, callback) {
-        $.post(this.mtt.mttUrl+'Projects/deleteAdmin', {participationId:params.id, projectId:params.project}, callback)
-    },
-
     deleteMember: function(params, callback) {
         $.post(this.mtt.mttUrl+'Projects/deleteMember', {participationId:params.id, projectId:params.project}, callback)
     }

@@ -596,7 +596,6 @@ var mytinytodo = window.mytinytodo = _mtt = {
                     else if (fn=='deleteTask') deleteTask(arg);
                     else if (fn=='clearCompleted') clearCompleted();
                     else if (fn=='deleteInvitation') _mtt.deleteInvitation(arg);
-                    else if (fn=='deleteAdmin') _mtt.deleteAdmin(arg);
                     else if (fn=='deleteMember') _mtt.deleteMember(arg);
                     $(this).dialog( "close" );}
                 },

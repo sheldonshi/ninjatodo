@@ -83,18 +83,6 @@ public class Projects extends Controller {
         }
     }
 
-    public static void deleteAdmin(Long participationId, Long projectId) {
-        Participation participation = Participation.findById(participationId);
-
-        // TODO check permission
-        if (participation != null && participation.role.equals(Role.WRITE) &&
-                participation.project.id == projectId) {
-            participation.role = Role.READ;
-            participation.save();
-            renderText(participationId);
-        }
-    }
-
     public static void deleteMember(Long participationId, Long projectId) {
         Participation participation = Participation.findById(participationId);
         // TODO check permission
