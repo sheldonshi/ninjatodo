@@ -23,7 +23,9 @@
             #{if participation.role==models.Role.READ}
                 <span><span class="team-members lightblue_bg">
                     <a href="#" class="weak">${participation.user.fullName}</a>
+                    #{if participations.size() > 1}
                     <span class="delete-team-member"><a href="#" id="deleteMember_${participation.id}" class="weak">x</a></span>
+                    #{/if}
                 </span>&nbsp;&nbsp;&nbsp;</span>
             #{/if}
             #{/list}
@@ -48,7 +50,9 @@
                     #{if participation.role==models.Role.WRITE}
                     <span><span class="team-members lightblue_bg">
                     <a href="#" class="weak">${participation.user.fullName}</a>
+                    #{if participations.size() > 1}
                     <span class="delete-team-member"><a href="#" id="deleteMember_${participation.id}" class="weak">x</a></span>
+                    #{/if}
                     </span>&nbsp;&nbsp;&nbsp;</span>
                     #{/if}
                 #{/list}
@@ -73,7 +77,9 @@
                 #{if participation.role==models.Role.OWN}
                     <span><span class="team-members lightblue_bg">
                     <a href="#" class="weak">${participation.user.fullName}</a>
+                    #{if participations.size() > 1}
                     <span class="delete-team-member"><a href="#" id="deleteMember_${participation.id}" class="weak">x</a></span>
+                    #{/if}
                 </span>&nbsp;&nbsp;&nbsp;</span>
                 #{/if}
                 #{/list}
