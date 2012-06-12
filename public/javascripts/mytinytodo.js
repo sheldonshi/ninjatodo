@@ -715,8 +715,6 @@ var mytinytodo = window.mytinytodo = _mtt = {
 			tabSelect(openListId);
 
 			$('#page_tasks').show();
-            // enable droppable on tabs
-            makeDroppable('#lists li');
 		});
 
 		if(onInit) updateAccessStatus();
@@ -882,18 +880,12 @@ function addList(name)
 			$('#lists ul').append('<li id="list_'+item.id+'" class="mtt-tab">'+
 					'<a href="#" title="'+item.name+'"><span>'+item.name+'</span>'+
 					'<div class="list-action"></div></a></li>');
-            // enable droppable on tabs
-            makeDroppable('#list_'+item.id);
 			mytinytodo.doAction('listAdded', item);
 		}
 		else _mtt.loadLists();
         checkAllListsTab();
 	});
 };
-
-function makeDroppable(selector) {
-    $(selector).droppable({drop:itemDropped,hoverClass:'mtt-tabs-droppable',tolerance:'pointer'});
-}
 
 function addTagToTask(id, tag) {
         _mtt.db.request('addTag', {id:id, tags:tag}, function(json){
@@ -2055,18 +2047,6 @@ function listOrderChanged(event, ui)
 	_mtt.db.request('changeListOrder', {order:order});
 	_mtt.doAction('listOrderChanged', {order:order});
 };
-
-function itemDropped(event, ui) {
-    if (ui.draggable[0].id.match(/^task/)) {
-        // this is a task moved here
-        var taskId=ui.draggable[0].id.split('_')[1];
-        var listId=$(this)[0].id.split('_')[1]
-        if (listId != curList.id) {
-            ui.draggable.remove();// cause loading icon to never stop
-            moveTaskToList(taskId,listId);
-        }
-    }
-}
 
 function showCompletedToggle()
 {

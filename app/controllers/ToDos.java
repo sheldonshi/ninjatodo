@@ -316,6 +316,7 @@ public class ToDos extends Controller {
         ToDoList newToDoList = ToDoList.findById(to);
         if (toDo != null && toDo.toDoList.id == from && newToDoList != null) {
             toDo.toDoList = newToDoList;
+            toDo.orderIndex = getNextOrderIndex(toDo.toDoList);
             toDo.save();
         }
 

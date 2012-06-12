@@ -24,7 +24,7 @@ $().ready(function(){
     <span class="addProject">
         &nbsp;&nbsp;&nbsp;${participations[0].user.username}&nbsp;&nbsp;&nbsp;&nbsp;<a href="#" id="help" class="weak">&{'a_help'}</a>&nbsp;&nbsp;:&nbsp;&nbsp;<a href="@{securesocial.SecureSocial.logout}" class="weak">&{'a_signout'}</a>
     </span>
-    <span id="projectList">
+    <span id="projectList">&{'workspaces'}&nbsp;&nbsp;&nbsp;
 #{list items:participations, as:'participation'}
     <a href="#" id="project_${participation.project.id}_${participation.role}" class="weak">${participation.project.title}</a>&nbsp;&nbsp;&nbsp;
 #{/list}
@@ -230,7 +230,7 @@ $().ready(function(){
  <li id="cmenu_edit"><b>&{'action_edit'}</b></li>
  *{<li id="cmenu_note">&{'action_note'}</li>}*
  <li id="cmenu_clone">&{'action_clone'}</li>
- *{<li id="cmenu_move" class="mtt-menu-indicator" submenu="cmenulistscontainer"><div class="submenu-icon"></div>&{'action_move'}</li>}*
+ <li id="cmenu_move" class="mtt-menu-indicator" submenu="cmenulistscontainer"><div class="submenu-icon"></div>&{'action_move'}</li>
  <li id="cmenu_delete">&{'action_delete'}</li>
 </ul>
 </div>
