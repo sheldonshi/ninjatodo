@@ -1,5 +1,6 @@
 package controllers;
 
+import controllers.securesocial.SecureSocial;
 import models.*;
 import org.apache.commons.lang.StringUtils;
 import play.db.jpa.JPA;
@@ -78,7 +79,7 @@ public class ToDos extends Controller {
     }
 
     /**
-     * clone a toDo. The new toDo will always be incompleted, has its own 
+     * clone a toDo. The new toDo will always be incompleted, has its own
      * created date and last updated date
      */
     public static void cloneTask(Long taskId) {
@@ -130,12 +131,25 @@ public class ToDos extends Controller {
      */
     public static void loadTasks(Long list, Boolean showCompleted, Boolean changeShowCompleted, String t) {
         if (Boolean.TRUE.equals(changeShowCompleted)) {
+            ToDoLists.manageListViewOptions(list, showCompleted, ViewOptionType.SHOW_COMPLETED, null);
+
+            /*
+            Projects.checkMembership(); // only member can change this
+            User user = User.loadBySocialUser(SecureSocial.getCurrentUser());
             // showCompleted has been changed; update. TODO check permission
             ToDoList toDoList = ToDoList.findById(list);
             if (toDoList != null) {
-                toDoList.showCompleted = showCompleted;
-                toDoList.save();
-            }
+                UserListOption ulo = UserListOption.find("toDoList=? and user=? and optionType=?",
+                        toDoList, user, OptionType.SHOW_COMPLETED).first();
+                if (ulo == null) {
+                    ulo = new UserListOption();
+                    ulo.toDoList = toDoList;
+                    ulo.user = user;
+                    ulo.optionType = OptionType.SHOW_COMPLETED;
+                }
+                ulo.value = showCompleted.toString();
+                ulo.save();
+            }*/
         }
         // treat undefined sort parameter as null
         String sort = JSConstant.STRING_UNDEFINED.equals(params.get("sort")) ? null : params.get("sort");

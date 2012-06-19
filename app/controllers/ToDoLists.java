@@ -10,6 +10,7 @@ import utils.Utils;
 
 import javax.persistence.NoResultException;
 import javax.persistence.Query;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -36,15 +37,23 @@ public class ToDoLists extends Controller {
     static void checkWriteAccess() {
         Projects.checkMembership();
     }
-    
+
     /**
      * required json data structure on the UI {'list':[], 'total':..}
+     * <p/>
+     * also load view options from session
      * <p/>
      * this requires visibility to the project
      */
     public static void loadLists(Long projectId) {
         Project proj = Project.findById(projectId);
-        List toDoLists = proj != null ? ToDoList.find("project=? order by orderIndex", proj).fetch() : null;
+        List<ToDoList> toDoLists = new ArrayList<ToDoList>();
+        if (proj != null) {
+            toDoLists = ToDoList.find("project=? order by orderIndex", proj).fetch();
+        }
+        for (ToDoList toDoList : toDoLists) {
+            loadListViewOptions(toDoList);
+        }
         renderJSON(Utils.toJson(toDoLists));
     }
 
@@ -81,7 +90,7 @@ public class ToDoLists extends Controller {
             toDoList.name = name;
             toDoList.save();
         }
-        
+
         renderText(Utils.toJson(toDoList));
     }
 
@@ -94,7 +103,7 @@ public class ToDoLists extends Controller {
 
         ToDoList toDoList = ToDoList.findById(list);
         if (toDoList != null) {
-            // delete in one shot                                                                                     
+            // delete in one shot
 //            count = JPA.em().createQuery("delete from ToDo t where t.dateCompleted is not null and t.toDoList.id=" + list).executeUpdate();
 //            count = JPA.em().createQuery("delete from ToDo t where t.dateCompleted is not null and t.toDoList.id=" + list).executeUpdate();
             List<ToDo> toDos = ToDo.find("toDoList=? and dateCompleted is not null", toDoList).fetch();
@@ -156,8 +165,8 @@ public class ToDoLists extends Controller {
         ToDoList toDoList = ToDoList.findById(list);
         Sort sortOrder = Sort.valueOf(sort);
         if (toDoList != null) {
+            manageListViewOptions(list, true, ViewOptionType.SORT, sortOrder);
             toDoList.sort = sortOrder;
-            toDoList.save();
         }
 
         renderText(Utils.toJson(toDoList));
@@ -168,11 +177,11 @@ public class ToDoLists extends Controller {
      * <p/>
      * should be user specific
      */
-    public static void toggleNotesExpanded(Long list) {
+    public static void toggleNotesExpanded(Long list, Boolean notesExpanded) {
         ToDoList toDoList = ToDoList.findById(list);
         if (toDoList != null) {
-            toDoList.notesExpanded = !toDoList.notesExpanded;
-            toDoList.save();
+            manageListViewOptions(list, notesExpanded, ViewOptionType.EXPAND_NOTES, null);
+            toDoList.notesExpanded = notesExpanded;
         }
 
         renderText(Utils.toJson(toDoList));
@@ -186,7 +195,7 @@ public class ToDoLists extends Controller {
      * check visibility
      */
     public static void tagCloud(Long list, Long projectId) {
-        
+
         List<Tag> tags = null;
         if (list > 0) {
             tags = JPA.em()
@@ -203,5 +212,80 @@ public class ToDoLists extends Controller {
         }
 
         renderText(Utils.toJson(tags));
+    }
+
+    /**
+     * this manages the list view option stored in session. For example, list=1_1_2, the first digit is list id,
+     * the second is SHOW_COMPLETED and NOTES_EXPANDED, the third digit is sorting by
+     * @param listId
+     * @param selected
+     * @param viewOptionType
+     * @param newSort
+     */
+    static void manageListViewOptions(Long listId, Boolean selected, ViewOptionType viewOptionType, Sort newSort) {
+        String key = "list";
+        String lists = session.get(key);
+        if (StringUtils.isNotEmpty(lists)) {
+            String[] listIdArray = lists.split(",");
+            StringBuilder sb = new StringBuilder(50);
+            int count = 0; // limit the number of list stored
+            String currentList = null;
+            for (String list : listIdArray) {
+                if (list.startsWith(listId.toString() + "_")) {
+                    String[] oldValues = list.split("_");
+                    int optionValues = Integer.valueOf(oldValues[1]);
+                    int sortValue = oldValues.length > 2 ? Integer.valueOf(oldValues[2]) : 0;
+                    if (viewOptionType.equals(ViewOptionType.SORT)) {
+                        sortValue = newSort != null ? newSort.ordinal() : sortValue;
+                    } else {
+                        optionValues = selected ?
+                                optionValues | (1 << viewOptionType.ordinal()) :
+                                optionValues & (1 << viewOptionType.ordinal());
+                    }
+                    currentList = listId + "_" + optionValues + "_" + sortValue;
+                } else if (count < 11) {
+                    // limit the number of list to 12
+                    sb.append(",").append(list);
+                    count++;
+                }
+            }
+            if (currentList == null) {
+                // new list whose options not yet stored
+                if (viewOptionType.equals(ViewOptionType.SORT)) {
+                    currentList = listId + "_0_" + (newSort != null ? newSort.ordinal() : 0);
+                } else {
+                    currentList = listId + "_" + (selected ? 1 << viewOptionType.ordinal() : 0) + "_0";
+                }
+
+            }
+            session.put(key, currentList + sb.toString());
+        } else if (selected) {
+            // add view option for this list to session
+            session.put(key, listId + "_" + (1 << viewOptionType.ordinal()) + "_" + (newSort != null ? newSort.ordinal() : 0));
+        }
+    }
+
+    private static void loadListViewOptions(ToDoList toDoList) {
+        String key = "list";
+        String lists = session.get(key);
+        try {
+            if (StringUtils.isNotEmpty(lists)) {
+                String[] listIdArray = lists.split(",");
+                StringBuilder sb = new StringBuilder(50);
+                int count = 0; // limit the number of list stored
+                String currentList = null;
+                for (String list : listIdArray) {
+                    if (list.startsWith(toDoList.id.toString() + "_")) {
+                        String[] oldValues = list.split("_");
+                        toDoList.showCompleted = (Integer.valueOf(oldValues[1]) & (1 << ViewOptionType.SHOW_COMPLETED.ordinal())) >> ViewOptionType.SHOW_COMPLETED.ordinal() == 1;
+                        toDoList.notesExpanded = (Integer.valueOf(oldValues[1]) & (1 << ViewOptionType.EXPAND_NOTES.ordinal())) >> ViewOptionType.EXPAND_NOTES.ordinal() == 1;
+                        toDoList.sort = oldValues.length > 2 ? Sort.values()[Integer.valueOf(oldValues[2])] : Sort.DEFAULT;
+                    }
+                }
+            }
+        } catch (Exception e) {
+            // something is wrong, ignore view options altogether
+            session.remove(key);
+        }
     }
 }
