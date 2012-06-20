@@ -188,6 +188,21 @@ public class ToDoLists extends Controller {
     }
 
     /**
+     * toggles notesExpanded boolean property of a list
+     * <p/>
+     * should be user specific
+     */
+    public static void toggleShowMetadata(Long list, Boolean showMetadata) {
+        ToDoList toDoList = ToDoList.findById(list);
+        if (toDoList != null) {
+            manageListViewOptions(list, showMetadata, ViewOptionType.SHOW_METADATA, null);
+            toDoList.showMetadata = showMetadata;
+        }
+
+        renderText(Utils.toJson(toDoList));
+    }
+
+    /**
      * get all tags contained in a to do list. If an id of -1 is passed, it means all lists in the project
      * TODO if list=-1, we should have project id and get tags under that project id
      *
@@ -279,6 +294,7 @@ public class ToDoLists extends Controller {
                         String[] oldValues = list.split("_");
                         toDoList.showCompleted = (Integer.valueOf(oldValues[1]) & (1 << ViewOptionType.SHOW_COMPLETED.ordinal())) >> ViewOptionType.SHOW_COMPLETED.ordinal() == 1;
                         toDoList.notesExpanded = (Integer.valueOf(oldValues[1]) & (1 << ViewOptionType.EXPAND_NOTES.ordinal())) >> ViewOptionType.EXPAND_NOTES.ordinal() == 1;
+                        toDoList.showMetadata = (Integer.valueOf(oldValues[1]) & (1 << ViewOptionType.SHOW_METADATA.ordinal())) >> ViewOptionType.SHOW_METADATA.ordinal() == 1;
                         toDoList.sort = oldValues.length > 2 ? Sort.values()[Integer.valueOf(oldValues[2])] : Sort.DEFAULT;
                     }
                 }

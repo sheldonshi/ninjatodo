@@ -13,6 +13,7 @@ import javax.persistence.NoResultException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -50,6 +51,7 @@ public class ToDos extends Controller {
         toDo.title = title;
         toDo.toDoList = ToDoList.findById(list);
         toDo.orderIndex = getNextOrderIndex(toDo.toDoList);
+        toDo.updater = User.loadBySocialUser(SecureSocial.getCurrentUser());
         // convert hashtags in title into tags, and remove them from title
         List<String> hashtags = parseHashtags(toDo);
         if (!hashtags.isEmpty()) {
@@ -100,6 +102,7 @@ public class ToDos extends Controller {
             }
             newToDo.completed = false;
             newToDo.orderIndex = toDo.orderIndex;
+            newToDo.updater = User.loadBySocialUser(SecureSocial.getCurrentUser());
             newToDo.save();
         }
         renderText(Utils.toJson(newToDo));
@@ -114,6 +117,8 @@ public class ToDos extends Controller {
         ToDo toDo = ToDo.findById(taskId);
         if (toDo != null) {
             addTagToToDo(tags, toDo);
+            toDo.updater = User.loadBySocialUser(SecureSocial.getCurrentUser());
+            toDo.lastUpdated = new Date();
             toDo.save();
         }
         renderText(Utils.toJson(toDo));
@@ -210,6 +215,8 @@ public class ToDos extends Controller {
         toDo.note = params.get("note");
         toDo.toDoList = ToDoList.findById(list);
         toDo.orderIndex = getNextOrderIndex(toDo.toDoList);
+        toDo.updater = User.loadBySocialUser(SecureSocial.getCurrentUser());
+        toDo.lastUpdated = new Date();
         if (params.get("duedate") != null && params.get("duedate").length() > 0) {
             try {
                 toDo.dateDue = (new SimpleDateFormat("MM/dd/yy")).parse(params.get("duedate"));
@@ -288,6 +295,8 @@ public class ToDos extends Controller {
         ToDo toDo = ToDo.findById(taskId);
         if (toDo != null) {
             toDo.note = note;
+            toDo.updater = User.loadBySocialUser(SecureSocial.getCurrentUser());
+            toDo.lastUpdated = new Date();
             toDo.save();
         }
 
@@ -313,6 +322,8 @@ public class ToDos extends Controller {
         ToDo toDo = ToDo.findById(taskId);
         if (toDo != null) {
             toDo.priority = prio;
+            toDo.updater = User.loadBySocialUser(SecureSocial.getCurrentUser());
+            toDo.lastUpdated = new Date();
             toDo.save();
         }
 
@@ -331,6 +342,8 @@ public class ToDos extends Controller {
         if (toDo != null && toDo.toDoList.id == from && newToDoList != null) {
             toDo.toDoList = newToDoList;
             toDo.orderIndex = getNextOrderIndex(toDo.toDoList);
+            toDo.updater = User.loadBySocialUser(SecureSocial.getCurrentUser());
+            toDo.lastUpdated = new Date();
             toDo.save();
         }
 

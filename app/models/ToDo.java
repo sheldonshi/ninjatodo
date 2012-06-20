@@ -57,8 +57,8 @@ public class ToDo extends Model {
     public int priority;
 
     @ManyToOne
-    @JoinColumn(name="parent_id", nullable = true)
-    public ToDo parent;  // for sub task feature
+    @JoinColumn(name="updater_id", nullable = true)
+    public User updater;
 
     @ManyToMany
     public List<Tag> tags;
@@ -76,6 +76,9 @@ public class ToDo extends Model {
     
     @Transient
     public Float dateDueInDays;
+
+    @Transient
+    public Float lastUpdatedInDays;
 
     // hack, mapped to the same toDoList field's corresponding column, read-only, for json conversion purpose
     @Column(name = "todolist_id", nullable = false, insertable = false, updatable = false)
@@ -103,6 +106,17 @@ public class ToDo extends Model {
             dateDueInDays = (float) diff/86400000L;
         } else {
             dateDueInDays = null;
+        }
+    }
+
+    public void setLastUpdated(Date lastUpdated) {
+        this.lastUpdated = lastUpdated;
+        if (lastUpdated != null) {
+            long now = System.currentTimeMillis();
+            long diff = lastUpdated.getTime() - now;
+            lastUpdatedInDays = (float) diff/86400000L;
+        } else {
+            lastUpdatedInDays = null;
         }
     }
 

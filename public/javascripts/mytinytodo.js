@@ -1015,9 +1015,10 @@ function prepareTaskStr(item, noteExp)
 		'<span class="task-date-completed"><span title="'+item.dateInlineTitle+'">'+item.dateInline+'</span>&#8212;'+
 		'<span title="'+item.dateCompletedInlineTitle+'">'+item.dateCompletedInline+'</span></span></div>'+"\n"+
 		'<div class="task-through">'+preparePrio(prio,id)+'<span class="task-title">'+prepareHtml(item.title)+'</span> '+
-		(curList.id == -1 ? '<span class="task-listname">'+ tabLists.get(item.toDoListId).name +'</span>' : '') +	"\n" +
-		prepareTagsStr(item)+'<span class="task-date">'+item.dateInlineTitle+'</span></div>'+
-		'<div class="task-note-block">'+
+		(curList.id == -1 ? '<span class="task-listname">'+ tabLists.get(item.toDoListId).name +'</span>' : '') +
+        '\n<span class="task-date">'+_mtt.lang.get('taskdate_lastUpdated')+' '+smartDate(item.lastUpdated,item.lastUpdatedInDays)+
+        ' '+_mtt.lang.get('taskdate_updatedBy')+' '+item.updater.username+'</span>'+
+		prepareTagsStr(item)+'</div>'+'<div class="task-note-block">'+
 			'<div id="tasknote'+id+'" class="task-note"><span>'+(item.note ? prepareHtml(item.note) : '')+'</span></div>'+
 			'<div id="tasknotearea'+id+'" class="task-note-area"><textarea id="notetext'+id+'"></textarea>'+
 				'<span class="task-note-actions"><a href="#" class="mtt-action-note-save">'+_mtt.lang.get('actionSave')+
@@ -1093,7 +1094,8 @@ function prepareItemStyleClass(item, noteExp) {
         }
     }
     styleClass += (item.note && item.note !=''?' task-has-note':'') +
-        ((curList.notesExpanded && item.note && item.note != '') || noteExp ? ' task-expanded' : '') + prepareTagsClass(item.tags);
+        ((curList.notesExpanded && item.note && item.note != '') || noteExp ? ' task-expanded' : '') +
+        (curList.showMetadata ? ' show-inline-date' : '') + prepareTagsClass(item.tags);
     return styleClass;
 }
 
@@ -1304,7 +1306,6 @@ function setTaskview(v)
 	}
 };
 
-
 function toggleAllNotes()
 {
     var show = !curList.notesExpanded;
@@ -1317,9 +1318,20 @@ function toggleAllNotes()
 	curList.notesExpanded = show;
     if(show) $('#btnExpandNotes').addClass('mtt-item-checked');
     else $('#btnExpandNotes').removeClass('mtt-item-checked');
-	_mtt.db.request('setShowNotesInList', {list:curList.id}, function(json){});
+	_mtt.db.request('setShowNotesInList', {list:curList.id, notesExpanded:curList.notesExpanded}, function(json){});
 };
 
+function toggleShowMetadata() {
+    var show = !curList.showMetadata;
+    for(var id in taskList) {
+        if(show) $('#taskrow_'+id).addClass('show-inline-date');
+        else $('#taskrow_'+id).removeClass('show-inline-date');
+    }
+    curList.showMetadata = show;
+    if(show) $('#btnShowMetadata').addClass('mtt-item-checked');
+    else $('#btnShowMetadata').removeClass('mtt-item-checked');
+    _mtt.db.request('setShowMetadata', {list:curList.id, showMetadata:show}, function(json){});
+};
 
 function tabSelect(elementOrId)
 {
@@ -1382,6 +1394,7 @@ function listMenuClick(el, menu)
 		case 'btnRssFeed': feedCurList(); break;
 		case 'btnShowCompleted': showCompletedToggle(); break;
         case 'btnExpandNotes': toggleAllNotes(); break;
+        case 'btnShowMetadata': toggleShowMetadata(); break;
 		case 'btnClearCompleted': _mtt.confirmAction('clearCompleted', 'clearCompleted', ''); break;
 		case 'sortByHand': setSort("DEFAULT"); break;
 		case 'sortByPrio': setSort(curList.sort=='PRIORITY_DESC' ? 'PRIORITY_ASC' : 'PRIORITY_DESC'); break;
@@ -2033,6 +2046,8 @@ function tabmenuOnListSelected(list)
 	else $('#btnShowCompleted').removeClass('mtt-item-checked');
     if (list.notesExpanded) $('#btnExpandNotes').addClass('mtt-item-checked');
     else $('#btnExpandNotes').removeClass('mtt-item-checked');
+    if (list.showMetadata) $('#btnShowMetadata').addClass('mtt-item-checked');
+    else $('#btnShowMetadata').removeClass('mtt-item-checked');
 };
 
 
@@ -2252,6 +2267,24 @@ function getMillis(date) {
     } else {
         return new Date(day[2], day[1]-1, day[0]).getTime();
     }
+}
+
+function smartDate(date, dateInDays) {
+    if (!date) return '';
+    if (dateInDays) {
+        if (-dateInDays * 86400 < 6) return 'moment ago';
+        else if (-dateInDays * 86400 < 30) return Math.round(-dateInDays*86400)+' seconds ago';
+        else if (-dateInDays * 1440 < 1.5) return '1 minute ago';
+        else if (-dateInDays * 1440 < 60) return Math.round(-dateInDays*1440)+' minutes ago';
+        else if (-dateInDays * 24 < 1.5) return '1 hour ago';
+        else if (-dateInDays * 24 < 24) return Math.round(-dateInDays*24)+' hours ago';
+        else if (-dateInDays < -1.5) return '1 day ago';
+        else return Math.round(-dateInDays) + ' days ago';
+    } else {
+        var dayHour = date.split(" ");
+        return dayHour[0];
+    }
+
 }
 /*
 	Errors and Info messages

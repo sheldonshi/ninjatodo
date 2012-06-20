@@ -1,11 +1,7 @@
 package models;
 
 /**
- * Created by IntelliJ IDEA.
- * User: sheldon
- * Date: 4/2/12
- * Time: 8:27 AM
- * To change this template use File | Settings | File Templates.
+ * Do not change order of these enums, as their ordinals are used in user view options stored in session
  */
 public enum Sort {
     DEFAULT("completed, orderIndex"),

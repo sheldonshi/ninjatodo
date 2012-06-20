@@ -189,8 +189,13 @@ mytinytodoStorageAjax.prototype =
 	
 	setShowNotesInList: function(params, callback)
 	{
-	    $.post(this.mtt.mttUrl+'ToDoLists/toggleNotesExpanded', { list:params.list },  callback, 'json');
+	    $.post(this.mtt.mttUrl+'ToDoLists/toggleNotesExpanded', { list:params.list, notesExpanded:params.notesExpanded },  callback, 'json');
 	},
+
+    setShowMetadata: function(params, callback)
+    {
+        $.post(this.mtt.mttUrl+'ToDoLists/toggleShowMetadata', { list:params.list, showMetadata:params.showMetadata },  callback, 'json');
+    },
 	
 	setHideList: function(params, callback)
 	{

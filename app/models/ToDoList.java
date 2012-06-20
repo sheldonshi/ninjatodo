@@ -46,16 +46,17 @@ public class ToDoList extends Model {
     @Column(name = "order_index", nullable = false)
     public int orderIndex;
 
-    @Required
-    @Column(name = "sort", nullable = false)
-    @Enumerated(EnumType.STRING)
+    @Transient
     public Sort sort = Sort.DEFAULT;
 
-    @Column(name = "show_completed")
+    @Transient
     public boolean showCompleted;
 
-    @Column(name = "notes_expanded")
+    @Transient
     public boolean notesExpanded;
+
+    @Transient
+    public boolean showMetadata;
     
     public ToDoList() {
         dateCreated = new Date();

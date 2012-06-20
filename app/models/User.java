@@ -64,6 +64,7 @@ public class User extends Model {
 
     @Version
     @Column(name = "version", nullable = false)
+    @JsonExclude
     public long version;
 
     @Temporal(TemporalType.TIMESTAMP)
