@@ -22,7 +22,39 @@ public class Application extends Controller {
         if (participations.isEmpty()) {
             participations.add(Projects.addProject(user, Messages.get("myFirstProject")));
         }
-        render(participations);
+        // now pick the selected participation
+        Participation selectedParticipation = participations.get(0);
+        ToDoList selectedToDoList = null;
+        boolean authorized = false;
+        if (params.get("projectId") != null) {
+            for (Participation part : participations) {
+                if (part.project.id.toString().equals(params.get("projectId"))) {
+                    selectedParticipation = part;
+                    authorized = true;
+                    break;
+                }
+            }
+        } else if (params.get("list") != null) {
+            ToDoList toDoList = ToDoList.findById(Long.valueOf(params.get("list")));
+            if (toDoList != null) {
+                Project project = toDoList.project;
+                for (Participation part : participations) {
+                    if (part.project.equals(project)) {
+                        selectedParticipation = part;
+                        selectedToDoList = toDoList;
+                        authorized = true;
+                        break;
+                    }
+                }
+            }
+        } else {
+            authorized = true;
+        }
+        if (authorized) {
+            render(participations, selectedParticipation, selectedToDoList);
+        } else {
+            forbidden();
+        }
     }
 
     /**

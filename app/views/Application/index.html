@@ -14,7 +14,8 @@ $().ready(function(){
 		singletab: false,
 		duedatepickerformat: "n/j/y",
 		firstdayofweek: 1,
-		autotag: true					}).loadProject(${participations[0].project.id});
+        openList: ${selectedToDoList ? selectedToDoList.id : 0},
+		autotag: true					}).loadProject(${selectedParticipation.project.id});
 });
 </script>
 
@@ -22,7 +23,7 @@ $().ready(function(){
 <div id="container">
 <div id="projects" class="ui-corner-bl ui-corner-br lightblue_bg">
     <span class="addProject">
-        &nbsp;&nbsp;&nbsp;${participations[0].user.username}&nbsp;&nbsp;&nbsp;&nbsp;<a href="#" id="help" class="weak">&{'a_help'}</a>&nbsp;&nbsp;:&nbsp;&nbsp;<a href="@{securesocial.SecureSocial.logout}" class="weak">&{'a_signout'}</a>
+        &nbsp;&nbsp;&nbsp;${selectedParticipation.user.username}&nbsp;&nbsp;&nbsp;&nbsp;<a href="#" id="help" class="weak">&{'a_help'}</a>&nbsp;&nbsp;:&nbsp;&nbsp;<a href="@{securesocial.SecureSocial.logout}" class="weak">&{'a_signout'}</a>
     </span>
     <span id="projectList">&{'workspaces'}&nbsp;&nbsp;&nbsp;
 #{list items:participations, as:'participation'}

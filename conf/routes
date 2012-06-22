@@ -4,6 +4,10 @@
 
 # Home page
 GET     /                                       Application.index
+# workspace
+GET     /w/{projectId}                          Application.index
+# list
+GET     /l/{list}                               Application.index
 
 # Ignore favicon requests
 GET     /favicon.ico                            404
