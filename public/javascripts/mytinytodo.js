@@ -483,7 +483,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
 			return false;
 		});
 		
-		$(".mtt-back-button").live('click', function(){ _mtt.pageBack(); this.blur(); $('#settings').show(); return false; } );
+		$(".mtt-back-button").live('click', function(){ _mtt.pageBack(); this.blur(); $('#settings').show(); return false } );
 
 		$(window).bind('beforeunload', function() {
 			if(_mtt.pages.current.page == 'taskedit' && flag.editFormChanged) {
@@ -634,6 +634,10 @@ var mytinytodo = window.mytinytodo = _mtt = {
 	},
 
     loadProject: function(projectId) {
+        /* if edit task is open, close it first */
+        if(_mtt.pages.current.page == 'taskedit') {
+            $('.mtt-back-button').click();
+        }
         _mtt.project = projectId;
         if ($('#project_'+_mtt.project+'_WRITE').length > 0) {
             $('#mtt_body h2').html($('#project_'+_mtt.project+'_WRITE').html());
@@ -2407,7 +2411,6 @@ function logout()
 	}, 'json');
 	return false;
 } 
-
 
 /*
 	Settings
