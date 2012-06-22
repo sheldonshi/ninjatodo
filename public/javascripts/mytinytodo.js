@@ -986,9 +986,9 @@ function loadTasks(opts)
 		var tasks = '';
 		$.each(json.list, function(i,item){
 			tasks += prepareTaskStr(item);
-            item.dateCreatedMillis = getMillis(item.dateCreated);
-            item.lastUpdatedMillis = getMillis(item.lastUpdated);
-            item.dateDueMillis = getMillis(item.dateDue);
+            item.dateCreatedMillis = getDate(item.dateCreated).getTime();
+            item.lastUpdatedMillis = getDate(item.lastUpdated).getTime();
+            item.dateDueMillis = getDate(item.dateDue).getTime();
 			taskList[item.id] = item;
 			taskOrder.push(parseInt(item.id));
 			changeTaskCnt(item, 1);
@@ -1452,11 +1452,15 @@ function toggleTaskNote(id)
 	var aArea = '#tasknotearea'+id;
 	if($(aArea).css('display') == 'none')
 	{
-		$('#notetext'+id).val(taskList[id].note);
-		$(aArea).show();
-		$('#tasknote'+id).hide();
-		$('#taskrow_'+id).addClass('task-expanded');
-		$('#notetext'+id).focus();
+        _mtt.db.request('loadTask', {id:id}, function(json){
+            if(!parseInt(json.total)) return;
+            taskList[id] = json.list[0];
+            $('#notetext'+id).val(taskList[id].note);
+            $(aArea).show();
+            $('#tasknote'+id).hide();
+            $('#taskrow_'+id).addClass('task-expanded');
+            $('#notetext'+id).focus();
+        });
 	} else {
 		cancelTaskNote(id)
 	}
@@ -1488,21 +1492,25 @@ function saveTaskNote(id)
 
 function editTask(id)
 {
-	var item = taskList[id];
-	if(!item) return false;
-	// no need to clear form
-	var form = document.getElementById('taskedit_form');
-	form.task.value = dehtml(item.title);
-	form.note.value = item.note ? item.note : '';
-	form.id.value = item.id;
-	form.tags.value = $(item.tags).map(function() { return this.text }).get().join(', ');
-	form.duedate.value = item.dateDue ? item.dateDue : '';
-	form.prio.value = item.priority;
-	$('#taskedit-date .date-created>span').text(item.dateCreated);
-	if(item.completed) $('#taskedit-date .date-completed').show().find('span').text(item.dateCompleted);
-	else $('#taskedit-date .date-completed').hide();
-	toggleEditAllTags(0);
-	showEditForm();
+    _mtt.db.request('loadTask', {id:id}, function(json){
+        if(!parseInt(json.total)) return;
+        taskList[id] = json.list[0];
+        var item = taskList[id];
+        if(!item) return false;
+        // no need to clear form
+        var form = document.getElementById('taskedit_form');
+        form.task.value = dehtml(item.title);
+        form.note.value = item.note ? item.note : '';
+        form.id.value = item.id;
+        form.tags.value = $(item.tags).map(function() { return this.text }).get().join(', ');
+        form.duedate.value = item.dateDue ? $.datepicker.formatDate(_mtt.duedatepickerformat(), getDate(item.dateDue)) : '';
+        form.prio.value = item.priority;
+        $('#taskedit-date .date-created>span').text(item.dateCreated);
+        if(item.completed) $('#taskedit-date .date-completed').show().find('span').text(item.dateCompleted);
+        else $('#taskedit-date .date-completed').hide();
+        toggleEditAllTags(0);
+        showEditForm();
+    });
 	return false;
 };
 
@@ -2257,15 +2265,15 @@ function checkAllListsTab() {
     }
 }
 
-function getMillis(date) {
-    if (!date) return 0;
+function getDate(date) {
+    if (!date) return new Date(0);
     var dayHour = date.split(" ");
     var day = dayHour[0].split("/");
     var hour = dayHour.length > 1 ? dayHour[1].split(":") : null;
     if (hour) {
-        return new Date(day[2], day[1]-1, day[0], hour[0], hour[1], hour[2]).getTime();
+        return new Date(day[2], day[0]-1, day[1], hour[0], hour[1], hour[2]);
     } else {
-        return new Date(day[2], day[1]-1, day[0]).getTime();
+        return new Date(day[2], day[0]-1, day[1]);
     }
 }
 

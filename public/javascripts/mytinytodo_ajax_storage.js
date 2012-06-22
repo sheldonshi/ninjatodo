@@ -72,6 +72,12 @@ mytinytodoStorageAjax.prototype =
 	},
 
 
+    loadTask: function(params, callback)
+    {
+        $.getJSON(this.mtt.mttUrl+'ToDos/index?taskId='+params.id, callback);
+    },
+
+
 	editTask: function(params, callback)
 	{
 		$.post(this.mtt.mttUrl+'ToDos/saveFullTask',

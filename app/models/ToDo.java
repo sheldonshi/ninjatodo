@@ -78,7 +78,7 @@ public class ToDo extends Model {
     public Float dateDueInDays;
 
     @Transient
-    public Float lastUpdatedInDays;
+    public long now;
 
     // hack, mapped to the same toDoList field's corresponding column, read-only, for json conversion purpose
     @Column(name = "todolist_id", nullable = false, insertable = false, updatable = false)
@@ -87,6 +87,7 @@ public class ToDo extends Model {
     public ToDo() {
         dateCreated = new Date();
         lastUpdated = dateCreated;
+        now = System.currentTimeMillis();
     }
     
     public void setCompleted(boolean completed) {
@@ -106,17 +107,6 @@ public class ToDo extends Model {
             dateDueInDays = (float) diff/86400000L;
         } else {
             dateDueInDays = null;
-        }
-    }
-
-    public void setLastUpdated(Date lastUpdated) {
-        this.lastUpdated = lastUpdated;
-        if (lastUpdated != null) {
-            long now = System.currentTimeMillis();
-            long diff = lastUpdated.getTime() - now;
-            lastUpdatedInDays = (float) diff/86400000L;
-        } else {
-            lastUpdatedInDays = null;
         }
     }
 

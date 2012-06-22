@@ -46,6 +46,15 @@ public class ToDos extends Controller {
         Projects.checkMembership();
     }
 
+    /**
+     * get a single task (usually for editing)
+     * @param taskId
+     */
+    public static void index(Long taskId) {
+        ToDo toDo = ToDo.findById(taskId);
+        renderText(Utils.toJson(toDo));
+    }
+
     public static void newTask(Long list, String title) {
         ToDo toDo = new ToDo();
         toDo.title = title;
