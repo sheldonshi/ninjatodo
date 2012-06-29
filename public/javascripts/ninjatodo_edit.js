@@ -1,4 +1,6 @@
-/* for editing project form of ninja to do
+/*
+ (C) Copyright 2012 Sheldon Shi
+ Licensed under the GNU GPL v3 license. See file COPYRIGHT for details.
  */
 
 (function(){

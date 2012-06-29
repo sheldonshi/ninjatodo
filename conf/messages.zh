@@ -80,7 +80,6 @@ f_today=最近两天
 f_soon=即将到期
 action_edit=编辑
 action_clone=复制
-action_note=编辑说明
 action_delete=删除
 action_priority=优先级
 action_move=移动至

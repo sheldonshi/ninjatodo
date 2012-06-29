@@ -211,15 +211,12 @@ li:hover a.addTag {display: inline; color:#fff; background-color:#bbbbbb;}
 .task-note-block { margin-left:2px; color:#777777; padding-left:19px; padding-top:2px; min-height:16px; margin-top:2px; display:none; }
 li.task-expanded .task-note-block { display:block; }
 li.task-completed .task-note-block .task-note { text-decoration:line-through; }
-.task-note-area { display:none; margin-bottom:5px; }
-.task-note-area textarea { color:#999999; width:100%; display:block; height:65px; }
-.task-note-actions { font-size:0.8em; }
 .hidden { display:none; }
 .invisible { visibility:hidden; }
 .in500 { width:500px; color:#444444; }
 .in100 { width:100px; color:#444444; }
-.task-note span a { color:#777777; }
-.task-note span a:hover { color:#af0000; }
+.task-note div a { color:#777777; }
+.task-note div a:hover { color:#af0000; }
 
 .task-prio { padding-left:2px; padding-right:2px; margin-left:0px; margin-right:5px; cursor:default; }
 .prio-neg { background-color:#3377ff; color:#ffffff; }
@@ -406,12 +403,19 @@ span.team-members .delete-team-member {position:relative;top:-1px}
 
 .lightblue_bg {background-color:#B5D5FF;}
 a.weak  {color:#888; text-decoration: none;font-size: 0.8em;}
-a.weak:hover {color:#444;text-decoration: underline;}
+a.weak:hover, a.weak:visited {color:#444;text-decoration: underline;}
 .addToProject {display:none;margin:8px 0px 5px 0px;font-size:0.8em; color:#888;width: 50%;min-width:350px;}
 .addToProject textarea {width:100%;display: block;height:50px; color:#888;}
 .pendingMembers .invitedEmail {margin:2px 0px;}
 .pendingMembers {margin-top:5px;}
 .pendingMembers a.deleteInvitedEmail {position:relative;top:-1px;}
 #addAdminToProject select {width: 100%;color:#888;}
+
+.note-done span {text-decoration: line-through;}
+a.note-undone-action {margin: 0px 5px 0px 10px;display: none;color:#888; text-decoration: none;font-size: 0.8em;}
+a.note-done-action {margin: 0px 5px 0px 10px;display: none;color:#888; text-decoration: none;font-size: 0.8em;}
+.note-done:hover a.note-undone-action {display: inline}
+.note-undone:hover a.note-done-action {display: inline}
+
 
 

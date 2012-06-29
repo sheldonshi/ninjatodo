@@ -50,9 +50,6 @@ public class ToDo extends Model {
     @Access(AccessType.PROPERTY)
     public Date dateDue;
 
-    @Column(name = "note", nullable = true)
-    public String note;
-
     @Required
     public int priority;
 
@@ -72,6 +69,9 @@ public class ToDo extends Model {
     @Column(name = "order_index", nullable = false)
     public int orderIndex;
 
+    @Column(name = "note_count", nullable = true)
+    public int noteCount;
+
     public boolean completed;
     
     @Transient
@@ -79,6 +79,10 @@ public class ToDo extends Model {
 
     @Transient
     public long now;
+
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "toDo", orphanRemoval = true)
+    @OrderBy("id")
+    public List<Note> notes;
 
     // hack, mapped to the same toDoList field's corresponding column, read-only, for json conversion purpose
     @Column(name = "todolist_id", nullable = false, insertable = false, updatable = false)

@@ -1,8 +1,8 @@
 /*
-	This file is a part of myTinyTodo.
-	(C) Copyright 2010 Max Pozdeev <maxpozdeev@gmail.com>
-	Licensed under the GNU GPL v3 license. See file COPYRIGHT for details.
-*/
+ This file is based on Max Pozdeev's myTinyTodo (C) Copyright 2009-2010 Max Pozdeev <maxpozdeev@gmail.com>
+ (C) Copyright 2012 Sheldon Shi
+ Licensed under the GNU GPL v3 license. See file COPYRIGHT for details.
+ */
 
 // AJAX myTinyTodo Storage
 
@@ -64,27 +64,15 @@ mytinytodoStorageAjax.prototype =
 	},
 	
 
-	fullNewTask: function(params, callback)
+	saveFullTask: function(params, callback)
 	{
-		$.post(this.mtt.mttUrl+'ToDos/saveFullTask',
-			{ list:params.list, title:params.title, note:params.note, prio:params.prio, tags:params.tags, duedate:params.duedate },
-			callback, 'json');
+		$.post(this.mtt.mttUrl+'ToDos/saveFullTask', params, callback, 'json');
 	},
-
 
     loadTask: function(params, callback)
     {
         $.getJSON(this.mtt.mttUrl+'ToDos/index?taskId='+params.id, callback);
     },
-
-
-	editTask: function(params, callback)
-	{
-		$.post(this.mtt.mttUrl+'ToDos/saveFullTask',
-			{ taskId:params.id, title:params.title, note:params.note, prio:params.prio, tags:params.tags, duedate:params.duedate },
-			callback, 'json');
-	},
-
 
     cloneTask: function(params, callback)
     {
@@ -92,18 +80,15 @@ mytinytodoStorageAjax.prototype =
             { taskId:params.id}, callback, 'json');
     },
 
-
-	editNote: function(params, callback)
-	{
-		$.post(this.mtt.mttUrl+'ToDos/editNote', {taskId:params.id, note: params.note}, callback, 'json');
-	},
-
-
 	completeTask: function(params, callback)
 	{
 		$.post(this.mtt.mttUrl+'ToDos/completeTask', { taskId:params.id, completed:params.completed }, callback, 'json');
 	},
 
+    checkNote: function(params, callback)
+    {
+        $.post(this.mtt.mttUrl+'ToDos/checkNote', { taskId:params.taskId, noteId:params.noteId, checked:params.checked }, callback, 'json');
+    },
 
 	deleteTask: function(params, callback)
 	{

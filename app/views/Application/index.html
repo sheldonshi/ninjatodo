@@ -126,6 +126,8 @@ $().ready(function(){
 
 <form id="taskedit_form" name="edittask" method="post">
 <input type="hidden" name="isadd" value="0" />
+<input type="hidden" name="isNoteDirty" id="isNoteDirty" value="0" />
+<input type="hidden" name="isTagDirty" id="isTagDirty" value="0" />
 <input type="hidden" name="id" value="" />
 <div class="form-row form-row-short">
  <span class="h">&{'priority'}</span>
@@ -138,9 +140,9 @@ $().ready(function(){
  <input name="duedate" id="duedate" value="" class="in100" title="Y-M-D, M/D/Y, D.M.Y, M/D, D.M" autocomplete="off" />
 </div>
 <div class="form-row-short-end"></div>
-<div class="form-row"><div class="h">&{'task'}</div> <input type="text" name="task" value="" class="in500" maxlength="250" /></div>
-<div class="form-row"><div class="h">&{'note'}</div> <textarea name="note" class="in500"></textarea></div>
-<div class="form-row"><div class="h">&{'tags'}</div>
+<div class="form-row"><span class="h" style="width:120px;">&{'task'}</span> <input type="text" name="task" value="" class="in500" maxlength="250" /></div>
+<div class="form-row"><span class="h">&{'note'}</span> <iframe class="in500" id="noteFrame" name="noteFrame"></iframe> <input type="hidden" name="note"/></div>
+<div class="form-row"><span class="h">&{'tags'}</span>
  <table cellspacing="0" cellpadding="0" width="100%"><tr>
   <td><input type="text" name="tags" id="edittags" value="" class="in500" maxlength="250" /></td>
   <td class="alltags-cell">
@@ -230,7 +232,6 @@ $().ready(function(){
 <div id="taskcontextcontainer" class="mtt-menu-container" style="display:none">
 <ul>
  <li id="cmenu_edit"><b>&{'action_edit'}</b></li>
- *{<li id="cmenu_note">&{'action_note'}</li>}*
  <li id="cmenu_clone">&{'action_clone'}</li>
  <li id="cmenu_move" class="mtt-menu-indicator" submenu="cmenulistscontainer"><div class="submenu-icon"></div>&{'action_move'}</li>
  <li id="cmenu_delete">&{'action_delete'}</li>

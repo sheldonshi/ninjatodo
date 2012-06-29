@@ -101,7 +101,6 @@ public class ToDos extends Controller {
             newToDo.title = toDo.title;
             newToDo.dateDue = toDo.dateDue;
             newToDo.toDoList = toDo.toDoList;
-            newToDo.note = toDo.note;
             newToDo.priority = toDo.priority;
             if (toDo.tags != null) {
                 newToDo.tags = new ArrayList<Tag>();
@@ -113,6 +112,17 @@ public class ToDos extends Controller {
             newToDo.orderIndex = toDo.orderIndex;
             newToDo.updater = User.loadBySocialUser(SecureSocial.getCurrentUser());
             newToDo.save();
+            // clone notes
+            List<Note> notes = Note.find("todo=?", toDo).fetch();
+            if (notes != null) {
+                for (Note note : notes) {
+                    Note newNote = new Note();
+                    newNote.content = note.content;
+                    newNote.toDo = newToDo;
+                    newNote.checked = note.checked;
+                    newNote.save();
+                }
+            }
         }
         renderText(Utils.toJson(newToDo));
     }
@@ -170,18 +180,22 @@ public class ToDos extends Controller {
 
         String querySortStr = " order by " + (sort != null ? Sort.valueOf(sort).getSqlSort() : Sort.DEFAULT.getSqlSort());
         // if a valid list id is passed, filter by list, otherwise, filter by project
-        String projectFilterStr = "toDoList.project.id=" + params.get("projectId");
-        String listFilterStr = "toDoList.id=" + list;
+        String projectFilterStr = "todo.toDoList.project.id=" + params.get("projectId");
+        String listFilterStr = "todo.toDoList.id=" + list;
         List<ToDo> tasks = new ArrayList<ToDo>();
         if (StringUtils.isNotEmpty(params.get("s"))) {
             String queryLikeStr = "%"+ params.get("s") + "%";
             String queryStr = (list == ALL_LIST_ID ? projectFilterStr : listFilterStr) +
-                    " and (title like ? or note like ?)" + (showCompleted ? "" : " and completed=false");
-            tasks = ToDo.find(queryStr + querySortStr, queryLikeStr, queryLikeStr).fetch();
+                    " and (title like :likeStr or note.content like :likeStr)" + (showCompleted ? "" : " and completed=false");
+//            tasks = ToDo.find(queryStr + querySortStr, queryLikeStr, queryLikeStr).fetch();
+            tasks = JPA.em().createQuery("select distinct todo from ToDo todo left join todo.tags tag left join todo.notes note where " + queryStr + querySortStr)
+                    .setParameter("likeStr", queryLikeStr).getResultList();
         } else {
             String queryStr = (list == ALL_LIST_ID ? projectFilterStr : listFilterStr) +
                     (showCompleted ? "" : " and completed=false");
-            tasks = ToDo.find(queryStr + querySortStr).fetch();
+//            tasks = ToDo.find(queryStr + querySortStr).fetch();
+            tasks = JPA.em().createQuery("select distinct todo from ToDo todo left join todo.tags tag left join todo.notes note where " + queryStr + querySortStr)
+                    .getResultList();
         }
         // filter by tag now
         if (StringUtils.isNotEmpty(t)) {
@@ -200,11 +214,33 @@ public class ToDos extends Controller {
         renderText(Utils.toJson(tasks));
     }
 
+    /**
+     * sets completed flag of a task to true
+     * @param taskId
+     * @param completed
+     */
     public static void completeTask(Long taskId, boolean completed) {
         ToDo toDo = ToDo.findById(taskId);
         toDo.completed = completed;
         toDo.save();
         renderText(Utils.toJson(toDo));
+    }
+
+    /**
+     * set checked flag of note to true
+     * @param taskId
+     * @param noteId
+     * @param checked
+     */
+    public static void checkNote(Long taskId, Long noteId, boolean checked) {
+        Note note = Note.findById(noteId);
+        if (note.toDo.id.equals(taskId)) {
+            note.checked = checked;
+            note.save();
+            renderText(Utils.toJson(note));
+        } else {
+            forbidden();
+        }
     }
 
     /**
@@ -221,7 +257,6 @@ public class ToDos extends Controller {
         }
         toDo.title = params.get("title");
         toDo.priority = Integer.parseInt(params.get("prio"));
-        toDo.note = params.get("note");
         toDo.toDoList = ToDoList.findById(list);
         toDo.orderIndex = getNextOrderIndex(toDo.toDoList);
         toDo.updater = User.loadBySocialUser(SecureSocial.getCurrentUser());
@@ -233,16 +268,71 @@ public class ToDos extends Controller {
                 // TODO error handling
             }
         }
-        // TODO deal with tags
-        if (toDo.tags != null) {
-            toDo.tags.clear();
-        } else {
-            toDo.tags = new ArrayList<Tag>();
+        // deal with tags      
+        // tags is only passed in parameter if isTagDirty is not 0 (user has keypressed in the tag area)
+        // tags is passed as empty string if user cleared out the tag field
+        if (params.get("tags") != null) {
+            // clear out existing tags
+            if (toDo.tags != null) {
+                toDo.tags.clear();
+            } else {
+                toDo.tags = new ArrayList<Tag>();
+            }
+            addTagToToDo(params.get("tags"), toDo);
         }
-        addTagToToDo(params.get("tags"), toDo);
         toDo.save();
-
+        // now deal with notes
+        // notes is only passed in parameter if isNoteDirty is not 0 (user has keypressed in the note area)
+        // notes is passed as empty string if user cleared out the note area
+        if (params.get("note") != null) {
+            // first clear all existing notes
+            if (toDo.notes != null) {
+                toDo.notes.clear();
+            } else {
+                toDo.notes = new ArrayList<Note>();
+            }
+            
+            String unprocessedNote = params.get("note");
+            String[] notesArray = unprocessedNote.replaceAll("</div>", "").replaceAll("<br>", "").split("<div>");
+            for (String notesItem : notesArray) {
+                String note = notesItem.trim();
+                if (note.length() > 0) {
+                    // split note further into multiple notes if it is longer than 250
+                    String[] splittedNotes = splitNoteByMaxLength(note, 250);
+                    for (String splittedNote : splittedNotes) {
+                        boolean checked = false;
+                        // checked note has strike through the sentences
+                        if (splittedNote.startsWith("<strike>") && splittedNote.endsWith("</strike>")) {
+                            splittedNote = splittedNote.substring(8, splittedNote.length() - 9);
+                            checked = true;
+                        }
+                        Note aNote = new Note();
+                        aNote.content = splittedNote;
+                        aNote.toDo = toDo;
+                        aNote.checked = checked;
+                        toDo.notes.add(aNote);
+                    }
+                }
+            }
+            toDo.save();
+        } else {
+            // when notes is not passed in parameter, it is empty (in newly created task), or didn't change
+            // in both case we don't need to load notes, we will use existing client cache for edited task
+        }
         renderText(Utils.toJson(toDo));
+    }
+
+    private static String[] splitNoteByMaxLength(String note, int limit) {
+        if (note != null) {
+            int splittedCount = (note.length() - 1) / limit;
+            String[] notes = new String[splittedCount + 1];
+            for (int i=0; i<notes.length; i++) {
+                notes[i] = note.substring(i*limit, note.length() < (i+1)*limit ? note.length() : (i+1)*limit);
+            }
+            return notes;
+        } else {
+            return new String[0];
+        }
     }
 
     /**
@@ -295,21 +385,6 @@ public class ToDos extends Controller {
                 toDo.tags.add(existing);
             }
         }
-    }
-
-    /**
-     * edit the note of a task
-     */
-    public static void editNote(Long taskId, String note) {
-        ToDo toDo = ToDo.findById(taskId);
-        if (toDo != null) {
-            toDo.note = note;
-            toDo.updater = User.loadBySocialUser(SecureSocial.getCurrentUser());
-            toDo.lastUpdated = new Date();
-            toDo.save();
-        }
-
-        renderText(Utils.toJson(toDo));
     }
 
     /**
