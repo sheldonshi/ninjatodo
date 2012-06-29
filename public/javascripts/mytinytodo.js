@@ -465,7 +465,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
 				placeholder:'mtt-task-placeholder',opacity:0.5
 		});
 
-		$("#lists ul").sortable({delay:150, update:listOrderChanged,opacity:0.5,tolerance:'pointer'});
+		//$("#lists ul").sortable({delay:150, update:listOrderChanged,opacity:0.5,tolerance:'pointer'});
         this.applySingletab();
 
 		// AJAX Errors
@@ -811,11 +811,11 @@ var mytinytodo = window.mytinytodo = _mtt = {
 		
 		if(yesno) {
 			$('#lists .mtt-tabs').addClass('mtt-tabs-only-one');
-			$("#lists ul").sortable('disable');
+			//$("#lists ul").sortable('disable');
 		}
 		else {
 			$('#lists .mtt-tabs').removeClass('mtt-tabs-only-one');
-			$("#lists ul").sortable('enable');
+			//$("#lists ul").sortable('enable');
 		}
 	},
 	

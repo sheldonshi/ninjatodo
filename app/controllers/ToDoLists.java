@@ -49,7 +49,7 @@ public class ToDoLists extends Controller {
         Project proj = Project.findById(projectId);
         List<ToDoList> toDoLists = new ArrayList<ToDoList>();
         if (proj != null) {
-            toDoLists = ToDoList.find("project=? order by orderIndex", proj).fetch();
+            toDoLists = ToDoList.find("project=? order by name", proj).fetch();
         }
         for (ToDoList toDoList : toDoLists) {
             loadListViewOptions(toDoList);
