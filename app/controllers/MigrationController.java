@@ -30,18 +30,33 @@ public class MigrationController extends Controller {
             forbidden();
         }
     }
-    
+
+    /**
+     * this is only run once
+     */
+    /*
     public static void migrateSingleNoteToMultipleNotes() {
-        List<ToDo> todos = ToDo.find("where note is not null").fetch();
+        List<ToDo> todos = ToDo.find("note is not null").fetch();
         for (ToDo todo : todos) {
             if (StringUtils.isNotEmpty(todo.note)) {
                 String[] notes = todo.note.split("\n");
+                int count = 0;
                 for (String noteString : notes) {
-                    Note note = new Note();
-                    note.content = noteString;
-                    note.toDo = todo;
+                    if (StringUtils.isNotEmpty(noteString.trim())) {
+                        Note note = new Note();
+                        if (noteString.length() > 255) {
+                            noteString = noteString.substring(0, 255);
+                        }
+                        note.content = noteString;
+                        note.toDo = todo;
+                        note.save();
+                        count ++;
+                    }
                 }
+                todo.noteCount = count;
+                todo.save();
             }
         }
-    }
+        renderText("ok");
+    } */
 }
