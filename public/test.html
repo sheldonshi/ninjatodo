@@ -1,0 +1,74 @@
+<html>
+<head>
+    <script src="/public/javascripts/jquery-1.4.4.min.js"></script>
+    <script type="text/javascript">
+        $().ready(function() {
+            var editFrame = document.getElementById("editorFrame");
+            editFrame.contentWindow.document.designMode="On";
+            $('#doButton').live('click', function() {
+                richEditorCommand('strikethrough', editFrame.contentWindow.document);
+            })
+            $('#undoButton').live('click', function() {
+                richEditorCommand('strikethrough', editFrame.contentWindow.document);
+            });
+            $('#showButton').live('click', function() {
+                setBody();
+            })
+            $(document.editorFrame.document).keypress(function(e)
+            {
+                code= (e.keyCode ? e.keyCode : e.which);
+                if (code == 13) {
+                    if (document.editorFrame.document.queryCommandValue('strikethrough')=='true') {
+                        richEditorCommand('strikethrough', document.editorFrame.document);
+                    }
+                }
+            });
+        });
+
+        function richEditorCommand(command, editDoc) {
+            editDoc.execCommand(command, false, null);
+            toggleDoUndo();
+        }
+
+        function toggleDoUndo() {
+            $('#doButton').toggleClass('hide');
+            $('#undoButton').toggleClass('hide');
+        }
+
+        function setBody() {
+
+            var msgTxt, bdy;
+
+            msgTxt = document.editorFrame.document.body.innerHTML;
+            alert(msgTxt);
+            return true;
+        }
+    </script>
+    <style type="text/css">
+        .toolbar span {
+            border: outset;
+        }
+
+        .toolbar span.active {
+            border: inset;
+        }
+
+        .toolbar span span {text-decoration: line-through;}
+        .hide {display: none;}
+    </style>
+</head>
+<body>
+<div class="toolbar">
+    <span id="doButton">Mark <span>Complete</span></span>
+    <span id="undoButton" class='hide'>Undo <span>complete</span></span>
+</div>
+
+<form>
+    <div style="position:relative; width:500px; height:100px"><textarea style="width:500px; height:100px; position:absolute; top:0; left:0" disabled="true"></textarea>
+        <iframe id="editorFrame" name="editorFrame" frameborder="0" style="z-index:100;width:500px; height:100px; position:absolute; top:0; left:0"></iframe>
+    </div>
+
+</form>
+<button id="showButton">Show</button>
+</body>
+</html>
