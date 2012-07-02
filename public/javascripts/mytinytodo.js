@@ -1579,20 +1579,18 @@ function showEditForm(isAdd)
     var d = getNoteFrameDocument();
     if (d) {
         d.designMode="On";
-        $(d).bind('keydown', function() {
+        $(d).bind('keydown', function(e) {
             form.isNoteDirty.value=1;
+            var code= (e.keyCode ? e.keyCode : e.which);
+            if (code == 13 && d.queryCommandValue('strikethrough')=='true') {
+                d.execCommand('strikethrough', false, null);
+            }
             $(d).unbind('keydown'); // so binding works repeatedly
         })
         $(d).bind('contextmenu', function() {
             form.isNoteDirty.value=1;
             $(d).unbind('contextmenu');
         })
-        $(d).keypress(function(e) {
-            code= (e.keyCode ? e.keyCode : e.which);
-            if (code == 13 && d.queryCommandValue('strikethrough')=='true') {
-                d.execCommand('strikethrough', false, null);
-            }
-        });
     }
 	if(isAdd)
 	{
