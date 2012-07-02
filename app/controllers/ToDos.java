@@ -293,7 +293,7 @@ public class ToDos extends Controller {
             }
             
             String unprocessedNote = params.get("note");
-            String[] notesArray = unprocessedNote.replaceAll("</div>", "").replaceAll("<br>", "").split("<div>");
+            String[] notesArray = unprocessedNote.replaceAll("</div>", "").replaceAll("<br>", "").replaceAll("&nbsp;", " ").split("<div>");
             for (String notesItem : notesArray) {
                 String note = notesItem.trim();
                 if (note.length() > 0) {
