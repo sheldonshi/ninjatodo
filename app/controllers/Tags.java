@@ -32,18 +32,18 @@ public class Tags extends Controller {
     /**
      * return up to limit # of suggested tags that contains q
      *
-     * @param project
+     * @param projectId
      * @param q
      * @param limit
      */
-    public static void suggest(Long project, String q, Integer limit) {
+    public static void suggest(Long projectId, String q, Integer limit) {
         if (limit == null) {
             limit = 8;
         } 
 
         String returnString = "";
         if (StringUtils.isNotEmpty(q)) {
-            List<Tag> tags = Tag.find("project.id=? and text like '%" + StringEscapeUtils.escapeSql(q) + "%'", project).fetch(limit);
+            List<Tag> tags = Tag.find("project.id=? and text like '%" + StringEscapeUtils.escapeSql(q) + "%'", projectId).fetch(limit);
             for (Tag tag : tags) {
                 returnString += tag.text + "|" + tag.id + "\n";
             }
