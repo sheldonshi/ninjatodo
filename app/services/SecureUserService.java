@@ -32,7 +32,7 @@ public class SecureUserService implements UserService.Service {
 
     @Override
     public void save(SocialUser socialUser) {
-        User user = new User();
+        User user = User.loadBySocialUser(socialUser);
         user.pack(socialUser);
         user.validateAndSave();
     }
