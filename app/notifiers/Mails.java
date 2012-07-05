@@ -31,7 +31,7 @@ public class Mails extends Mailer {
 
     public static boolean sendInvitationEmail(String email, Project project, User fromUser, Role role) {
 
-        setSubject(Messages.get("mail_invitation_subject"));
+        setSubject(Messages.get("mail_invitation_subject", fromUser.fullName, project.title));
         setFrom(Play.configuration.getProperty(SECURESOCIAL_MAILER_FROM));
 
         Date cutoffDate = new Date(System.currentTimeMillis() - 86400000L);
