@@ -33,6 +33,9 @@ public class SecureUserService implements UserService.Service {
     @Override
     public void save(SocialUser socialUser) {
         User user = User.loadBySocialUser(socialUser);
+        if (user == null) {
+            user = new User();
+        }
         user.pack(socialUser);
         user.validateAndSave();
     }
