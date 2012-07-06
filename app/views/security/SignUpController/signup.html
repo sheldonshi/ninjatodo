@@ -16,7 +16,7 @@ $(document).ready(function() {
                 $this.parent().parent().addClass("error");
                 $this.next().html(i18n('signup_needMoreCharacters'));
             } else {
-                $.get('/auth/isUnique?username='+encodeURI($this.val())+'&rnd='+Math.random(), function(data){
+                $.get('${play.Play.ctxPath}/auth/isUnique?username='+encodeURI($this.val())+'&rnd='+Math.random(), function(data){
                      if (data.length > 0) {
                          if (data > 0) {
                              $this.parent().parent().addClass("error");

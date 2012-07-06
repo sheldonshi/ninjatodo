@@ -4,8 +4,8 @@
 <script type="text/javascript">
 $().ready(function(){
 
-	mytinytodo.mttUrl = "/";
-	mytinytodo.templateUrl = "/public/themes/default/";
+	mytinytodo.mttUrl = "${play.Play.ctxPath}/";
+	mytinytodo.templateUrl = "${play.Play.ctxPath}/public/themes/default/";
 	mytinytodo.db = new mytinytodoStorageAjax(mytinytodo);
 	mytinytodo.init({
 		needAuth: false,
