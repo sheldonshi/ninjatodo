@@ -31,8 +31,8 @@ help_desktop=Desktop:
 help_mobile=Mobile Browser:
 help_hover=Mouse hover to activate</li>
 help_click=Click to select
-help_dblclick=Double click to edit
-help_drag=Drag to reorder or move to a different list
+help_dblclick=Double click a task to edit
+help_drag=Drag a task to reorder
 help_add=Click on "+" to add
 help_menu=Arrows on the right side are menus
 
