@@ -21,7 +21,7 @@ var tabLists = {
 	_alltasks: {},
 	clear: function(){
 		this._lists = {}; this._length = 0; this._order = [];
-		this._alltasks = { id:-1, showCompleted:0, sort:3 };
+		this._alltasks = { id:-1, showCompleted:0, sort:'DEFAULT' };
 	},
 	length: function(){ return this._length; },
 	exists: function(id){ if(this._lists[id] || id==-1) return true; else return false; },
@@ -728,10 +728,17 @@ var mytinytodo = window.mytinytodo = _mtt = {
 				if(!openListId) openListId = res.list[0].id;
 				
 				$.each(res.list, function(i,item){
-					tabLists.add(item);
-					ti += '<li id="list_'+item.id+'" class="mtt-tab'+(item.hidden?' mtt-tabs-hidden':'')+'">'+
-						'<a href="#list/'+item.id+'" title="'+item.name+'"><span>'+item.name+'</span>'+
-						'<div class="list-action"></div></a></li>';
+                    if (item.id == -1) {
+                        tabLists.get(-1).sort = item.sort;
+                        tabLists.get(-1).notesExpanded = item.notesExpanded;
+                        tabLists.get(-1).showCompleted = item.showCompleted;
+                        tabLists.get(-1).showMetadata = item.showMetadata;
+                    } else {
+                        tabLists.add(item);
+                        ti += '<li id="list_'+item.id+'" class="mtt-tab'+(item.hidden?' mtt-tabs-hidden':'')+'">'+
+                            '<a href="#list/'+item.id+'" title="'+item.name+'"><span>'+item.name+'</span>'+
+                            '<div class="list-action"></div></a></li>';
+                    }
 				});
                 checkAllListsTab();
 			}
@@ -1300,7 +1307,7 @@ function setSort(v, init)
 	if(!init)
 	{
 		changeTaskOrder();
-		if(!flag.readOnly) _mtt.db.request('setSort', {list:curList.id, sort:curList.sort});
+		if(!flag.readOnly) _mtt.db.request('setSort', {list:curList.id, sort:curList.sort, project:_mtt.project});
 	}
 };
 

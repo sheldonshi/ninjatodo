@@ -54,6 +54,10 @@ public class ToDoLists extends Controller {
         for (ToDoList toDoList : toDoLists) {
             loadListViewOptions(toDoList);
         }
+        ToDoList allTasksList = new ToDoList();
+        allTasksList.id = ToDos.ALL_LIST_ID;
+        loadListViewOptions(allTasksList);
+        toDoLists.add(allTasksList);
         renderJSON(Utils.toJson(toDoLists));
     }
 
@@ -162,14 +166,19 @@ public class ToDoLists extends Controller {
      * should be user specific
      */
     public static void setListSort(Long list, String sort) {
-        ToDoList toDoList = ToDoList.findById(list);
-        Sort sortOrder = Sort.valueOf(sort);
-        if (toDoList != null) {
+        if (list.equals(ToDos.ALL_LIST_ID)) {
+            Sort sortOrder = Sort.valueOf(sort);
             manageListViewOptions(list, true, ViewOptionType.SORT, sortOrder);
-            toDoList.sort = sortOrder;
+        } else {
+            ToDoList toDoList = ToDoList.findById(list);
+            Sort sortOrder = Sort.valueOf(sort);
+            if (toDoList != null) {
+                manageListViewOptions(list, true, ViewOptionType.SORT, sortOrder);
+                toDoList.sort = sortOrder;
+            }
         }
 
-        renderText(Utils.toJson(toDoList));
+        renderText(""); // nothing needs to be returned
     }
 
     /**
