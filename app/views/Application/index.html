@@ -16,6 +16,7 @@ $().ready(function(){
 		firstdayofweek: 1,
         openList: ${selectedToDoList ? selectedToDoList.id : 0},
 		autotag: true					}).loadProject(${selectedParticipation.project.id});
+    mytinytodo.newNotificationCount();
 });
 </script>
 
@@ -23,7 +24,7 @@ $().ready(function(){
 <div id="container">
 <div id="projects" class="ui-corner-bl ui-corner-br lightblue_bg">
     <span class="addProject">
-        &nbsp;&nbsp;&nbsp;${selectedParticipation.user.username}&nbsp;&nbsp;&nbsp;&nbsp;<a href="#" id="help" class="weak">&{'a_help'}</a>&nbsp;&nbsp;:&nbsp;&nbsp;<a href="@{securesocial.SecureSocial.logout}" class="weak">&{'a_signout'}</a>
+        &nbsp;&nbsp;&nbsp;${selectedParticipation.user.username}&nbsp;&nbsp;&nbsp;&nbsp;<a href="#" id="notification" class="weak">&{'a_notification'}</a>&nbsp;&nbsp;:&nbsp;&nbsp;<a href="#" id="help" class="weak">&{'a_help'}</a>&nbsp;&nbsp;:&nbsp;&nbsp;<a href="@{securesocial.SecureSocial.logout}" class="weak">&{'a_signout'}</a>
     </span>
     <span id="projectList">&{'workspaces'}&nbsp;&nbsp;&nbsp;
 #{list items:participations, as:'participation'}
@@ -210,9 +211,15 @@ $().ready(function(){
         </ul>
     </div>
 </div>
+<div id="notificationdetail" style="display:none">
+    <a id="notificationcancel" class="mtt-img-button"><span></span></a>
+    <div id="notificationcontent">
+    </div>
+</div>
 
 <div id="listmenucontainer" class="mtt-menu-container" style="display:none">
 <ul>
+    <li class="mtt-need-list" id="btnWatch"><div class="menu-icon"></div>&{'list_watch'}</li>
     <li class="mtt-need-list" id="btnShowCompleted"><div class="menu-icon"></div>&{'list_showcompleted'}</li>
     <li class="mtt-need-list" id="btnExpandNotes"><div class="menu-icon"></div>&{'list_expandnotes'}</li>
     <li class="mtt-need-list" id="btnShowMetadata"><div class="menu-icon"></div>&{'list_showmetadata'}</li>

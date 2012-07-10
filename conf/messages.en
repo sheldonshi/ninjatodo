@@ -97,6 +97,7 @@ list_publish=Publish list
 list_showcompleted=Show completed tasks
 list_expandnotes=Keep notes expanded
 list_showmetadata=Show last update info
+list_watch=Watch for updates
 list_clearcompleted=Clear completed tasks
 list_select=Select list
 list_export=Export
@@ -108,6 +109,7 @@ alltags_show=Show all
 alltags_hide=Hide all
 a_settings=Settings
 a_help=Help
+a_notification=Notification
 rss_feed=RSS Feed
 feed_title=%s
 feed_completed_tasks=Completed tasks
@@ -171,3 +173,6 @@ sendInvitationEmail_hello=Hello, %s invites you join Ninja To Do workspace "%s".
 sendInvitationEmail_url=Click the following link to join:
 
 mail_invitation_subject=%s invite you to join workspace "%s"
+
+notification_no=No notifications
+notification_clear=Clear All

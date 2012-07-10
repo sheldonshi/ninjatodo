@@ -1,6 +1,7 @@
 package controllers;
 
 import controllers.securesocial.SecureSocial;
+import jobs.NotificationJob;
 import models.*;
 import org.apache.commons.lang.StringUtils;
 import play.db.jpa.JPA;
@@ -67,6 +68,12 @@ public class ToDos extends Controller {
             addTagToToDo(StringUtils.join(hashtags, ","), toDo);
         }
         toDo.save();
+        // send notification
+        User user = User.loadBySocialUser(SecureSocial.getCurrentUser());
+        NotificationJob.queueNotification(NotificationType.ASSIGN_TASK,
+                toDo.toDoList, user,
+                user.fullName + " added a new task \"" + toDo.title + "\" to list \"" + toDo.toDoList.name + "\"");
+        
         renderText(Utils.toJson(toDo));
     }
 
@@ -223,6 +230,12 @@ public class ToDos extends Controller {
         ToDo toDo = ToDo.findById(taskId);
         toDo.completed = completed;
         toDo.save();
+        // send notification
+        User user = User.loadBySocialUser(SecureSocial.getCurrentUser());
+        NotificationJob.queueNotification(NotificationType.COMPLETE_TASK,
+                toDo.toDoList, user,
+                user.fullName + " mark task \"" + toDo.title + "\" completed.");
+        
         renderText(Utils.toJson(toDo));
     }
 
@@ -249,8 +262,10 @@ public class ToDos extends Controller {
      */
     public static void saveFullTask(Long list, Long taskId) {
         ToDo toDo = null;
+        boolean isNewTask = false;
         if (taskId == null) {
             toDo = new ToDo();
+            isNewTask = true;
         } else {
             toDo = ToDo.findById(taskId);
             list = toDo.toDoList.id;
@@ -319,6 +334,15 @@ public class ToDos extends Controller {
             // when notes is not passed in parameter, it is empty (in newly created task), or didn't change
             // in both case we don't need to load notes, we will use existing client cache for edited task
         }
+
+        // send notification
+        User user = User.loadBySocialUser(SecureSocial.getCurrentUser());
+        NotificationJob.queueNotification((isNewTask ? NotificationType.ASSIGN_TASK : NotificationType.UPDATE_TASK),
+                toDo.toDoList, user,
+                (isNewTask ?
+                        user.fullName + " added a new task \"" + toDo.title + "\" to list \"" + toDo.toDoList.name + "\"" :
+                        user.fullName + " updated task \"" + toDo.title + "\"." ));
+        
         renderText(Utils.toJson(toDo));
     }
 
@@ -395,6 +419,11 @@ public class ToDos extends Controller {
         if (toDo != null) {
             toDo.delete();
         }
+        // send notification
+        User user = User.loadBySocialUser(SecureSocial.getCurrentUser());
+        NotificationJob.queueNotification(NotificationType.REMOVE_TASK,
+                toDo.toDoList, user,
+                user.fullName + " removed task \"" + toDo.title + "\" from list \"" + toDo.toDoList.name + "\"");
 
         renderText(Utils.toJson(1));
     }
@@ -410,6 +439,11 @@ public class ToDos extends Controller {
             toDo.lastUpdated = new Date();
             toDo.save();
         }
+        // send notification
+        User user = User.loadBySocialUser(SecureSocial.getCurrentUser());
+        NotificationJob.queueNotification(NotificationType.CHANGE_PRIORITY,
+                toDo.toDoList, user,
+                user.fullName + " changed the priority of task \"" + toDo.title + "\".");
 
         renderText(Utils.toJson(toDo));
     }
@@ -423,6 +457,7 @@ public class ToDos extends Controller {
     public static void moveTask(Long taskId, Long from, Long to) {
         ToDo toDo = ToDo.findById(taskId);
         ToDoList newToDoList = ToDoList.findById(to);
+        ToDoList oldToDoList = ToDoList.findById(from);
         if (toDo != null && toDo.toDoList.id == from && newToDoList != null) {
             toDo.toDoList = newToDoList;
             toDo.orderIndex = getNextOrderIndex(toDo.toDoList);
@@ -430,6 +465,14 @@ public class ToDos extends Controller {
             toDo.lastUpdated = new Date();
             toDo.save();
         }
+        // send notification
+        User user = User.loadBySocialUser(SecureSocial.getCurrentUser());
+        NotificationJob.queueNotification(NotificationType.REMOVE_TASK,
+                oldToDoList, user,
+                user.fullName + " removed task \"" + toDo.title + "\" from list \"" + oldToDoList.name + "\"");
+        NotificationJob.queueNotification(NotificationType.ASSIGN_TASK,
+                toDo.toDoList, user,
+                user.fullName + " assigned a new task \"" + toDo.title + "\" to list \"" + toDo.toDoList.name + "\"");
 
         renderText(Utils.toJson(toDo));
     }

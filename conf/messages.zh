@@ -93,6 +93,7 @@ list_publish=发布列表
 list_showcompleted=显示已完成的任务
 list_expandnotes=显示所有说明
 list_showmetadata=显示修改信息
+list_watch=关注此列表
 list_clearcompleted=清空已完成的任务
 list_select=选择列表
 list_export=导出
@@ -104,6 +105,7 @@ alltags_show=显示全部标签
 alltags_hide=隐藏全部标签
 a_settings=设置
 a_help=帮助
+a_notification=通知
 rss_feed=RSS输出
 feed_title=%s
 feed_completed_tasks=已完成的任务
@@ -165,3 +167,6 @@ sendInvitationEmail_hello=您好，%s邀请您加入 Ninja To Do 项目"%s".
 sendInvitationEmail_url=点击以下链接加入：
 
 mail_invitation_subject=%s邀请你加入项目“%s“
+
+notification_no=没有通知
+notification_clear=清空

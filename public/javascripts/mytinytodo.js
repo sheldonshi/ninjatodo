@@ -262,6 +262,38 @@ var mytinytodo = window.mytinytodo = _mtt = {
             if(_mtt.menus.help) _mtt.menus.help.close();
         });
 
+        $('#notification').click(function(){
+            if(!_mtt.menus.notification) _mtt.menus.notification = new mttMenu('notificationdetail', {
+                adjustWidth:true
+            });
+            _mtt.db.request('checkNotification', {}, function(json){
+                if (json.total < 1) {
+                    s = '<h3>'+_mtt.lang.get('notification_no')+'</h3>';
+                } else {
+                    var s = '<h3>'+_mtt.lang.get('a_notification')+'</h3><ul>';
+                    $.each(json.list, function(i,item) {
+                        s += '<li>'+item.message+'</li>';
+                    })
+                    s += '</ul><div class="notification-action"><a href="#" class="weak">'+_mtt.lang.get('notification_clear')+'</a></div></div>';
+                }
+                $('#notificationcontent').html(s);
+            });
+            _mtt.menus.notification.show(this);
+            $('#notification strong').remove();
+        });
+
+        $('#notificationcontent .notification-action a').live('click', function() {
+            _mtt.db.request('clearNotification', {}, function(json) {
+                if (json.total == 0) {
+                    $('#notificationcontent').html('<h3>'+_mtt.lang.get('notification_no')+'</h3>');
+                }
+            });
+        });
+
+        $('#notificationcancel').click(function(){
+            if(_mtt.menus.notification) _mtt.menus.notification.close();
+        });
+
 		$('#taskviewcontainer li').click(function(){
 			if(this.id == 'view_tasks') setTaskview(0);
 			else if(this.id == 'view_past') setTaskview('past');
@@ -894,6 +926,13 @@ var mytinytodo = window.mytinytodo = _mtt = {
         $("#deleteConfirm-dialog-form-fn").val(fn);
         $("#deleteConfirm-dialog-form-id").val(id);
         $("#deleteConfirm-dialog-form").dialog( "open" );
+    },
+
+    newNotificationCount: function() {
+        this.db.newNotificationCount({}, function(json) {
+            if (json.total < 1) return;
+            $('#notification').append(' <strong>('+json.total+')</strong>');
+        });
     }
 };
 
@@ -1377,6 +1416,14 @@ function setTaskview(v)
 	}
 };
 
+function toggleWatch() {
+    var show = !curList.watchedByMe;
+    curList.watchedByMe = show;
+    if(show) $('#btnWatch').addClass('mtt-item-checked');
+    else $('#btnWatch').removeClass('mtt-item-checked');
+    _mtt.db.request('setWatchList', {list:curList.id, watchedByMe:curList.watchedByMe}, function(json){});
+};
+
 function toggleAllNotes()
 {
     var show = !curList.notesExpanded;
@@ -1463,6 +1510,7 @@ function listMenuClick(el, menu)
 		case 'btnExportCSV': exportCurList('csv'); break;
 		case 'btnExportICAL': exportCurList('ical'); break;
 		case 'btnRssFeed': feedCurList(); break;
+        case 'btnWatch': toggleWatch(); break;
 		case 'btnShowCompleted': showCompletedToggle(); break;
         case 'btnExpandNotes': toggleAllNotes(); break;
         case 'btnShowMetadata': toggleShowMetadata(); break;
@@ -2103,6 +2151,8 @@ function tabmenuOnListSelected(list)
 		$('#btnPublish').removeClass('mtt-item-checked');
 		$('#btnRssFeed').addClass('mtt-item-disabled');
 	}
+    if(list.watchedByMe) $('#btnWatch').addClass('mtt-item-checked');
+    else $('#btnWatch').removeClass('mtt-item-checked');
 	if(list.showCompleted) $('#btnShowCompleted').addClass('mtt-item-checked');
 	else $('#btnShowCompleted').removeClass('mtt-item-checked');
     if (list.notesExpanded) $('#btnExpandNotes').addClass('mtt-item-checked');
@@ -2311,7 +2361,7 @@ function hideTab(listId)
 }
 
 function checkAllListsTab() {
-    if (tabLists.length()>1) {
+    if (tabLists.length()>2) {
         $("#list_all").removeClass('mtt-tabs-hidden');
     } else {
         $('#list_all').addClass('mtt-tabs-hidden');

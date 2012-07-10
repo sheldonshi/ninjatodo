@@ -57,6 +57,9 @@ public class ToDoList extends Model {
 
     @Transient
     public boolean showMetadata;
+
+    @Transient
+    public boolean watchedByMe;
     
     public ToDoList() {
         dateCreated = new Date();

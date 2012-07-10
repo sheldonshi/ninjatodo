@@ -1,6 +1,7 @@
 package controllers;
 
 import controllers.securesocial.SecureSocial;
+import jobs.NotificationJob;
 import models.*;
 import org.apache.commons.lang.StringUtils;
 import play.db.jpa.JPA;
@@ -54,10 +55,13 @@ public class ToDoLists extends Controller {
         for (ToDoList toDoList : toDoLists) {
             loadListViewOptions(toDoList);
         }
+        loadListWatchOptions(toDoLists);
+        // create a transient ToDoList for alltasks
         ToDoList allTasksList = new ToDoList();
         allTasksList.id = ToDos.ALL_LIST_ID;
         loadListViewOptions(allTasksList);
         toDoLists.add(allTasksList);
+
         renderJSON(Utils.toJson(toDoLists));
     }
 
@@ -72,6 +76,8 @@ public class ToDoLists extends Controller {
         toDoList.project = Project.findById(projectId);
         toDoList.creator = User.loadBySocialUser(SecureSocial.getCurrentUser());
         toDoList.save();
+        /*
+        // no more re-ordering of todolists
         try {
             Integer lastOrderIndex = (Integer) JPA.em()
                     .createQuery("select orderIndex from ToDoList order by orderIndex desc")
@@ -80,7 +86,18 @@ public class ToDoLists extends Controller {
             toDoList.orderIndex = lastOrderIndex + 1;
         } catch (NoResultException nre) {
             // orderIndex should remain the default 0
-        }
+        }               
+         */
+
+        // send notification
+        User user = User.loadBySocialUser(SecureSocial.getCurrentUser());
+        NotificationJob.queueNotification(NotificationType.ADD_LIST,
+                toDoList, user,
+                user.fullName + " created a new list \"" + toDoList.name + "\".");
+        // add this to user's watch list
+        user.watchedToDoLists.add(toDoList);
+        user.save();
+
         renderText(Utils.toJson(toDoList));
     }
 
@@ -90,10 +107,17 @@ public class ToDoLists extends Controller {
      */
     public static void renameList(Long list, String name) {
         ToDoList toDoList = ToDoList.findById(list);
+        String oldName = null;
         if (toDoList != null) {
+            oldName = toDoList.name;
             toDoList.name = name;
             toDoList.save();
         }
+        // send notification
+        User user = User.loadBySocialUser(SecureSocial.getCurrentUser());
+        NotificationJob.queueNotification(NotificationType.DELETE_LIST,
+                toDoList, user,
+                user.fullName + " renamed list \"" + oldName + "\" to \"" + toDoList.name + "\".");
 
         renderText(Utils.toJson(toDoList));
     }
@@ -116,6 +140,11 @@ public class ToDoLists extends Controller {
                 count++;
             }
         }
+        // send notification
+        User user = User.loadBySocialUser(SecureSocial.getCurrentUser());
+        NotificationJob.queueNotification(NotificationType.CLEAR_LIST, 
+                toDoList, user,
+                user.fullName + " cleared all completed tasks in list \"" + toDoList.name + "\".");
 
         renderText(Utils.toJson(count));
     }
@@ -157,6 +186,12 @@ public class ToDoLists extends Controller {
             toDoList.delete();
         }
 
+        // send notification
+        User user = User.loadBySocialUser(SecureSocial.getCurrentUser());
+        NotificationJob.queueNotification(NotificationType.DELETE_LIST,
+                toDoList, user,
+                user.fullName + " deleted list \"" + toDoList.name + "\".");
+        
         renderText(Utils.toJson(toDoList));
     }
 
@@ -179,6 +214,33 @@ public class ToDoLists extends Controller {
         }
 
         renderText(""); // nothing needs to be returned
+    }
+
+    /**
+     * toggles watchedByMe property of a list
+     * <p/>
+     * This is user specific, stored in a many-to-many join table of user and todolist
+     */
+    public static void toggleWatchedByMe(Long list, Boolean watchedByMe) {
+        ToDoList toDoList = ToDoList.findById(list);
+        if (toDoList != null) {
+            User user = User.loadBySocialUser(SecureSocial.getCurrentUser());
+            if (watchedByMe) {
+                // if user has not watched this list, watch it
+                if (!user.watchedToDoLists.contains(toDoList)) {
+                    user.watchedToDoLists.add(toDoList);
+                    user.save();
+                }
+            } else {
+                // if user is watching this list, remove watch
+                if (user.watchedToDoLists.contains(toDoList)) {
+                    user.watchedToDoLists.remove(toDoList);
+                    user.save();
+                }
+            }
+        }
+
+        renderText(Utils.toJson(toDoList));
     }
 
     /**
@@ -289,6 +351,10 @@ public class ToDoLists extends Controller {
         }
     }
 
+    /**
+     * sets the view options for each list pertaining to current user's preference
+     * @param toDoList
+     */
     private static void loadListViewOptions(ToDoList toDoList) {
         String key = "list";
         String lists = session.get(key);
@@ -312,5 +378,19 @@ public class ToDoLists extends Controller {
             // something is wrong, ignore view options altogether
             session.remove(key);
         }
+    }
+
+    /**
+     * this sets the watchedByMe property on all lists passed in
+     * @param toDoLists
+     */
+    private static void loadListWatchOptions(List<ToDoList> toDoLists) {
+        User user = User.loadBySocialUser(SecureSocial.getCurrentUser());
+        for (ToDoList toDoList : toDoLists) {
+            if (user != null && user.watchedToDoLists != null && user.watchedToDoLists.contains(toDoList)) {
+                toDoList.watchedByMe = true;
+            }
+        }
+        
     }
 }

@@ -7,6 +7,7 @@ import play.data.validation.Email;
 import play.data.validation.MaxSize;
 import play.data.validation.MinSize;
 import play.data.validation.Required;
+import play.db.jpa.JPA;
 import play.db.jpa.Model;
 import play.libs.Codec;
 import securesocial.provider.AuthenticationMethod;
@@ -14,16 +15,10 @@ import securesocial.provider.ProviderType;
 import securesocial.provider.SocialUser;
 import securesocial.provider.UserId;
 
-import javax.persistence.Cacheable;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-import javax.persistence.Version;
+import javax.persistence.*;
 import java.util.Date;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Created by IntelliJ IDEA.
@@ -75,6 +70,10 @@ public class User extends Model {
     @Column(name = "date_last_login", nullable = true)
     public Date dateLastLogin;
 
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "last_notification_check", nullable = true)
+    public Date lastNotificationCheck;
+
     @Column(name = "provider", nullable = true)
     @Enumerated(EnumType.STRING)
     public ProviderType provider;
@@ -88,6 +87,9 @@ public class User extends Model {
     @Column(name = "verify_code", nullable = true)
     @JsonExclude
     public String verifyCode;
+
+    @ManyToMany
+    public Set<ToDoList> watchedToDoLists;
     
     public User() {
         dateCreated = new Date();
@@ -140,7 +142,14 @@ public class User extends Model {
     
     public static User loadBySocialUser(SocialUser socialUser) {
         if (socialUser != null) {
-            return User.find("byUsername", socialUser.id.id).first();
+            try {
+                return (User) JPA.em()
+                        .createQuery("select u from User u left join u.watchedToDoLists where username=:username")
+                        .setParameter("username", socialUser.id.id)
+                        .getSingleResult();
+            } catch (Exception e) {
+                return null;
+            }
         } else {
             return null;
         }

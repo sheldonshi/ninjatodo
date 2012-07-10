@@ -140,6 +140,19 @@ mytinytodoStorageAjax.prototype =
         $.post(this.mtt.mttUrl+'ToDos/addTag', {taskId:params.id,tags:params.tags}, callback, 'json');
     },
 
+    checkNotification: function(params, callback)
+    {
+        $.getJSON(this.mtt.mttUrl+'Notifications/check?rnd='+Math.random(), callback);
+    },
+
+    newNotificationCount: function(params, callback) {
+        $.getJSON(this.mtt.mttUrl+'Notifications/checkNewCount?rnd='+Math.random(), callback);
+    },
+
+    clearNotification: function(params, callback) {
+        $.post(this.mtt.mttUrl+'Notifications/clear', params, callback, 'json');
+    },
+
 	moveTask: function(params, callback)
 	{
 		$.post(this.mtt.mttUrl+'ToDos/moveTask', { taskId:params.id, from:params.from, to:params.to }, callback, 'json');
@@ -182,6 +195,10 @@ mytinytodoStorageAjax.prototype =
 	{
 	    $.post(this.mtt.mttUrl+'ToDoLists/toggleNotesExpanded', { list:params.list, notesExpanded:params.notesExpanded },  callback, 'json');
 	},
+
+    setWatchList: function(params, callback) {
+        $.post(this.mtt.mttUrl+'ToDoLists/toggleWatchedByMe', { list:params.list, watchedByMe:params.watchedByMe },  callback, 'json');
+    },
 
     setShowMetadata: function(params, callback)
     {

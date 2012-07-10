@@ -7,5 +7,6 @@ package models;
  * Time: 10:45 AM
  * To change this template use File | Settings | File Templates.
  */
-public class NotificationType {
+public enum NotificationType {
+    ASSIGN_TASK, REMOVE_TASK, UPDATE_TASK, COMPLETE_TASK, CHANGE_PRIORITY, ADD_LIST, DELETE_LIST, RENAME_LIST, CLEAR_LIST
 }
