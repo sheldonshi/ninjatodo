@@ -29,7 +29,7 @@ public class Notifications extends Controller {
                 .fetch();
         user.lastNotificationCheck = new Date();
         user.save();
-        renderText(Utils.toJson(notifications));
+        renderText(Utils.toJson(notifications, true));
     }
     /**
      * get all notification count since last viewed

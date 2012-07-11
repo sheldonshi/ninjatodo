@@ -92,7 +92,6 @@ list_delete=删除列表
 list_publish=发布列表
 list_showcompleted=显示已完成的任务
 list_expandnotes=显示所有说明
-list_showmetadata=显示修改信息
 list_watch=关注此列表
 list_clearcompleted=清空已完成的任务
 list_select=选择列表
@@ -170,3 +169,12 @@ mail_invitation_subject=%s邀请你加入项目“%s“
 
 notification_no=没有通知
 notification_clear=清空
+
+time_amomentago=刚才
+time_secondsago=%s秒以前
+time_oneminuteago=一分钟前
+time_minutesago=%s分钟前
+time_onehourago=一小时前
+time_hoursago=%s小时前
+time_onedayago=一天前
+time_daysago=%s天前

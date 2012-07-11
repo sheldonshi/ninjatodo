@@ -272,7 +272,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
                 } else {
                     var s = '<h3>'+_mtt.lang.get('a_notification')+'</h3><ul>';
                     $.each(json.list, function(i,item) {
-                        s += '<li>'+item.message+'</li>';
+                        s += '<li>'+item.message+'&nbsp;&nbsp;<span>' + smartDate(item.dateCreated, json.now) + '</span></li>';
                     })
                     s += '</ul><div class="notification-action"><a href="#" class="weak">'+_mtt.lang.get('notification_clear')+'</a></div></div>';
                 }
@@ -764,7 +764,6 @@ var mytinytodo = window.mytinytodo = _mtt = {
                         tabLists.get(-1).sort = item.sort;
                         tabLists.get(-1).notesExpanded = item.notesExpanded;
                         tabLists.get(-1).showCompleted = item.showCompleted;
-                        tabLists.get(-1).showMetadata = item.showMetadata;
                     } else {
                         tabLists.add(item);
                         ti += '<li id="list_'+item.id+'" class="mtt-tab'+(item.hidden?' mtt-tabs-hidden':'')+'">'+
@@ -1108,8 +1107,6 @@ function prepareTaskStr(item, noteExp)
 		'<span title="'+item.dateCompletedInlineTitle+'">'+item.dateCompletedInline+'</span></span></div>'+"\n"+
 		'<div class="task-through">'+preparePrio(prio,id)+'<span class="task-title">'+prepareHtml(item.title)+'</span> '+
 		(curList.id == -1 ? '<span class="task-listname">'+ tabLists.get(item.toDoListId).name +'</span>' : '') +
-        '\n<span class="task-date">'+_mtt.lang.get('taskdate_lastUpdated')+' '+smartDate(item.lastUpdated,item.lastUpdatedInDays)+
-        ' '+_mtt.lang.get('taskdate_updatedBy')+' '+item.updater.username+'</span>'+
 		prepareTagsStr(item)+'</div>'+'<div class="task-note-block">'+
 			'<div id="tasknote'+id+'" class="task-note">'+prepareNotes(item.notes)+'</div>'+
 		'</div>'+
@@ -1205,7 +1202,7 @@ function prepareItemStyleClass(item, noteExp) {
     }
     styleClass += (item.notes && item.notes.length > 0?' task-has-note':'') +
         ((curList.notesExpanded && item.notes && item.notes.length > 0) || noteExp ? ' task-expanded' : '') +
-        (curList.showMetadata ? ' show-inline-date' : '') + prepareTagsClass(item.tags);
+        prepareTagsClass(item.tags);
     return styleClass;
 }
 
@@ -1439,18 +1436,6 @@ function toggleAllNotes()
 	_mtt.db.request('setShowNotesInList', {list:curList.id, notesExpanded:curList.notesExpanded}, function(json){});
 };
 
-function toggleShowMetadata() {
-    var show = !curList.showMetadata;
-    for(var id in taskList) {
-        if(show) $('#taskrow_'+id).addClass('show-inline-date');
-        else $('#taskrow_'+id).removeClass('show-inline-date');
-    }
-    curList.showMetadata = show;
-    if(show) $('#btnShowMetadata').addClass('mtt-item-checked');
-    else $('#btnShowMetadata').removeClass('mtt-item-checked');
-    _mtt.db.request('setShowMetadata', {list:curList.id, showMetadata:show}, function(json){});
-};
-
 function tabSelect(elementOrId)
 {
 	var id;
@@ -1513,7 +1498,6 @@ function listMenuClick(el, menu)
         case 'btnWatch': toggleWatch(); break;
 		case 'btnShowCompleted': showCompletedToggle(); break;
         case 'btnExpandNotes': toggleAllNotes(); break;
-        case 'btnShowMetadata': toggleShowMetadata(); break;
 		case 'btnClearCompleted': _mtt.confirmAction('clearCompleted', 'clearCompleted', ''); break;
 		case 'sortByHand': setSort("DEFAULT"); break;
 		case 'sortByPrio': setSort(curList.sort=='PRIORITY_DESC' ? 'PRIORITY_ASC' : 'PRIORITY_DESC'); break;
@@ -2157,8 +2141,6 @@ function tabmenuOnListSelected(list)
 	else $('#btnShowCompleted').removeClass('mtt-item-checked');
     if (list.notesExpanded) $('#btnExpandNotes').addClass('mtt-item-checked');
     else $('#btnExpandNotes').removeClass('mtt-item-checked');
-    if (list.showMetadata) $('#btnShowMetadata').addClass('mtt-item-checked');
-    else $('#btnShowMetadata').removeClass('mtt-item-checked');
 };
 
 
@@ -2398,17 +2380,21 @@ function getDate(date) {
     }
 }
 
-function smartDate(date, dateInDays) {
+function smartDate(date, now) {
     if (!date) return '';
-    if (dateInDays) {
-        if (-dateInDays * 86400 < 6) return 'moment ago';
-        else if (-dateInDays * 86400 < 30) return Math.round(-dateInDays*86400)+' seconds ago';
-        else if (-dateInDays * 1440 < 1.5) return '1 minute ago';
-        else if (-dateInDays * 1440 < 60) return Math.round(-dateInDays*1440)+' minutes ago';
-        else if (-dateInDays * 24 < 1.5) return '1 hour ago';
-        else if (-dateInDays * 24 < 24) return Math.round(-dateInDays*24)+' hours ago';
-        else if (-dateInDays < -1.5) return '1 day ago';
-        else return Math.round(-dateInDays) + ' days ago';
+    if (now) {
+        var dateInDays = (getDate(date).getTime() - getDate(now).getTime()) / 86400000;
+        if (-dateInDays * 86400 < 6) return _mtt.lang.get('time_amomentago');
+        else if (-dateInDays * 86400 < 30) return _mtt.lang.get('time_secondsago').replace('%s', Math.round(-dateInDays*86400));
+        else if (-dateInDays * 1440 < 1.5) return _mtt.lang.get('time_oneminuteago');
+        else if (-dateInDays * 1440 < 60) return _mtt.lang.get('time_minutesago').replace('%s', Math.round(-dateInDays*1440));
+        else if (-dateInDays * 24 < 1.5) return _mtt.lang.get('time_onehourago');
+        else if (-dateInDays * 24 < 24) return _mtt.lang.get('time_hoursago').replace('%s', Math.round(-dateInDays*24));
+        else if (-dateInDays < 1.5) return _mtt.lang.get('time_onedayago');
+        else if (-dateInDays < 7) return _mtt.lang.get('time_daysago').replace('%s', Math.round(-dateInDays));
+        else {
+            return date.split(" ")[0];
+        };
     } else {
         var dayHour = date.split(" ");
         return dayHour[0];

@@ -96,7 +96,6 @@ list_delete=Delete list
 list_publish=Publish list
 list_showcompleted=Show completed tasks
 list_expandnotes=Keep notes expanded
-list_showmetadata=Show last update info
 list_watch=Watch for updates
 list_clearcompleted=Clear completed tasks
 list_select=Select list
@@ -176,3 +175,12 @@ mail_invitation_subject=%s invite you to join workspace "%s"
 
 notification_no=No notifications
 notification_clear=Clear All
+
+time_amomentago=a moment ago
+time_secondsago=%s seconds ago
+time_oneminuteago=one minute ago
+time_minutesago=%s minutes ago
+time_onehourago=one hour ago
+time_hoursago=%s hours ago
+time_onedayago=one day ago
+time_daysago=%s days ago

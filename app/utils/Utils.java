@@ -27,6 +27,17 @@ public class Utils {
      * @return
      */
     public static String toJson(Object obj) {
+        return toJson(obj, false);
+    }
+    
+    /**
+     * prepare for the right json structure when returning response
+     *
+     * @param obj
+     * @param returnCurrentDate
+     * @return
+     */
+    public static String toJson(Object obj, boolean returnCurrentDate) {
         Map returnObj = new HashMap();
         List list = new ArrayList();
         if (obj instanceof List) {
@@ -37,20 +48,23 @@ public class Utils {
 
         returnObj.put("list", list);
         returnObj.put("total", list.size());
+        if (returnCurrentDate) {
+            returnObj.put("now", new Date());
+        }
 
         return (new GsonBuilder())
                 .setDateFormat("MM/dd/yyyy HH:mm:ss")
                 .setExclusionStrategies(new ExclusionStrategy() {
-            @Override
-            public boolean shouldSkipField(FieldAttributes field) {
-                return field.getAnnotation(JsonExclude.class) != null;
-            }
+                    @Override
+                    public boolean shouldSkipField(FieldAttributes field) {
+                        return field.getAnnotation(JsonExclude.class) != null;
+                    }
 
-            @Override
-            public boolean shouldSkipClass(Class<?> clazz) {
-                return clazz.getAnnotation(JsonExclude.class) != null;
-            }
-        }).create().toJson(returnObj);
+                    @Override
+                    public boolean shouldSkipClass(Class<?> clazz) {
+                        return clazz.getAnnotation(JsonExclude.class) != null;
+                    }
+                }).create().toJson(returnObj);
     }
 
     /**

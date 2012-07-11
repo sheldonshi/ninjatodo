@@ -199,11 +199,6 @@ mytinytodoStorageAjax.prototype =
     setWatchList: function(params, callback) {
         $.post(this.mtt.mttUrl+'ToDoLists/toggleWatchedByMe', { list:params.list, watchedByMe:params.watchedByMe },  callback, 'json');
     },
-
-    setShowMetadata: function(params, callback)
-    {
-        $.post(this.mtt.mttUrl+'ToDoLists/toggleShowMetadata', { list:params.list, showMetadata:params.showMetadata },  callback, 'json');
-    },
 	
 	setHideList: function(params, callback)
 	{

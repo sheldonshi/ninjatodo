@@ -55,8 +55,8 @@ public class ToDoList extends Model {
     @Transient
     public boolean notesExpanded;
 
-    @Transient
-    public boolean showMetadata;
+    //@Transient
+    //public boolean showMetadata;
 
     @Transient
     public boolean watchedByMe;

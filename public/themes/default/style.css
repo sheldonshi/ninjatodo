@@ -297,11 +297,15 @@ a.mtt-back-button { font-size:0.8em; }
     -moz-box-shadow:1px 2px 5px rgba(0,0,0,0.5); -webkit-box-shadow:1px 2px 5px rgba(0,0,0,0.5);
 }
 #notificationcontent ul { list-style: none; padding:0; margin:0; }
-#notificationcontent li { margin:1px 0px; cursor:default; color:#000; white-space:nowrap; padding:0.15em 18px; position:relative; }
+#notificationcontent li { margin:1px 0px; cursor:default; color:#000; padding:0.15em 18px; position:relative; }
 
 #notificationcancel { float:right; }
 #notificationcancel span { background:url(images/buttons.png) 0 -32px no-repeat; }
 #notificationcancel span:hover { background-position:-16px -32px; }
+
+#notificationcontent .notification-action {float:right;margin:4px 10px}
+#notificationcontent span {color:#888;}
+#notification strong {color:red}
 
 #taskview { padding:2px; }
 
@@ -428,9 +432,6 @@ a.note-undone-action {margin: 0px 5px 0px 10px;display: none;color:#888; text-de
 a.note-done-action {margin: 0px 5px 0px 10px;display: none;color:#888; text-decoration: none;font-size: 0.8em;}
 .note-done:hover a.note-undone-action {display: inline}
 .note-undone:hover a.note-done-action {display: inline}
-
-#notificationcontent .notification-action {float:right;margin:4px 10px}
-#notification strong {color:red}
 
 
 
