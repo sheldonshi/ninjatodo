@@ -1,10 +1,8 @@
 package controllers.security;
 
 import controllers.securesocial.SecureSocial;
-import models.Invitation;
-import models.Participation;
-import models.Role;
-import models.User;
+import jobs.NotificationJob;
+import models.*;
 import notifiers.securesocial.Mails;
 import play.Logger;
 import play.data.validation.*;
@@ -128,6 +126,11 @@ public class SignUpController extends Controller {
                 }
                 // remove invitation because it has been used and cannot be used again
                 invitation.delete();
+                // send notification
+                User user = User.loadBySocialUser(SecureSocial.getCurrentUser());
+                NotificationJob.queueNotification(Notification
+                        .createOnJoinByInvite(user, invitation.fromUser));
+
             }
         } catch ( Throwable e ) {
             Logger.error(e, "Error while invoking UserService.save()");

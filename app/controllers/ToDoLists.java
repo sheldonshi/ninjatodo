@@ -91,9 +91,8 @@ public class ToDoLists extends Controller {
 
         // send notification
         User user = User.loadBySocialUser(SecureSocial.getCurrentUser());
-        NotificationJob.queueNotification(NotificationType.ADD_LIST,
-                toDoList, user,
-                user.fullName + " created a new list \"" + toDoList.name + "\".");
+        NotificationJob.queueNotification(Notification.createOnListAction(NotificationType.ADD_LIST,
+                toDoList, user, null));
         // add this to user's watch list
         user.watchedToDoLists.add(toDoList);
         user.save();
@@ -115,9 +114,8 @@ public class ToDoLists extends Controller {
         }
         // send notification
         User user = User.loadBySocialUser(SecureSocial.getCurrentUser());
-        NotificationJob.queueNotification(NotificationType.DELETE_LIST,
-                toDoList, user,
-                user.fullName + " renamed list \"" + oldName + "\" to \"" + toDoList.name + "\".");
+        NotificationJob.queueNotification(Notification.createOnListAction(NotificationType.RENAME_LIST,
+                toDoList, user, oldName));
 
         renderText(Utils.toJson(toDoList));
     }
@@ -142,9 +140,8 @@ public class ToDoLists extends Controller {
         }
         // send notification
         User user = User.loadBySocialUser(SecureSocial.getCurrentUser());
-        NotificationJob.queueNotification(NotificationType.CLEAR_LIST, 
-                toDoList, user,
-                user.fullName + " cleared all completed tasks in list \"" + toDoList.name + "\".");
+        NotificationJob.queueNotification(Notification.createOnListAction(NotificationType.CLEAR_LIST,
+                toDoList, user, null));
 
         renderText(Utils.toJson(count));
     }
@@ -203,9 +200,9 @@ public class ToDoLists extends Controller {
 
         // send notification
         User user = User.loadBySocialUser(SecureSocial.getCurrentUser());
-        NotificationJob.queueNotification(NotificationType.DELETE_LIST,
-                toDoList, user,
-                user.fullName + " deleted list \"" + toDoList.name + "\".");
+        NotificationJob.queueNotification(
+                Notification.createOnListAction(NotificationType.DELETE_LIST,
+                        toDoList, user, null));
         
         renderText(Utils.toJson(toDoList));
     }

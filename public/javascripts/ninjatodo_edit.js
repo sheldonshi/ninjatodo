@@ -69,7 +69,7 @@
             if ($('#participant_'+id).parents('#adminList').length > 0) newRoleArea = '#ownerList';
             else if ($('#participant_'+id).parents('#memberList').length > 0) newRoleArea = '#adminList';
             if (newRoleArea != '') {
-                $('#participant_'+id).parents('.eachMember').appendTo(newRoleArea);
+                $('#participant_'+id).parents('.eachMember').prependTo(newRoleArea);
                 $('#participant_'+id).parents('.eachMember').find('.team-member-action').hide();
             }
         });
@@ -83,7 +83,7 @@
             if ($('#participant_'+id).parents('#adminList').length > 0) newRoleArea = '#memberList';
             else if ($('#participant_'+id).parents('#ownerList').length > 0) newRoleArea = '#adminList';
             if (newRoleArea != '') {
-                $('#participant_'+id).parents('.eachMember').appendTo(newRoleArea);
+                $('#participant_'+id).parents('.eachMember').prependTo(newRoleArea);
                 $('#participant_'+id).parents('.eachMember').find('.team-member-action').hide();
             }
         });

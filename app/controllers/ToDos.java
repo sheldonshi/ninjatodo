@@ -70,9 +70,9 @@ public class ToDos extends Controller {
         toDo.save();
         // send notification
         User user = User.loadBySocialUser(SecureSocial.getCurrentUser());
-        NotificationJob.queueNotification(NotificationType.ASSIGN_TASK,
-                toDo.toDoList, user,
-                user.fullName + " added a new task \"" + toDo.title + "\" to list \"" + toDo.toDoList.name + "\"");
+        NotificationJob.queueNotification(Notification
+                        .createOnTaskAction(NotificationType.ASSIGN_TASK,
+                                toDo, user, null));
         
         renderText(Utils.toJson(toDo));
     }
@@ -232,9 +232,9 @@ public class ToDos extends Controller {
         toDo.save();
         // send notification
         User user = User.loadBySocialUser(SecureSocial.getCurrentUser());
-        NotificationJob.queueNotification(NotificationType.COMPLETE_TASK,
-                toDo.toDoList, user,
-                user.fullName + " mark task \"" + toDo.title + "\" completed.");
+        NotificationJob.queueNotification(Notification
+                .createOnTaskAction(NotificationType.COMPLETE_TASK,
+                        toDo, user, null));
         
         renderText(Utils.toJson(toDo));
     }
@@ -337,11 +337,9 @@ public class ToDos extends Controller {
 
         // send notification
         User user = User.loadBySocialUser(SecureSocial.getCurrentUser());
-        NotificationJob.queueNotification((isNewTask ? NotificationType.ASSIGN_TASK : NotificationType.UPDATE_TASK),
-                toDo.toDoList, user,
-                (isNewTask ?
-                        user.fullName + " added a new task \"" + toDo.title + "\" to list \"" + toDo.toDoList.name + "\"" :
-                        user.fullName + " updated task \"" + toDo.title + "\"." ));
+        NotificationJob.queueNotification(Notification
+                .createOnTaskAction((isNewTask ? NotificationType.ASSIGN_TASK : NotificationType.UPDATE_TASK),
+                        toDo, user, null));
         
         renderText(Utils.toJson(toDo));
     }
@@ -419,11 +417,13 @@ public class ToDos extends Controller {
         if (toDo != null) {
             toDo.delete();
         }
-        // send notification
-        User user = User.loadBySocialUser(SecureSocial.getCurrentUser());
-        NotificationJob.queueNotification(NotificationType.REMOVE_TASK,
-                toDo.toDoList, user,
-                user.fullName + " removed task \"" + toDo.title + "\" from list \"" + toDo.toDoList.name + "\"");
+        if (!toDo.completed) {
+            // send notification only when deleting an incomplete task
+            User user = User.loadBySocialUser(SecureSocial.getCurrentUser());
+            NotificationJob.queueNotification(Notification
+                    .createOnTaskAction(NotificationType.REMOVE_TASK,
+                            toDo, user, null));
+        }
 
         renderText(Utils.toJson(1));
     }
@@ -441,9 +441,9 @@ public class ToDos extends Controller {
         }
         // send notification
         User user = User.loadBySocialUser(SecureSocial.getCurrentUser());
-        NotificationJob.queueNotification(NotificationType.CHANGE_PRIORITY,
-                toDo.toDoList, user,
-                user.fullName + " changed the priority of task \"" + toDo.title + "\".");
+        NotificationJob.queueNotification(Notification
+                .createOnTaskAction(NotificationType.CHANGE_PRIORITY,
+                toDo, user, null));
 
         renderText(Utils.toJson(toDo));
     }
@@ -467,12 +467,12 @@ public class ToDos extends Controller {
         }
         // send notification
         User user = User.loadBySocialUser(SecureSocial.getCurrentUser());
-        NotificationJob.queueNotification(NotificationType.REMOVE_TASK,
-                oldToDoList, user,
-                user.fullName + " removed task \"" + toDo.title + "\" from list \"" + oldToDoList.name + "\"");
-        NotificationJob.queueNotification(NotificationType.ASSIGN_TASK,
-                toDo.toDoList, user,
-                user.fullName + " assigned a new task \"" + toDo.title + "\" to list \"" + toDo.toDoList.name + "\"");
+        NotificationJob.queueNotification(Notification
+                .createOnTaskAction(NotificationType.REMOVE_TASK,
+                        toDo, user, oldToDoList));
+        NotificationJob.queueNotification(Notification
+                .createOnTaskAction(NotificationType.ASSIGN_TASK,
+                        toDo, user, null));
 
         renderText(Utils.toJson(toDo));
     }
