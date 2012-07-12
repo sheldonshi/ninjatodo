@@ -64,25 +64,56 @@ public class Projects extends Controller {
     }
 
     /**
-     * promotes users to admins of a project
-     * @param participationIds
+     * promotes a user in a project
+     * @param participationId
      * @param projectId
      */
-    public static void promoteToAdmin(Long[] participationIds, Long projectId) {
+    public static void promoteMember(Long participationId, Long projectId) {
         Project project = Project.findById(projectId);
         if (project != null) {
-            for (Long participationId : participationIds) {
-                Participation participation = Participation.findById(participationId);
-                if (participation != null && participation.role.equals(Role.READ) && participation.project.equals(project)) {
+            Participation participation = Participation.findById(participationId);
+            if (participation != null) {
+                if (participation.role.equals(Role.READ) && participation.project.equals(project)) {
                     participation.role = Role.WRITE;
-                    participation.save();
                 }
+                if (participation.role.equals(Role.WRITE) && participation.project.equals(project)) {
+                    participation.role = Role.OWN;
+                }
+                participation.save();
             }
-            List<Participation> participations = Participation.find("byProject", project).fetch();
-            renderTemplate("/Projects/administrators.html", project, participations);
+            renderText("");
         }
     }
 
+    /**
+     * demotes a user in a project
+     * @param participationId
+     * @param projectId
+     */
+    public static void demoteMember(Long participationId, Long projectId) {
+        Project project = Project.findById(projectId);
+        if (project != null) {
+            Participation participation = Participation.findById(participationId);
+            if (participation != null) {
+                if (participation.role.equals(Role.WRITE) && participation.project.equals(project)) {
+                    participation.role = Role.READ;
+                }
+                if (participation.role.equals(Role.OWN) && participation.project.equals(project)) {
+                    if (Participation.count("project=? and role=?", project, Role.OWN) > 1) {
+                        participation.role = Role.WRITE; // only allow demoting an owner when there are more than one owner
+                    }
+                }
+                participation.save();
+            }
+            renderText("");
+        }
+    }
+
+    /**
+     * remove a user from a project
+     * @param participationId
+     * @param projectId
+     */
     public static void deleteMember(Long participationId, Long projectId) {
         Participation participation = Participation.findById(participationId);
         // TODO check permission

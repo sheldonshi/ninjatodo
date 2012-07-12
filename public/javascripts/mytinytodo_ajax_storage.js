@@ -219,8 +219,12 @@ mytinytodoStorageAjax.prototype =
         $.post(this.mtt.mttUrl+'Invitations/delete', {id:params.id, projectId:params.project}, callback, 'json');
     },
 
-    promoteToAdmin: function(params, callback) {
-        $.post(this.mtt.mttUrl+'Projects/promoteToAdmin', {participationIds:params.participations, projectId:params.project}, callback)
+    promoteMember: function(params, callback) {
+        $.post(this.mtt.mttUrl+'Projects/promoteMember', {participationId:params.id, projectId:params.project}, callback)
+    },
+
+    demoteMember: function(params, callback) {
+        $.post(this.mtt.mttUrl+'Projects/demoteMember', {participationId:params.id, projectId:params.project}, callback)
     },
 
     deleteMember: function(params, callback) {

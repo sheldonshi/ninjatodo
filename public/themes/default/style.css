@@ -304,7 +304,7 @@ a.mtt-back-button { font-size:0.8em; }
 #notificationcancel span:hover { background-position:-16px -32px; }
 
 #notificationcontent .notification-action {float:right;margin:4px 10px}
-#notificationcontent span {color:#888;}
+#notificationcontent span {color:#888;white-space: nowrap;}
 #notification strong {color:red}
 
 #taskview { padding:2px; }
@@ -413,12 +413,13 @@ li.mtt-item-hidden { display:none; }
 #projects {margin:0px 8px 5px 8px;padding: 8px;}
 div.settings_close {float:right;padding-top:5px}
 
-.mtt-settings-table th .team-members {color:#888;font-weight:normal;font-size:0.8em;}
+.mtt-settings-table th .team-members-instr {color:#888;font-weight:normal;font-size:0.8em;}
 span.team-members {padding:1px 2px 1px 4px;color:#888;font-weight:normal;}
-span.team-members .delete-team-member {position:relative;top:-1px}
+span.team-members .team-member-action {position:relative;top:-1px; padding:0px 3px 0 6px; display: none}
+span.team-members .team-member-action a.weak {font-size:1em; padding:0px 2px;}
 
 .lightblue_bg {background-color:#B5D5FF;}
-a.weak  {color:#888; text-decoration: none;font-size: 0.8em;}
+a.weak  {color:#888; text-decoration: none;}
 a.weak:hover, a.weak:visited {color:#444;text-decoration: underline;}
 .addToProject {display:none;margin:8px 0px 5px 0px;font-size:0.8em; color:#888;width: 50%;min-width:350px;}
 .addToProject textarea {width:100%;display: block;height:50px; color:#888;}
@@ -432,6 +433,9 @@ a.note-undone-action {margin: 0px 5px 0px 10px;display: none;color:#888; text-de
 a.note-done-action {margin: 0px 5px 0px 10px;display: none;color:#888; text-decoration: none;font-size: 0.8em;}
 .note-done:hover a.note-undone-action {display: inline}
 .note-undone:hover a.note-done-action {display: inline}
+
+#ownerList .promoteMember {display:none;}
+#memberList .demoteMember {display:none;}
 
 
 

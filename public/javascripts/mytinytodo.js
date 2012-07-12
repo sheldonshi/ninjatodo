@@ -203,7 +203,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
                 $(this).parent().append('<input type="text" name="note" class="in500 note"/>');
             }
 
-        })
+        });
 
 		$('#taskview').click(function(){
 			if(!_mtt.menus.taskview) _mtt.menus.taskview = new mttMenu('taskviewcontainer');
@@ -215,6 +215,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
                 var attrs = $(this)[0].id.split('_');
                 _mtt.role=attrs[2];
                 _mtt.loadProject(attrs[1]);
+                _mtt.pageSet('tasks');
                 return false;
             } else if ($(this)[0].id=='addProject') {
                 addProjectDialog();
@@ -2521,7 +2522,6 @@ function logout()
 
 function showSettings()
 {
-	if(_mtt.pages.current.page == 'ajax' && _mtt.pages.current.pageClass == 'settings') return false;
 	$('#page_ajax').load(_mtt.mttUrl+'Projects/edit?projectId=' + _mtt.project,null,function(){
 		_mtt.pageSet('ajax','settings');
         $('#settings').hide();

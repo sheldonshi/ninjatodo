@@ -43,9 +43,50 @@
         return false;
     });
 
-    $('.delete-team-member a').live('click', function(){
+    $('span .team-members').hover(
+        function() {
+            if ($(this).parents('#ownerList').length > 0 && $('#ownerList').find(".team-members").length<=2) {
+                return; // only owner
+            } else {
+                $(this).find('.team-member-action').show();
+            }
+        },
+        function() {
+            $(this).find('.team-member-action').hide();
+        }
+    );
+
+    $('a.deleteMember').live('click', function(){
         var id=$(this)[0].id.split('_')[1];
         _mtt.confirmAction("deleteMember", "deleteMember", id);
+        return false;
+    });
+
+    $('a.promoteMember').live('click', function(){
+        var id=$(this)[0].id.split('_')[1];
+        _mtt.db.request('promoteMember', {id:id, project:_mtt.project}, function(json){
+            var newRoleArea = '';
+            if ($('#participant_'+id).parents('#adminList').length > 0) newRoleArea = '#ownerList';
+            else if ($('#participant_'+id).parents('#memberList').length > 0) newRoleArea = '#adminList';
+            if (newRoleArea != '') {
+                $('#participant_'+id).parents('.eachMember').appendTo(newRoleArea);
+                $('#participant_'+id).parents('.eachMember').find('.team-member-action').hide();
+            }
+        });
+        return false;
+    });
+
+    $('a.demoteMember').live('click', function(){
+        var id=$(this)[0].id.split('_')[1];
+        _mtt.db.request('demoteMember', {id:id, project:_mtt.project}, function(json){
+            var newRoleArea = '';
+            if ($('#participant_'+id).parents('#adminList').length > 0) newRoleArea = '#memberList';
+            else if ($('#participant_'+id).parents('#ownerList').length > 0) newRoleArea = '#adminList';
+            if (newRoleArea != '') {
+                $('#participant_'+id).parents('.eachMember').appendTo(newRoleArea);
+                $('#participant_'+id).parents('.eachMember').find('.team-member-action').hide();
+            }
+        });
         return false;
     });
 
@@ -78,4 +119,17 @@
             if (text.length>0) $('#deleteMember_'+text).parent().parent().parent().remove();
         });
     };
+
+    _mtt.promoteMember = function(id) {
+        _mtt.db.request('promoteMember', {id:id, project:_mtt.project}, function(text){
+            if (text.length>0) $('#deleteMember_'+text).parent().parent().parent().remove();
+        });
+    };
+
+    _mtt.demoteMember = function(id) {
+        _mtt.db.request('demoteMember', {id:id, project:_mtt.project}, function(text){
+            if (text.length>0) $('#deleteMember_'+text).parent().parent().parent().remove();
+        });
+    };
+
 })();
