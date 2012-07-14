@@ -179,7 +179,17 @@ sendInvitationEmail_url=Click the following link to join:
 mail_invitation_subject=%s invite you to join workspace "%s"
 
 notification_no=No notifications
-notification_clear=Clear All  \
+notification_clear=Clear All
+notification_assign_task=%s1 added a new task "%s2" to list "%s3".
+notification_remove_task=%s1 removed task "%s2" from list "%s3".
+notification_update_task=%s1 updated task "%s2" in list "%s3".
+notification_complete_task=%s1 marked task "%s2" completed.
+notification_change_priority=%s1 changed the priority of task "%s2".
+notification_add_list=%s1 created a new list "%s2" in workspace "%s3";
+notification_delete_list=%s1 deleted list "%s2" from workspace "%s3";
+notification_rename_list=%s1 renamed list "%s2" to "%s3";
+notification_clear_list=%s1 cleared all completed tasks in list "%s2";
+notification_join_by_invite=%s1 accepted your invitation to join.
 
 time_amomentago=a moment ago
 time_secondsago=%s seconds ago

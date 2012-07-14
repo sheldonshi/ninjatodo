@@ -273,7 +273,8 @@ var mytinytodo = window.mytinytodo = _mtt = {
                 } else {
                     var s = '<h3>'+_mtt.lang.get('a_notification')+'</h3><ul>';
                     $.each(json.list, function(i,item) {
-                        s += '<li>'+item.message+'&nbsp;&nbsp;<span>' + smartDate(item.dateCreated, json.now) + '</span></li>';
+                        var msgJson = $.parseJSON(item.message);
+                        s += '<li>'+_mtt.lang.get(msgJson.message).replace("%s1",msgJson.s1).replace("%s2",msgJson.s2).replace("%s3",msgJson.s3)+'&nbsp;&nbsp;<span>' + smartDate(item.dateCreated, json.now) + '</span></li>';
                     })
                     s += '</ul><div class="notification-action"><a href="#" class="weak">'+_mtt.lang.get('notification_clear')+'</a></div></div>';
                 }

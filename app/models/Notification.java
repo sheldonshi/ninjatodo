@@ -4,12 +4,10 @@ import play.data.validation.MaxSize;
 import play.data.validation.Required;
 import play.db.jpa.JPA;
 import play.db.jpa.Model;
+import utils.Utils;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by IntelliJ IDEA.
@@ -23,7 +21,7 @@ import java.util.Map;
 public class Notification extends Model {
 
     @Required
-    @MaxSize(400)
+    @MaxSize(500)
     @Column(name = "message", nullable = false)
     public String message;
 
@@ -74,22 +72,20 @@ public class Notification extends Model {
                     .getResultList();
         }
         if (users != null && users.size() > 0) {
-            String message = null;
+            Map<String, String> messageMap = new HashMap<String, String>();
+            messageMap.put("s1", initiator.fullName);
+            messageMap.put("message", "notification_" + notificationType.name().toLowerCase());
+            String message = Utils.mapToJson(messageMap);
             switch (notificationType) {
-                case ADD_LIST:
-                    message = initiator.fullName + " created a new list \"" + toDoList.name + "\".";
-                    break;
-                case DELETE_LIST:
-                    message = initiator.fullName + " deleted list \"" + toDoList.name + "\".";
-                    break;
                 case RENAME_LIST:
+                    messageMap.put("s2", oldListNameOnRename);
+                    messageMap.put("s3", toDoList.name);
                     message = initiator.fullName + " renamed list \"" + oldListNameOnRename + "\" to \"" + toDoList.name + "\".";
                     break;
-                case CLEAR_LIST:
-                    message = initiator.fullName + " cleared all completed tasks in list \"" + toDoList.name + "\".";
-                    break;
                 default:
-                    throw new RuntimeException("notification type " + notificationType + " is not supported");
+                    messageMap.put("s2", toDoList.name);
+                    messageMap.put("s3", toDoList.project.title);
+                    break;
             }
             return createNotifications(notificationType, users, message);
         } else {
@@ -115,24 +111,12 @@ public class Notification extends Model {
                     .getResultList();
         
         if (users != null && users.size() > 0) {
-            String message = null;
-            switch (notificationType) {
-                case ASSIGN_TASK:
-                    message = initiator.fullName + " added a new task \"" + toDo.title + "\" to list \"" + toDo.toDoList.name + "\"";
-                    break;
-                case REMOVE_TASK:
-                    message = initiator.fullName + " removed task \"" + toDo.title + "\" from list \"" + oldToDoList.name + "\"";
-                    break;
-                case UPDATE_TASK:
-                    message = initiator.fullName + " updated task \"" + toDo.title + "\" in list \"" + toDo.toDoList.name + "\".";
-                    break;
-                case COMPLETE_TASK:
-                    message = initiator.fullName + " mark task \"" + toDo.title + "\" completed.";
-                    break;
-                case CHANGE_PRIORITY:
-                    message = initiator.fullName + " changed the priority of task \"" + toDo.title + "\".";
-                    break;
-            }
+            Map<String, String> messageMap = new HashMap<String, String>();
+            messageMap.put("s1", initiator.fullName);
+            messageMap.put("s2", toDo.title);
+            messageMap.put("s3", toDo.toDoList.name);
+            messageMap.put("message", "notification_" + notificationType.name().toLowerCase());
+            String message = Utils.mapToJson(messageMap);
             return createNotifications(notificationType, users, message);
         } else {
             return null;
@@ -146,10 +130,14 @@ public class Notification extends Model {
      * @return
      */
     public static List<Notification> createOnJoinByInvite(User invitee, User inviter) {
-        String message = invitee.fullName + " accepted your invitation to join.";
+        NotificationType notificationType = NotificationType.JOIN_BY_INVITE;
+        Map<String, String> messageMap = new HashMap<String, String>();
+        messageMap.put("s1", invitee.fullName);
+        messageMap.put("message", "notification_" + notificationType.name().toLowerCase());
+        String message = Utils.mapToJson(messageMap);
         List<User> recipients = new ArrayList<User>();
         recipients.add(inviter);
-        return createNotifications(NotificationType.JOIN_BY_INVITE, recipients, message);
+        return createNotifications(notificationType, recipients, message);
     }
 
     /**

@@ -130,4 +130,13 @@ public class Utils {
             }
         }
     }
+
+    /**
+     * convert a map to json
+     * @param map
+     * @return
+     */
+    public static String mapToJson(Map map) {
+        return (new GsonBuilder()).create().toJson(map);
+    }
 }
