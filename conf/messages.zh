@@ -183,6 +183,8 @@ notification_delete_list=%s1从项目"%s3"里删除列表"%s2"。
 notification_rename_list=%s1把列表"%s2"更名为"%s3"。
 notification_clear_list=%s1清除了列表"%s2"中的所有完成的任务。
 notification_join_by_invite=%s1接受了你的邀请。
+notification_invite_in_project=%s1邀请你加入项目"%s2".
+notification_invite_in_project_gotoUrl_text=接受
 
 time_amomentago=刚才
 time_secondsago=%s秒以前

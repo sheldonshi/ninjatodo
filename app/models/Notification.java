@@ -141,19 +141,54 @@ public class Notification extends Model {
     }
 
     /**
+     * creates notification on join by invite
+     * @param inviter
+     * @param project
+     * @return
+     */
+    public static List<Notification> createOnInvite(User invitee, User inviter, 
+                                                    Project project, String activationUrl) {
+        NotificationType notificationType = NotificationType.INVITE_IN_PROJECT;
+        Map<String, String> messageMap = new HashMap<String, String>();
+        messageMap.put("s1", inviter.fullName);
+        messageMap.put("s2", project.title);
+        messageMap.put("message", "notification_" + notificationType.name().toLowerCase());
+        String message = Utils.mapToJson(messageMap);
+        List<User> recipients = new ArrayList<User>();
+        recipients.add(invitee);
+        return createNotifications(notificationType, recipients, message, activationUrl);
+    }
+
+    /**
      * creates one type of notifications for a list of recipients
      * @param notificationType
      * @param recipients
      * @param message
      * @return
      */
-    private static List<Notification> createNotifications(NotificationType notificationType, List<User> recipients, String message) {
+    private static List<Notification> createNotifications(NotificationType notificationType,
+                                                          List<User> recipients, String message) {
+        return createNotifications(notificationType,recipients, message, null);
+    }
+
+    /**
+     * creates on type of notifications for a list of recipients
+     * @param notificationType
+     * @param recipients
+     * @param message
+     * @param gotoUrl
+     * @return
+     */
+    private static List<Notification> createNotifications(NotificationType notificationType, 
+                                                          List<User> recipients, String message,
+                                                          String gotoUrl) {
         List<Notification> notifications = new ArrayList<Notification> ();
         for (User recipient : recipients) {
             Notification notification = new Notification();
             notification.message = message;
             notification.notificationType = notificationType;
             notification.recipient = recipient;
+            notification.gotoUrl = gotoUrl;
             notifications.add(notification);
         }
         return notifications;

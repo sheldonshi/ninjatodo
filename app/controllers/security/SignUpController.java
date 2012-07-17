@@ -155,9 +155,22 @@ public class SignUpController extends Controller {
 
     public static void join(@Required String code) {
         Invitation invitation = Invitation.find("byUuid", code).first();
+        User existingUser = null;
         if (invitation != null) {
-            flash.put(SignUpController.EMAIL, invitation.toEmail);
-            flash.put(SignUpController.INVITATION_UUID, code);
+            // first check whether user already exists
+            existingUser = User.find("byEmail", invitation.toEmail).first();
+            if (existingUser == null) {
+                flash.put(SignUpController.EMAIL, invitation.toEmail);
+                flash.put(SignUpController.INVITATION_UUID, code);
+            } else if (invitation.project != null) {
+                Participation participation = new Participation();
+                participation.project = invitation.project;
+                participation.role = invitation.role;
+                participation.user = existingUser;
+                participation.save();
+                invitation.delete();
+                redirect("/w/" + invitation.project.id);
+            }
         }
         signup();
     }

@@ -2,14 +2,13 @@ package controllers;
 
 import controllers.securesocial.SecureSocial;
 import controllers.security.SignUpController;
+import jobs.NotificationJob;
 import models.*;
 import notifiers.Mails;
 import play.data.validation.Required;
 import play.db.jpa.JPA;
-import play.mvc.Before;
-import play.mvc.Controller;
-import play.mvc.Scope;
-import play.mvc.With;
+import play.libs.Codec;
+import play.mvc.*;
 import services.SecureUserService;
 import utils.Utils;
 
@@ -27,6 +26,8 @@ import java.util.Map;
  */
 @With(SecureSocial.class)
 public class Invitations extends Controller {
+    private static final String INVITED_CODE = "code";
+    private static final String INVITATIONS_JOIN = "security.SignUpController.join";
 
     @Before
     static void checkAccess() throws Throwable {
@@ -54,8 +55,21 @@ public class Invitations extends Controller {
         List<String> sendList = new ArrayList<String>();
         for (String email : emailArray) {
             email = email.trim(); // remove white spaces
+
+            String uuid = Codec.UUID();
+            Map<String, Object> args = new HashMap<String, Object>();
+            args.put(INVITED_CODE, uuid);
+            String activationUrl = Router.getFullUrl(INVITATIONS_JOIN, args);
+
+            // check whether this email is already a registered user
+            User existingUser = User.find("email=?", email).first();
+            if (existingUser != null) {
+                // send notification
+                NotificationJob.queueNotification(Notification.createOnInvite(existingUser, user, project, activationUrl));
+            }
             // then check whether email is valid
-            if (validation.email(email).error == null && Mails.sendInvitationEmail(email, project, user, role)) {
+            if (validation.email(email).error == null &&
+                    Mails.sendInvitationEmail(email, project, user, role, uuid, activationUrl)) {
                 sendList.add(email);
             }
         }

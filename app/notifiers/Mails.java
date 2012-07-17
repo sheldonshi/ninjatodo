@@ -26,10 +26,9 @@ import java.util.*;
  */
 public class Mails extends Mailer {
     private static final String SECURESOCIAL_MAILER_FROM = "securesocial.mailer.from";
-    private static final String INVITATIONS_JOIN = "security.SignUpController.join";
-    private static final String INVITED_CODE = "code";
 
-    public static boolean sendInvitationEmail(String email, Project project, User fromUser, Role role) {
+    public static boolean sendInvitationEmail(String email, Project project, User fromUser, 
+                                              Role role, String uuid, String activationUrl) {
 
         setSubject(Messages.get("mail_invitation_subject", fromUser.fullName, project.title));
         setFrom(Play.configuration.getProperty(SECURESOCIAL_MAILER_FROM));
@@ -46,11 +45,7 @@ public class Mails extends Mailer {
             try {
 
                 addRecipient(email);
-                String uuid = Codec.UUID();
 
-                Map<String, Object> args = new HashMap<String, Object>();
-                args.put(INVITED_CODE, uuid);
-                String activationUrl = Router.getFullUrl(INVITATIONS_JOIN, args);
                 send(fromUser, project, activationUrl);
 
                 Invitation invitation = new Invitation();
