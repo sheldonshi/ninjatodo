@@ -1,6 +1,8 @@
 package controllers;
 
+import models.Participation;
 import models.Tag;
+import models.User;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import play.mvc.Before;
@@ -30,7 +32,7 @@ public class Tags extends Controller {
     }
 
     /**
-     * return up to limit # of suggested tags that contains q
+     * return up to limit # of suggested name tags that contains q
      *
      * @param projectId
      * @param q
@@ -39,15 +41,17 @@ public class Tags extends Controller {
     public static void suggest(Long projectId, String q, Integer limit) {
         if (limit == null) {
             limit = 8;
-        } 
+        }
+        if (q.startsWith("@")) {
+            q = q.substring(1);
+        }
 
         String returnString = "";
-        if (StringUtils.isNotEmpty(q)) {
-            List<Tag> tags = Tag.find("project.id=? and text like '%" + StringEscapeUtils.escapeSql(q) + "%'", projectId).fetch(limit);
-            for (Tag tag : tags) {
-                returnString += tag.text + "|" + tag.id + "\n";
+
+            List<User> users = Participation.find("select p.user from Participation p where p.project.id=? and p.user.username like '%" + StringEscapeUtils.escapeSql(q) + "%'", projectId).fetch(limit);
+            for (User user : users) {
+                returnString += "@" + user.username + "|" + user.id + "\n";
             }
-        }
         renderText(returnString);
     }
 }

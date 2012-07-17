@@ -19,14 +19,7 @@ public class Tag extends Model {
     @Required
     public String text;
 
-    @Required
-    @ManyToOne
-    @JoinColumn(name="project_id", nullable = false)
-    @JsonExclude
-    public Project project;
-
     // weight of occurrence of the tag
-    @Transient
     public int weight = 0;
     
     public String toString() {

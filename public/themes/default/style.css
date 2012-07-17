@@ -232,9 +232,6 @@ li:hover .prio-zero { background-color:#bbbbbb; }
 #page_taskedit .form-row textarea.in500 { height:200px; /*resize:none;*/ }
 #page_taskedit .form-row-short { float:left; margin-right:12px; }
 #page_taskedit .form-bottom-buttons { text-align:center; }
-#alltags .tag { font-weight:bold; color:#333333; }
-#alltags .tag:hover { background-color:#999988; color:white; }
-.alltags-cell { width:1%; white-space:nowrap; padding-left:5px; }
 #page_taskedit.mtt-inadd .mtt-inedit { display:none; }
 #page_taskedit.mtt-inedit .mtt-inadd { display:none; }
 #taskedit-date { font-size:1em; font-weight:normal; display:inline; color:#777; margin-left:8px; }

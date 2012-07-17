@@ -13,9 +13,7 @@ import utils.Utils;
 import javax.persistence.NoResultException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -30,6 +28,7 @@ public class ToDos extends Controller {
     public static final Long ALL_LIST_ID = -1L;
     // this is based on twitter-text-java
     public static final Pattern VALID_HASHTAG = Pattern.compile("(^|[^&0-9\\uff10-\\uff19_a-z\\u00c0-\\u00d6\\u00d8-\\u00f6\\u00f8-\\u00ff\\u0100-\\u024f\\u0253\\u0254\\u0256\\u0257\\u0259\\u025b\\u0263\\u0268\\u026f\\u0272\\u0289\\u028b\\u02bb\\u0300-\\u036f\\u1e00-\\u1eff\\u0400-\\u04ff\\u0500-\\u0527\\u2de0-\\u2dff\\ua640-\\ua69f\\u0591-\\u05bf\\u05c1-\\u05c2\\u05c4-\\u05c5\\u05c7\\u05d0-\\u05ea\\u05f0-\\u05f4\\ufb1d-\\ufb28\\ufb2a-\\ufb36\\ufb38-\\ufb3c\\ufb3e\\ufb40-\\ufb41\\ufb43-\\ufb44\\ufb46-\\ufb4f\\u0610-\\u061a\\u0620-\\u065f\\u066e-\\u06d3\\u06d5-\\u06dc\\u06de-\\u06e8\\u06ea-\\u06ef\\u06fa-\\u06fc\\u06ff\\u0750-\\u077f\\u08a0\\u08a2-\\u08ac\\u08e4-\\u08fe\\ufb50-\\ufbb1\\ufbd3-\\ufd3d\\ufd50-\\ufd8f\\ufd92-\\ufdc7\\ufdf0-\\ufdfb\\ufe70-\\ufe74\\ufe76-\\ufefc\\u200c\\u0e01-\\u0e3a\\u0e40-\\u0e4e\\u1100-\\u11ff\\u3130-\\u3185\\uA960-\\uA97F\\uAC00-\\uD7AF\\uD7B0-\\uD7FF\\p{InHiragana}\\p{InKatakana}\\p{InCJKUnifiedIdeographs}\\u3003\\u3005\\u303b\\uff21-\\uff3a\\uff41-\\uff5a\\uff66-\\uff9f\\uffa1-\\uffdc])(#|＃)([0-9\\uff10-\\uff19_a-z\\u00c0-\\u00d6\\u00d8-\\u00f6\\u00f8-\\u00ff\\u0100-\\u024f\\u0253\\u0254\\u0256\\u0257\\u0259\\u025b\\u0263\\u0268\\u026f\\u0272\\u0289\\u028b\\u02bb\\u0300-\\u036f\\u1e00-\\u1eff\\u0400-\\u04ff\\u0500-\\u0527\\u2de0-\\u2dff\\ua640-\\ua69f\\u0591-\\u05bf\\u05c1-\\u05c2\\u05c4-\\u05c5\\u05c7\\u05d0-\\u05ea\\u05f0-\\u05f4\\ufb1d-\\ufb28\\ufb2a-\\ufb36\\ufb38-\\ufb3c\\ufb3e\\ufb40-\\ufb41\\ufb43-\\ufb44\\ufb46-\\ufb4f\\u0610-\\u061a\\u0620-\\u065f\\u066e-\\u06d3\\u06d5-\\u06dc\\u06de-\\u06e8\\u06ea-\\u06ef\\u06fa-\\u06fc\\u06ff\\u0750-\\u077f\\u08a0\\u08a2-\\u08ac\\u08e4-\\u08fe\\ufb50-\\ufbb1\\ufbd3-\\ufd3d\\ufd50-\\ufd8f\\ufd92-\\ufdc7\\ufdf0-\\ufdfb\\ufe70-\\ufe74\\ufe76-\\ufefc\\u200c\\u0e01-\\u0e3a\\u0e40-\\u0e4e\\u1100-\\u11ff\\u3130-\\u3185\\uA960-\\uA97F\\uAC00-\\uD7AF\\uD7B0-\\uD7FF\\p{InHiragana}\\p{InKatakana}\\p{InCJKUnifiedIdeographs}\\u3003\\u3005\\u303b\\uff21-\\uff3a\\uff41-\\uff5a\\uff66-\\uff9f\\uffa1-\\uffdc]*[a-z\\u00c0-\\u00d6\\u00d8-\\u00f6\\u00f8-\\u00ff\\u0100-\\u024f\\u0253\\u0254\\u0256\\u0257\\u0259\\u025b\\u0263\\u0268\\u026f\\u0272\\u0289\\u028b\\u02bb\\u0300-\\u036f\\u1e00-\\u1eff\\u0400-\\u04ff\\u0500-\\u0527\\u2de0-\\u2dff\\ua640-\\ua69f\\u0591-\\u05bf\\u05c1-\\u05c2\\u05c4-\\u05c5\\u05c7\\u05d0-\\u05ea\\u05f0-\\u05f4\\ufb1d-\\ufb28\\ufb2a-\\ufb36\\ufb38-\\ufb3c\\ufb3e\\ufb40-\\ufb41\\ufb43-\\ufb44\\ufb46-\\ufb4f\\u0610-\\u061a\\u0620-\\u065f\\u066e-\\u06d3\\u06d5-\\u06dc\\u06de-\\u06e8\\u06ea-\\u06ef\\u06fa-\\u06fc\\u06ff\\u0750-\\u077f\\u08a0\\u08a2-\\u08ac\\u08e4-\\u08fe\\ufb50-\\ufbb1\\ufbd3-\\ufd3d\\ufd50-\\ufd8f\\ufd92-\\ufdc7\\ufdf0-\\ufdfb\\ufe70-\\ufe74\\ufe76-\\ufefc\\u200c\\u0e01-\\u0e3a\\u0e40-\\u0e4e\\u1100-\\u11ff\\u3130-\\u3185\\uA960-\\uA97F\\uAC00-\\uD7AF\\uD7B0-\\uD7FF\\p{InHiragana}\\p{InKatakana}\\p{InCJKUnifiedIdeographs}\\u3003\\u3005\\u303b\\uff21-\\uff3a\\uff41-\\uff5a\\uff66-\\uff9f\\uffa1-\\uffdc][0-9\\uff10-\\uff19_a-z\\u00c0-\\u00d6\\u00d8-\\u00f6\\u00f8-\\u00ff\\u0100-\\u024f\\u0253\\u0254\\u0256\\u0257\\u0259\\u025b\\u0263\\u0268\\u026f\\u0272\\u0289\\u028b\\u02bb\\u0300-\\u036f\\u1e00-\\u1eff\\u0400-\\u04ff\\u0500-\\u0527\\u2de0-\\u2dff\\ua640-\\ua69f\\u0591-\\u05bf\\u05c1-\\u05c2\\u05c4-\\u05c5\\u05c7\\u05d0-\\u05ea\\u05f0-\\u05f4\\ufb1d-\\ufb28\\ufb2a-\\ufb36\\ufb38-\\ufb3c\\ufb3e\\ufb40-\\ufb41\\ufb43-\\ufb44\\ufb46-\\ufb4f\\u0610-\\u061a\\u0620-\\u065f\\u066e-\\u06d3\\u06d5-\\u06dc\\u06de-\\u06e8\\u06ea-\\u06ef\\u06fa-\\u06fc\\u06ff\\u0750-\\u077f\\u08a0\\u08a2-\\u08ac\\u08e4-\\u08fe\\ufb50-\\ufbb1\\ufbd3-\\ufd3d\\ufd50-\\ufd8f\\ufd92-\\ufdc7\\ufdf0-\\ufdfb\\ufe70-\\ufe74\\ufe76-\\ufefc\\u200c\\u0e01-\\u0e3a\\u0e40-\\u0e4e\\u1100-\\u11ff\\u3130-\\u3185\\uA960-\\uA97F\\uAC00-\\uD7AF\\uD7B0-\\uD7FF\\p{InHiragana}\\p{InKatakana}\\p{InCJKUnifiedIdeographs}\\u3003\\u3005\\u303b\\uff21-\\uff3a\\uff41-\\uff5a\\uff66-\\uff9f\\uffa1-\\uffdc]*)");
+    public static final Pattern VALID_MENTION_OR_LIST = Pattern.compile("(^|[^&0-9\\uff10-\\uff19_a-z\\u00c0-\\u00d6\\u00d8-\\u00f6\\u00f8-\\u00ff\\u0100-\\u024f\\u0253\\u0254\\u0256\\u0257\\u0259\\u025b\\u0263\\u0268\\u026f\\u0272\\u0289\\u028b\\u02bb\\u0300-\\u036f\\u1e00-\\u1eff\\u0400-\\u04ff\\u0500-\\u0527\\u2de0-\\u2dff\\ua640-\\ua69f\\u0591-\\u05bf\\u05c1-\\u05c2\\u05c4-\\u05c5\\u05c7\\u05d0-\\u05ea\\u05f0-\\u05f4\\ufb1d-\\ufb28\\ufb2a-\\ufb36\\ufb38-\\ufb3c\\ufb3e\\ufb40-\\ufb41\\ufb43-\\ufb44\\ufb46-\\ufb4f\\u0610-\\u061a\\u0620-\\u065f\\u066e-\\u06d3\\u06d5-\\u06dc\\u06de-\\u06e8\\u06ea-\\u06ef\\u06fa-\\u06fc\\u06ff\\u0750-\\u077f\\u08a0\\u08a2-\\u08ac\\u08e4-\\u08fe\\ufb50-\\ufbb1\\ufbd3-\\ufd3d\\ufd50-\\ufd8f\\ufd92-\\ufdc7\\ufdf0-\\ufdfb\\ufe70-\\ufe74\\ufe76-\\ufefc\\u200c\\u0e01-\\u0e3a\\u0e40-\\u0e4e\\u1100-\\u11ff\\u3130-\\u3185\\uA960-\\uA97F\\uAC00-\\uD7AF\\uD7B0-\\uD7FF\\p{InHiragana}\\p{InKatakana}\\p{InCJKUnifiedIdeographs}\\u3003\\u3005\\u303b\\uff21-\\uff3a\\uff41-\\uff5a\\uff66-\\uff9f\\uffa1-\\uffdc])(@|\\uFF20)([0-9\\uff10-\\uff19_a-z\\u00c0-\\u00d6\\u00d8-\\u00f6\\u00f8-\\u00ff\\u0100-\\u024f\\u0253\\u0254\\u0256\\u0257\\u0259\\u025b\\u0263\\u0268\\u026f\\u0272\\u0289\\u028b\\u02bb\\u0300-\\u036f\\u1e00-\\u1eff\\u0400-\\u04ff\\u0500-\\u0527\\u2de0-\\u2dff\\ua640-\\ua69f\\u0591-\\u05bf\\u05c1-\\u05c2\\u05c4-\\u05c5\\u05c7\\u05d0-\\u05ea\\u05f0-\\u05f4\\ufb1d-\\ufb28\\ufb2a-\\ufb36\\ufb38-\\ufb3c\\ufb3e\\ufb40-\\ufb41\\ufb43-\\ufb44\\ufb46-\\ufb4f\\u0610-\\u061a\\u0620-\\u065f\\u066e-\\u06d3\\u06d5-\\u06dc\\u06de-\\u06e8\\u06ea-\\u06ef\\u06fa-\\u06fc\\u06ff\\u0750-\\u077f\\u08a0\\u08a2-\\u08ac\\u08e4-\\u08fe\\ufb50-\\ufbb1\\ufbd3-\\ufd3d\\ufd50-\\ufd8f\\ufd92-\\ufdc7\\ufdf0-\\ufdfb\\ufe70-\\ufe74\\ufe76-\\ufefc\\u200c\\u0e01-\\u0e3a\\u0e40-\\u0e4e\\u1100-\\u11ff\\u3130-\\u3185\\uA960-\\uA97F\\uAC00-\\uD7AF\\uD7B0-\\uD7FF\\p{InHiragana}\\p{InKatakana}\\p{InCJKUnifiedIdeographs}\\u3003\\u3005\\u303b\\uff21-\\uff3a\\uff41-\\uff5a\\uff66-\\uff9f\\uffa1-\\uffdc]*[a-z\\u00c0-\\u00d6\\u00d8-\\u00f6\\u00f8-\\u00ff\\u0100-\\u024f\\u0253\\u0254\\u0256\\u0257\\u0259\\u025b\\u0263\\u0268\\u026f\\u0272\\u0289\\u028b\\u02bb\\u0300-\\u036f\\u1e00-\\u1eff\\u0400-\\u04ff\\u0500-\\u0527\\u2de0-\\u2dff\\ua640-\\ua69f\\u0591-\\u05bf\\u05c1-\\u05c2\\u05c4-\\u05c5\\u05c7\\u05d0-\\u05ea\\u05f0-\\u05f4\\ufb1d-\\ufb28\\ufb2a-\\ufb36\\ufb38-\\ufb3c\\ufb3e\\ufb40-\\ufb41\\ufb43-\\ufb44\\ufb46-\\ufb4f\\u0610-\\u061a\\u0620-\\u065f\\u066e-\\u06d3\\u06d5-\\u06dc\\u06de-\\u06e8\\u06ea-\\u06ef\\u06fa-\\u06fc\\u06ff\\u0750-\\u077f\\u08a0\\u08a2-\\u08ac\\u08e4-\\u08fe\\ufb50-\\ufbb1\\ufbd3-\\ufd3d\\ufd50-\\ufd8f\\ufd92-\\ufdc7\\ufdf0-\\ufdfb\\ufe70-\\ufe74\\ufe76-\\ufefc\\u200c\\u0e01-\\u0e3a\\u0e40-\\u0e4e\\u1100-\\u11ff\\u3130-\\u3185\\uA960-\\uA97F\\uAC00-\\uD7AF\\uD7B0-\\uD7FF\\p{InHiragana}\\p{InKatakana}\\p{InCJKUnifiedIdeographs}\\u3003\\u3005\\u303b\\uff21-\\uff3a\\uff41-\\uff5a\\uff66-\\uff9f\\uffa1-\\uffdc][0-9\\uff10-\\uff19_a-z\\u00c0-\\u00d6\\u00d8-\\u00f6\\u00f8-\\u00ff\\u0100-\\u024f\\u0253\\u0254\\u0256\\u0257\\u0259\\u025b\\u0263\\u0268\\u026f\\u0272\\u0289\\u028b\\u02bb\\u0300-\\u036f\\u1e00-\\u1eff\\u0400-\\u04ff\\u0500-\\u0527\\u2de0-\\u2dff\\ua640-\\ua69f\\u0591-\\u05bf\\u05c1-\\u05c2\\u05c4-\\u05c5\\u05c7\\u05d0-\\u05ea\\u05f0-\\u05f4\\ufb1d-\\ufb28\\ufb2a-\\ufb36\\ufb38-\\ufb3c\\ufb3e\\ufb40-\\ufb41\\ufb43-\\ufb44\\ufb46-\\ufb4f\\u0610-\\u061a\\u0620-\\u065f\\u066e-\\u06d3\\u06d5-\\u06dc\\u06de-\\u06e8\\u06ea-\\u06ef\\u06fa-\\u06fc\\u06ff\\u0750-\\u077f\\u08a0\\u08a2-\\u08ac\\u08e4-\\u08fe\\ufb50-\\ufbb1\\ufbd3-\\ufd3d\\ufd50-\\ufd8f\\ufd92-\\ufdc7\\ufdf0-\\ufdfb\\ufe70-\\ufe74\\ufe76-\\ufefc\\u200c\\u0e01-\\u0e3a\\u0e40-\\u0e4e\\u1100-\\u11ff\\u3130-\\u3185\\uA960-\\uA97F\\uAC00-\\uD7AF\\uD7B0-\\uD7FF\\p{InHiragana}\\p{InKatakana}\\p{InCJKUnifiedIdeographs}\\u3003\\u3005\\u303b\\uff21-\\uff3a\\uff41-\\uff5a\\uff66-\\uff9f\\uffa1-\\uffdc]*)");
 
     /**
      * Check whether the project is visible to the user
@@ -62,10 +61,10 @@ public class ToDos extends Controller {
         toDo.toDoList = ToDoList.findById(list);
         toDo.orderIndex = getNextOrderIndex(toDo.toDoList);
         toDo.updater = User.loadBySocialUser(SecureSocial.getCurrentUser());
-        // convert hashtags in title into tags, and remove them from title
-        List<String> hashtags = parseHashtags(toDo);
+        // convert mentions in title into tags, and remove them from title
+        List<String> hashtags = parseMentions(toDo);
         if (!hashtags.isEmpty()) {
-            addTagToToDo(StringUtils.join(hashtags, ","), toDo);
+            addTagToToDo(hashtags, toDo);
         }
         toDo.save();
         // send notification
@@ -110,7 +109,7 @@ public class ToDos extends Controller {
             newToDo.toDoList = toDo.toDoList;
             newToDo.priority = toDo.priority;
             if (toDo.tags != null) {
-                newToDo.tags = new ArrayList<Tag>();
+                newToDo.tags = new HashSet<Tag>();
                 for (Tag tag : toDo.tags) {
                     newToDo.tags.add(tag);
                 }
@@ -142,7 +141,12 @@ public class ToDos extends Controller {
     public static void addTag(Long taskId, String tags) {
         ToDo toDo = ToDo.findById(taskId);
         if (toDo != null) {
-            addTagToToDo(tags, toDo);
+            String[] tagArray = tags.split(",");
+            List<String> tagList = new ArrayList<String>();
+            for (String tag : tagArray) {
+                tagList.add(tag);
+            }
+            addTagToToDo(tagList, toDo);
             toDo.updater = User.loadBySocialUser(SecureSocial.getCurrentUser());
             toDo.lastUpdated = new Date();
             toDo.save();
@@ -270,7 +274,6 @@ public class ToDos extends Controller {
             toDo = ToDo.findById(taskId);
             list = toDo.toDoList.id;
         }
-        toDo.title = params.get("title");
         toDo.priority = Integer.parseInt(params.get("prio"));
         toDo.toDoList = ToDoList.findById(list);
         toDo.orderIndex = getNextOrderIndex(toDo.toDoList);
@@ -283,18 +286,20 @@ public class ToDos extends Controller {
                 // TODO error handling
             }
         }
-        // deal with tags      
-        // tags is only passed in parameter if isTagDirty is not 0 (user has keypressed in the tag area)
-        // tags is passed as empty string if user cleared out the tag field
-        if (params.get("tags") != null) {
-            // clear out existing tags
-            if (toDo.tags != null) {
-                toDo.tags.clear();
-            } else {
-                toDo.tags = new ArrayList<Tag>();
+        if (params.get("title") != null) {
+            toDo.title = params.get("title");
+            // convert mentions in title into tags, and remove them from title
+            List<String> hashtags = parseMentions(toDo);
+            if (!hashtags.isEmpty()) {
+                if (toDo.tags != null) {
+                    toDo.tags.clear();
+                } else {
+                    toDo.tags = new HashSet<Tag>();
+                }
+                addTagToToDo(hashtags, toDo);
             }
-            addTagToToDo(params.get("tags"), toDo);
         }
+        
         toDo.save();
         // now deal with notes
         // notes is only passed in parameter if isNoteDirty is not 0 (user has keypressed in the note area)
@@ -378,33 +383,73 @@ public class ToDos extends Controller {
     }
 
     /**
+     * parse out mentions into an array and remove mentions from task title
+     * @param toDo
+     * @return
+     */
+    private static List<String> parseMentions(ToDo toDo) {
+        List<String> mentions = new ArrayList<String>();
+        Matcher matcher = VALID_MENTION_OR_LIST.matcher(toDo.title);
+        boolean foundHashtags = false;
+        String cleanedTitle = "";
+        int idx = 0;
+        int prevMatchEnd = 0;
+        while (matcher.find()) {
+            foundHashtags = true;
+            String potentialMention = toDo.title.substring(matcher.start() == 0 ? 1 : matcher.start() + 2, matcher.end());
+            // check if name tag belong to member of projects
+            User user = User.find("select p.user from Participation p where p.user.username=? and p.project=?",
+                    potentialMention, toDo.toDoList.project).first();
+            if (user != null) {
+                // add mention
+                if (!mentions.contains(potentialMention)) {
+                    mentions.add(potentialMention);
+                }
+                // remove the mention from the title. two cases: (1) 'something @username' remove space after something (2) '@username something'
+                if (toDo.title.charAt(matcher.start()) == ' ' || matcher.start() == 0) {
+                    idx = matcher.start();     // remove preceding space
+                } else {
+                    idx = matcher.start() + 1;
+                }
+            } else {
+                // keep @string in title
+                idx = matcher.end();
+            }
+            cleanedTitle += toDo.title.substring(prevMatchEnd, idx);
+            prevMatchEnd = matcher.end();
+        }
+        cleanedTitle += toDo.title.substring(prevMatchEnd);
+        if (foundHashtags) {
+            toDo.title = cleanedTitle;
+        }
+        return mentions;
+    }
+
+    /**
      * convenient method to add comma separated tags to todo
-     * @param tagsString
+     * @param tags
      * @param toDo
      */
-    private static void addTagToToDo(String tagsString, ToDo toDo) {
-        if (StringUtils.isEmpty(tagsString)) {
+    private static void addTagToToDo(List<String> tags, ToDo toDo) {
+        if (tags == null || tags.isEmpty()) {
             return;
         }
-        String[] tags = tagsString.split(",");
         for (String t : tags) {
             // first find if tag exists, if not, save it
             t = t.trim();
+            if (t.startsWith("@")) {
+                t = t.substring(1);
+            }
             // remove empty tag
             if (t.length() > 0) {
-                Tag existing = Tag.find("text=? and project=?", t, toDo.toDoList.project).first();
-                if (existing == null) {
                     // save this tag if it has not been saved before
                     Tag tag = new Tag();
                     tag.text = t;
-                    tag.project = toDo.toDoList.project;
                     tag.save();
-                    existing = tag;
-                }
-                if (toDo.tags == null) {
-                    toDo.tags = new ArrayList<Tag>();
-                }
-                toDo.tags.add(existing);
+                    if (toDo.tags == null) {
+                        toDo.tags = new HashSet<Tag>();
+                    }
+                    toDo.tags.add(tag);
             }
         }
     }
@@ -443,7 +488,7 @@ public class ToDos extends Controller {
         User user = User.loadBySocialUser(SecureSocial.getCurrentUser());
         NotificationJob.queueNotification(Notification
                 .createOnTaskAction(NotificationType.CHANGE_PRIORITY,
-                toDo, user, null));
+                        toDo, user, null));
 
         renderText(Utils.toJson(toDo));
     }

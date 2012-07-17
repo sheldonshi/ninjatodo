@@ -15,6 +15,9 @@ $(document).ready(function() {
             } else if ($this.val().length < 3) {
                 $this.parent().parent().addClass("error");
                 $this.next().html(i18n('signup_needMoreCharacters'));
+            } else if ($this.val().length > 20) {
+                $this.parent().parent().addClass("error");
+                $this.next().html(i18n('signup_tooManyCharacters'));
             } else {
                 $.get('${play.Play.ctxPath}/auth/isUnique?username='+encodeURI($this.val())+'&rnd='+Math.random(), function(data){
                      if (data.length > 0) {

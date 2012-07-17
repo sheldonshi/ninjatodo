@@ -40,7 +40,9 @@ public class Utils {
     public static String toJson(Object obj, boolean returnCurrentDate) {
         Map returnObj = new HashMap();
         List list = new ArrayList();
-        if (obj instanceof List) {
+        if (obj == null) {
+            return toJson(0);
+        } else if (obj instanceof List) {
             list = (List) obj;
         } else {
             list.add(obj);

@@ -355,25 +355,8 @@ var mytinytodo = window.mytinytodo = _mtt = {
 			$(this).hide()}
 		);
 
-
-		// edit form handlers
-		$('#alltags_show').click(function(){
-			toggleEditAllTags(1);
-			return false;
-		});
-
-		$('#alltags_hide').click(function(){
-			toggleEditAllTags(0);
-			return false;
-		});
-
 		$('#taskedit_form').submit(function(){
 			return saveTask(this);
-		});
-
-		$('#alltags .tag').live('click', function(){
-			addEditTag($(this).attr('tag'));
-			return false;
 		});
 		
 		$("#duedate").datepicker({
@@ -402,6 +385,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
                     });
                 });
             }
+            return false;
         })
 
         $('.note-undone-action').live('click', function() {
@@ -421,11 +405,12 @@ var mytinytodo = window.mytinytodo = _mtt = {
             }
         })
 
-        $('#edittags').focus(function(e){
-            $('#isTagDirty').val(1);
+        $('#editTitle').focus(function(e){
+            $('#isTitleDirty').val(1);
         });
 
-		$("#edittags").autocomplete('Tags/suggest', {scroll: false, multiple: true, selectFirst:false, max:8});
+		$("#editTitle").autocomplete('Tags/suggest', {scroll: false, multiple: false, selectFirst:false, max:8});
+        $("#task").autocomplete('Tags/suggest', {scroll: false, multiple: false, selectFirst:false, max:8});
 
 		$('#taskedit_form').find('select,input,textarea').bind('change keypress', function(){
 			flag.editFormChanged = true;
@@ -645,7 +630,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
             return false;
         });
         // enable autocomplete
-        $("#addTag-dialog-form-name").autocomplete('Tags/suggest', {scroll: false, multiple: true, selectFirst:false, max:8});
+        $("#addTag-dialog-form-name").autocomplete('Tags/suggest', {scroll: false, multiple: false, selectFirst:false, max:8});
 
         $( "#deleteConfirm-dialog-form" ).dialog({
             autoOpen: false,
@@ -719,7 +704,8 @@ var mytinytodo = window.mytinytodo = _mtt = {
         }
         // refresh autocomplete params
         $("#addTag-dialog-form-name").flushCache().setOptions({extraParams:{projectId:_mtt.project}});
-        $("#edittags").flushCache().setOptions({extraParams:{projectId:_mtt.project}});
+        $("#editTitle").flushCache().setOptions({extraParams:{projectId:_mtt.project}});
+        $("#task").flushCache().setOptions({extraParams:{projectId:_mtt.project}});
         this.loadLists(1);
     },
 
@@ -873,7 +859,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
 			this._filters.push({tagId:tagId, tag:tag, exclude:exclude});
 			$('#mtt_filters').append('<span class="tag-filter tag-id-'+tagId+
 				(exclude ? ' tag-filter-exclude' : '')+'"><span class="mtt-filter-header">'+
-				_mtt.lang.get('tagfilter')+'</span>'+tag+'<span class="mtt-filter-close" tagid="'+tagId+'"></span></span>');
+				_mtt.lang.get('tagfilter')+'</span>@'+tag+'<span class="mtt-filter-close" tagid="'+tagId+'"></span></span>');
 			return true;
 		},
 		cancelTag: function(tagId)
@@ -1168,7 +1154,7 @@ function prepareTagsStr(item)
         b.push(item.tags[i].id);
     }
 	for(var i in a) {
-		a[i] = '<a href="#" class="tag" tag="'+a[i]+'" tagid="'+b[i]+'">'+a[i]+'</a>';
+		a[i] = '<a href="#" class="tag" tag="'+a[i]+'" tagid="'+b[i]+'">@'+a[i]+'</a>';
 	}
 	return '<span class="task-tags">'+a.join(', ')+' <a href="#" class="tag addTag">'+_mtt.lang.get('a_addTag')+'</a></span>';
 };
@@ -1561,7 +1547,7 @@ function editTask(id)
         if(!item) return false;
         // no need to clear form
         var form = document.getElementById('taskedit_form');
-        form.task.value = dehtml(item.title);
+        form.task.value = dehtml(item.title) + (item.tags ? $(item.tags).map(function() { return ' @'+this.text }).get().join('') : '');
         if (item.notes) {
             for (var i in item.notes) {
                 $('.form-row input.note').parent().append('<input type="text" name="note" class="in500 note"/>');
@@ -1572,7 +1558,6 @@ function editTask(id)
                 }});
         }
         form.id.value = item.id;
-        form.tags.value = $(item.tags).map(function() { return this.text }).get().join(', ');
         form.duedate.value = item.dateDue ? $.datepicker.formatDate(_mtt.duedatepickerformat(), getDate(item.dateDue)) : '';
         form.prio.value = item.priority;
         $('#taskedit-date .date-created>span').text(item.dateCreated);
@@ -1580,7 +1565,6 @@ function editTask(id)
         else $('#taskedit-date .date-completed').hide();
         $('#noteFrame').css('height', (item.notes&&item.notes.length>3 ? 18*item.notes.length : 60)+'px');
         writeToNoteFrame(prepareNotesInFrame(item.notes));
-        toggleEditAllTags(0);
         showEditForm();
     });
 	return false;
@@ -1603,19 +1587,17 @@ function clearEditForm()
 	var form = document.getElementById('taskedit_form');
 	form.task.value = '';
 	form.note.value = '';
-	form.tags.value = '';
 	form.duedate.value = '';
 	form.prio.value = '0';
 	form.id.value = '';
     writeToNoteFrame('');
-	toggleEditAllTags(0);
 };
 
 function showEditForm(isAdd)
 {
 	var form = document.getElementById('taskedit_form');
     form.isNoteDirty.value = 0;
-    form.isTagDirty.value = 0;
+    form.isTitleDirty.value = 0;
     // enable iframe edit
     var d = getNoteFrameDocument();
     if (d) {
@@ -1637,7 +1619,6 @@ function showEditForm(isAdd)
 	{
 		$('#page_taskedit').removeClass('mtt-inedit').addClass('mtt-inadd');
 		form.isadd.value = 1;
-		if(_mtt.options.autotag) form.tags.value = _mtt.filter.getTags();
 		if($('#task').val() != '')
 		{
             form.task.value = $('#task').val();
@@ -1653,45 +1634,6 @@ function showEditForm(isAdd)
 	_mtt.pageSet('taskedit');
 };
 
-function toggleEditAllTags(show)
-{
-	if(show)
-	{
-		if(curList.id == -1) {
-			var taskId = document.getElementById('taskedit_form').id.value;
-			loadTags(taskList[taskId].listId, fillEditAllTags);
-		}
-		else if(flag.tagsChanged) loadTags(curList.id, fillEditAllTags);
-		else fillEditAllTags();
-		showhide($('#alltags_hide'), $('#alltags_show'));
-	}
-	else {
-		$('#alltags').hide();
-		showhide($('#alltags_show'), $('#alltags_hide'))
-	}
-};
-
-function fillEditAllTags()
-{
-	var a = [];
-	for(var i=tagsList.length-1; i>=0; i--) { 
-		a.push('<a href="#" class="tag" tag="'+tagsList[i].text+'">'+tagsList[i].text+'</a>');
-	}
-	$('#alltags .tags-list').html(a.join(', '));
-	$('#alltags').show();
-};
-
-function addEditTag(tag)
-{
-	var v = $('#edittags').val();
-	if(v == '') { 
-		$('#edittags').val(tag);
-		return;
-	}
-	var r = v.search(new RegExp('(^|,)\\s*'+tag+'\\s*(,|$)'));
-	if(r < 0) $('#edittags').val(v+', '+tag);
-};
-
 function loadTags(listId, callback)
 {
 	_mtt.db.request('tagCloud', {list:listId,project:_mtt.project}, function(json){
@@ -1699,7 +1641,7 @@ function loadTags(listId, callback)
 		else tagsList = json.list;
 		var cloud = '';
 		$.each(tagsList, function(i,item){
-			cloud += ' <a href="#" tag="'+item.text+'" tagid="'+item.id+'" class="tag w'+item.weight+'" >'+item.text+'</a>';
+			cloud += ' <a href="#" tag="'+item.text+'" tagid="'+item.id+'" class="tag w'+item.weight+'" >@'+item.text+'</a>';
 		});
 		$('#tagcloudcontent').html(cloud)
 		flag.tagsChanged = false;
@@ -1756,11 +1698,10 @@ function searchTasks(force)
 function saveTask(form)
 {
 	if(flag.readOnly) return false;
-    var param = { list:curList.id, tag:_mtt.filter.getTags(), title: form.task.value,
-        prio:form.prio.value, duedate:form.duedate.value };
-    var isTagDirty = form.isTagDirty.value != 0;
-    if (isTagDirty) {
-        param['tags'] = form.tags.value;
+    var param = { list:curList.id, prio:form.prio.value, duedate:form.duedate.value };
+    var isTitleDirty = form.isTitleDirty.value != 0;
+    if (isTitleDirty) {
+        param['title'] = form.task.value;
     }
     var isNoteDirty = form.isNoteDirty.value != 0;
     if (isNoteDirty) {
@@ -1781,7 +1722,7 @@ function saveTask(form)
             changeTaskCnt(item, 0, taskList[item.id]);
             //reuse client cache
             if (!isNoteDirty) item.notes = taskList[item.id].notes;
-            if (!isTagDirty) item.tags = taskList[item.id].tags;
+            if (!isTitleDirty) item.tags = taskList[item.id].tags;
         }
 		taskList[item.id] = item;
         if (isadd) {
@@ -1803,7 +1744,6 @@ function saveTask(form)
         }
 	});
 
-	$("#edittags").flushCache();
 	flag.tagsChanged = true;
 	return false;
 };
@@ -2080,7 +2020,7 @@ function moveTaskToList(taskId, listId)
 		}
 	});
 
-	$("#edittags").flushCache();
+	$("#editTitle").flushCache();
 	flag.tagsChanged = true;
 };
 

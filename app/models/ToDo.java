@@ -10,6 +10,7 @@ import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import json.JsonExclude;
 
@@ -57,8 +58,9 @@ public class ToDo extends Model {
     @JoinColumn(name="updater_id", nullable = true)
     public User updater;
 
-    @ManyToMany
-    public List<Tag> tags;
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name="todo_id")
+    public Set<Tag> tags;
 
     @Required
     @ManyToOne

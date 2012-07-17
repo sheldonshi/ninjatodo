@@ -40,13 +40,15 @@ public class SignUpController extends Controller {
      * checks whether username has not been used
      * @param username
      */
-    public static void isUnique(@Required @MinSize(3) String username) {
+    public static void isUnique(@Required @MinSize(3) @MaxSize(20) String username) {
         if (validation.hasErrors()) {
             renderText("");
         } else {
-            if (isUsernameUnique(username)) {
+            if (username.indexOf("@") != -1 || username.indexOf(",") != -1 || username.indexOf("\\uFF03") != -1 || username.indexOf(" ") != -1) {
+                renderText("1");
+            } else if (isUsernameUnique(username)) {
                 renderText("0");
-            } else {
+            } else  {
                 renderText("1");
             }
         }

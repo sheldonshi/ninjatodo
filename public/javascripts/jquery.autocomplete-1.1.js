@@ -86,6 +86,8 @@ $.Autocompleter = function(input, options) {
 	var select = $.Autocompleter.Select(options, input, selectCurrent, config);
 	
 	var blockSubmit;
+    // ninjatodo
+    var lastWordStart = -1;
 	
 	// prevent form submit in opera when selecting with return key
 	$.browser.opera && $(input.form).bind("submit.autocomplete", function() {
@@ -238,7 +240,12 @@ $.Autocompleter = function(input, options) {
 			v += options.multipleSeparator;
 		}
 		
-		$input.val(v);
+		//$input.val(v);
+        // ninjatodo
+        var priorToLastWord = $input.val().substring(0, lastWordStart).trim();
+        $input.val(priorToLastWord + (priorToLastWord.length > 0 ? ' ' : '') + v);
+        lastWordStart = -1;
+
 		hideResultsNow();
 		$input.trigger("result", [selected.data, selected.value]);
 		return true;
@@ -280,6 +287,15 @@ $.Autocompleter = function(input, options) {
 	}
 	
 	function lastWord(value) {
+        // ninjatodo starts
+        if (value.match(/@$/)) {
+            lastWordStart = value.length - 1;
+        }
+        if (lastWordStart == -1)
+            return "";
+        else
+            value = value.substring(lastWordStart);
+        // ninja ends
 		if ( !options.multiple )
 			return value;
 		var words = trimWords(value);
@@ -369,7 +385,7 @@ $.Autocompleter = function(input, options) {
 
 			options.func({
 				data: $.extend({
-					q: lastWord(term),
+					q: term, //lastWord(term),
 					limit: options.max
 				}, extraParams)},
 				function(data){
@@ -397,7 +413,7 @@ $.Autocompleter = function(input, options) {
 				dataType: options.dataType,
 				url: options.url,
 				data: $.extend({
-					q: lastWord(term),
+					q: term, //lastWord(term),
 					limit: options.max
 				}, extraParams),
 				success: function(data) {

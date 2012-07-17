@@ -22,7 +22,7 @@
                 #{list items:participations, as:'participation'}
                     #{if participation.role==models.Role.OWN}
                         <span class="eachMember"><span id="participant_${participation.id}" class="team-members lightblue_bg">
-                    ${participation.user.fullName} (${participation.user.email})
+                    ${participation.user.username} (${participation.user.fullName}, ${participation.user.email})
 
                     <span class="team-member-action">
                         #{if !participation.user.username.equals(user.id.id)}
@@ -55,7 +55,7 @@
                 #{list items:participations, as:'participation'}
                     #{if participation.role==models.Role.WRITE}
                     <span class="eachMember"><span id="participant_${participation.id}" class="team-members lightblue_bg">
-                    ${participation.user.fullName} (${participation.user.email})
+                    ${participation.user.username} (${participation.user.fullName}, ${participation.user.email})
 
                     <span class="team-member-action">
                         #{if participations.size() > 1}
@@ -88,7 +88,7 @@
                 #{list items:participations, as:'participation'}
                     #{if participation.role==models.Role.READ}
                         <span class="eachMember"><span id="participant_${participation.id}" class="team-members lightblue_bg">
-                    ${participation.user.fullName} (${participation.user.email})
+                     ${participation.user.username} (${participation.user.fullName}, ${participation.user.email})
                     <span class="team-member-action">
                         #{if participations.size() > 1}
                         <a href="#" title="&{'set_remove_user'}" id="deleteMember_${participation.id}" class="deleteMember weak">x</a>
