@@ -298,12 +298,12 @@ public class ToDoLists extends Controller {
         List<Object[]> results = new ArrayList<Object[]>();
         if (list > 0) {
             results = JPA.em()
-                    .createQuery("select t.id, t.text, count(t) from ToDo todo right join todo.tags t where todo.toDoList.id=:list group by t.id order by t.text")
+                    .createQuery("select t.id, t.text, count(t) from ToDo todo right join todo.tags t where todo.toDoList.id=:list group by t.text order by t.text")
                     .setParameter("list", list)
                     .getResultList();
         } else if (list == -1) {
             results = JPA.em()
-                    .createQuery("select t.id, t.text, count(t) from ToDo todo right join todo.tags t where todo.toDoList.project.id=:project group by t.id order by t.text")
+                    .createQuery("select t.id, t.text, count(t) from ToDo todo right join todo.tags t where todo.toDoList.project.id=:project group by t.text order by t.text")
                     .setParameter("project", projectId)
                     .getResultList();
         }

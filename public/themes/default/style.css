@@ -261,16 +261,16 @@ a.mtt-back-button { font-size:0.8em; }
 } 
 #tagcloud .tag { margin:1px 0px; padding:2px; line-height:140%; color:black; }
 #tagcloud .tag:hover { background-color:#999988; color:white; }
-#tagcloud .w0 { font-size:80%; }
+#tagcloud .w0 { font-size:85%; }
 #tagcloud .w1 { font-size:90%; }
-#tagcloud .w2 { font-size:100%; }
-#tagcloud .w3 { font-size:110%; }
-#tagcloud .w4 { font-size:120%; }
-#tagcloud .w5 { font-size:130%; }
-#tagcloud .w6 { font-size:140%; }
-#tagcloud .w7 { font-size:150%; }
-#tagcloud .w8 { font-size:160%; }
-#tagcloud .w9 { font-size:170%; }
+#tagcloud .w2 { font-size:95%; }
+#tagcloud .w3 { font-size:100%; }
+#tagcloud .w4 { font-size:105%; }
+#tagcloud .w5 { font-size:110%; }
+#tagcloud .w6 { font-size:115%; }
+#tagcloud .w7 { font-size:120%; }
+#tagcloud .w8 { font-size:125%; }
+#tagcloud .w9 { font-size:130%; }
 
 #tagcloudcancel { float:right; }
 #tagcloudcancel span { background:url(images/buttons.png) 0 -32px no-repeat; }

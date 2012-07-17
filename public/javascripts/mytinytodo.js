@@ -1641,7 +1641,7 @@ function loadTags(listId, callback)
 		else tagsList = json.list;
 		var cloud = '';
 		$.each(tagsList, function(i,item){
-			cloud += ' <a href="#" tag="'+item.text+'" tagid="'+item.id+'" class="tag w'+item.weight+'" >@'+item.text+'</a>';
+			cloud += ' <a href="#" tag="'+item.text+'" tagid="'+item.id+'" class="tag w'+item.weight+'" >@'+item.text+' ('+item.weight+')</a>';
 		});
 		$('#tagcloudcontent').html(cloud)
 		flag.tagsChanged = false;
