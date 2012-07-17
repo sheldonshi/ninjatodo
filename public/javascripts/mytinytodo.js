@@ -466,10 +466,16 @@ var mytinytodo = window.mytinytodo = _mtt = {
 		if(this.options.tagPreview) {
 			$('#tasklist .tag').live('mouseover mouseout', function(event){
                 if ($(this).hasClass("addTag")) return false;
-				var cl = 'tag-id-' + $(this).attr('tagid');
-				var sel = (event.metaKey || event.ctrlKey) ? 'li.'+cl : 'li:not(.'+cl+')';
+				var reverse = (event.metaKey || event.ctrlKey);
 				if(event.type == 'mouseover') {
-					_mtt.timers.previewtag = setTimeout( function(){$('#tasklist '+sel).addClass('not-in-tagpreview');}, _mtt.options.tagPreviewDelay);
+					_mtt.timers.previewtag = setTimeout( function(){
+                        $.each($('#tasklist li'), function(i, item) {
+                            var tagLink = $(item).find('a.tag')
+                            if (('@'+$(tagLink).attr('tag').toLowerCase() != $(tagLink).html().toLowerCase() && !reverse) || ('@'+$(tagLink).attr('tag').toLowerCase() == $(tagLink).html().toLowerCase() && reverse)) {
+                                $(item).addClass('not-in-tagpreview');
+                            }
+                        })
+                    }, _mtt.options.tagPreviewDelay);
 				}
 				else {
 					clearTimeout(_mtt.timers.previewtag);
