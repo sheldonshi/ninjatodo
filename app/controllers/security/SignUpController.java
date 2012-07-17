@@ -163,11 +163,16 @@ public class SignUpController extends Controller {
                 flash.put(SignUpController.EMAIL, invitation.toEmail);
                 flash.put(SignUpController.INVITATION_UUID, code);
             } else if (invitation.project != null) {
-                Participation participation = new Participation();
-                participation.project = invitation.project;
-                participation.role = invitation.role;
-                participation.user = existingUser;
-                participation.save();
+                // check existing first
+                Participation participation = Participation.find("project=? and and user=?",
+                        invitation.project, existingUser).first();
+                if (participation == null) {
+                    participation = new Participation();
+                    participation.project = invitation.project;
+                    participation.role = invitation.role;
+                    participation.user = existingUser;
+                    participation.save();
+                }
                 invitation.delete();
                 redirect("/w/" + invitation.project.id);
             }
