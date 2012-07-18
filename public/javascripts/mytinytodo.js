@@ -23,7 +23,7 @@ var tabLists = {
 		this._lists = {}; this._length = 0; this._order = [];
 		this._alltasks = { id:-1, showCompleted:0, sort:'DEFAULT' };
 	},
-	length: function(){ return this._length; },
+	length: function(){ return this._length+1; },
 	exists: function(id){ if(this._lists[id] || id==-1) return true; else return false; },
 	add: function(list){ this._lists[list.id] = list; this._length++; this._order.push(list.id); },
 	replace: function(list){ this._lists[list.id] = list; },
