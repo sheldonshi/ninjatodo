@@ -4,6 +4,11 @@
  */
 
 (function(){
+    if (_mtt.editJSLoaded) {
+        return;
+    }
+    _mtt.editJSLoaded = true;
+
     $(".inviteToProject a").live("click", function() {
         var invite = $(this).parent().next()[0];
         if ($(invite).css('display') == 'none') {
