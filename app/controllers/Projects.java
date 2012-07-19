@@ -143,7 +143,7 @@ public class Projects extends Controller {
      */
     static List<Participation> getParticipations(User user) {
         List<Participation> participations = JPA.em()
-                .createQuery("select p from Participation p left join p.project proj where p.user=:user order by proj.dateCreated desc")
+                .createQuery("select p from Participation p left join p.project proj where p.user=:user order by proj.id desc")
                 .setParameter("user", user).getResultList();
         return participations;
     }
