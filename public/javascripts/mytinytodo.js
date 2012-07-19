@@ -211,13 +211,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
 		});
 
         $('#projects a').live('click', function(){
-            if ($(this)[0].id.split('_').length > 1) {
-                var attrs = $(this)[0].id.split('_');
-                _mtt.role=attrs[2];
-                _mtt.loadProject(attrs[1]);
-                _mtt.pageSet('tasks');
-                return false;
-            } else if ($(this)[0].id=='addProject') {
+            if ($(this)[0].id=='addProject') {
                 addProjectDialog();
                 return false;
             } else {
@@ -946,11 +940,10 @@ function addProject(title) {
         if(!parseInt(json.total)) return;
         var htmlStr=_mtt.lang.get('workspaces') + '&nbsp;&nbsp;&nbsp;';
         $.each(json.list, function(i,item){
-            if (i==0) _mtt.project=item.project.id;
-            htmlStr += '<a href="#" id="project_'+item.project.id+'_'+item.role+'" class="weak">'+item.project.title+'</a>&nbsp;&nbsp;&nbsp;';
+            if (item.project.title == title) {
+                window.location.href = _mtt.mttUrl + "w/" + item.project.id;
+            }
         });
-        $('#projectList').html(htmlStr);
-        this.loadProject(_mtt.project);
     });
 }
 

@@ -28,7 +28,7 @@ $().ready(function(){
     </span>
     <span id="projectList">&{'workspaces'}&nbsp;&nbsp;&nbsp;
 #{list items:participations, as:'participation'}
-    <a href="#" id="project_${participation.project.id}_${participation.role}" class="weak">${participation.project.title}</a>&nbsp;&nbsp;&nbsp;
+    <a href="${play.Play.ctxPath}/w/${participation.project.id}" id="project_${participation.project.id}_${participation.role}" class="weak">${participation.project.title}</a>&nbsp;&nbsp;&nbsp;
 #{/list}
     </span>
     <a href="#" id="addProject" class="weak">&{'a_addProject'}</a>&nbsp;&nbsp;&nbsp;
