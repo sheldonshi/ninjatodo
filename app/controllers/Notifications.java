@@ -25,7 +25,7 @@ public class Notifications extends Controller {
      */
     public static void check() {
         User user = User.loadBySocialUser(SecureSocial.getCurrentUser());
-        List<Notification> notifications = Notification.find("recipient=?", user)
+        List<Notification> notifications = Notification.find("recipient=? order by id desc", user)
                 .fetch();
         user.lastNotificationCheck = new Date();
         user.save();
