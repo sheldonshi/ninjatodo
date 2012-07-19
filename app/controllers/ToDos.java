@@ -108,18 +108,12 @@ public class ToDos extends Controller {
             newToDo.dateDue = toDo.dateDue;
             newToDo.toDoList = toDo.toDoList;
             newToDo.priority = toDo.priority;
-            if (toDo.tags != null) {
-                newToDo.tags = new HashSet<Tag>();
-                for (Tag tag : toDo.tags) {
-                    newToDo.tags.add(tag);
-                }
-            }
             newToDo.completed = false;
             newToDo.orderIndex = toDo.orderIndex;
             newToDo.updater = User.loadBySocialUser(SecureSocial.getCurrentUser());
             newToDo.save();
             // clone notes
-            List<Note> notes = Note.find("todo=?", toDo).fetch();
+            List<Note> notes = Note.find("toDo=?", toDo).fetch();
             if (notes != null) {
                 for (Note note : notes) {
                     Note newNote = new Note();
@@ -129,6 +123,7 @@ public class ToDos extends Controller {
                     newNote.save();
                 }
             }
+            // don't copy tags because this to do is likely assigned to someone else
         }
         renderText(Utils.toJson(newToDo));
     }
