@@ -27,5 +27,6 @@ public class Note extends Model {
 
     @ManyToOne
     @JsonExclude
+    @JoinColumn(name = "todo_id", nullable = false)
     public ToDo toDo;
 }
