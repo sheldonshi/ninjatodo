@@ -57,7 +57,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
 		touchDevice: false
 	},
     project: '',
-    role: '',
+    editJSLoaded: false,
 
 	timers: {
 		previewtag: 0
@@ -725,7 +725,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
 		{
 			var ti = '';
 			var openListId = 0;
-			if(res && res.total)
+			if(res && res.total>1)
 			{
 				// open required or first non-hidden list
 				for(var i=0; i<res.list.length; i++) {
