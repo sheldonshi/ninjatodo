@@ -58,6 +58,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
 	},
     project: '',
     editJSLoaded: false,
+    tagSuggestUrl: '',
 
 	timers: {
 		previewtag: 0
@@ -403,8 +404,8 @@ var mytinytodo = window.mytinytodo = _mtt = {
             $('#isTitleDirty').val(1);
         });
 
-		$("#editTitle").autocomplete('Tags/suggest', {scroll: false, multiple: false, selectFirst:false, max:8});
-        $("#task").autocomplete('Tags/suggest', {scroll: false, multiple: false, selectFirst:false, max:8});
+		$("#editTitle").autocomplete(_mtt.tagSuggestUrl, {scroll: false, multiple: false, selectFirst:false, max:8});
+        $("#task").autocomplete(_mtt.tagSuggestUrl, {scroll: false, multiple: false, selectFirst:false, max:8});
 
 		$('#taskedit_form').find('select,input,textarea').bind('change keypress', function(){
 			flag.editFormChanged = true;
@@ -630,7 +631,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
             return false;
         });
         // enable autocomplete
-        $("#addTag-dialog-form-name").autocomplete('Tags/suggest', {scroll: false, multiple: false, selectFirst:false, max:8});
+        $("#addTag-dialog-form-name").autocomplete(_mtt.tagSuggestUrl, {scroll: false, multiple: false, selectFirst:false, max:8});
 
         $( "#deleteConfirm-dialog-form" ).dialog({
             autoOpen: false,

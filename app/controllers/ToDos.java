@@ -282,15 +282,12 @@ public class ToDos extends Controller {
             }
         }
         if (params.get("title") != null) {
+            // clear all tag first and thenr re-add
             toDo.title = params.get("title");
             // convert mentions in title into tags, and remove them from title
+            clearTags(toDo);
             List<String> hashtags = parseMentions(toDo);
             if (!hashtags.isEmpty()) {
-                if (toDo.tags != null) {
-                    toDo.tags.clear();
-                } else {
-                    toDo.tags = new HashSet<Tag>();
-                }
                 addTagToToDo(hashtags, toDo);
             }
         }
@@ -354,6 +351,17 @@ public class ToDos extends Controller {
             return notes;
         } else {
             return new String[0];
+        }
+    }
+
+    /**
+     * clear all mentions of a toDo
+     */
+    private static void clearTags(ToDo toDo) {
+        if (toDo.tags != null) {
+            toDo.tags.clear();
+        } else {
+            toDo.tags = new HashSet<Tag>();
         }
     }
 

@@ -6,6 +6,7 @@ $().ready(function(){
 
 	mytinytodo.mttUrl = "${play.Play.ctxPath}/";
 	mytinytodo.templateUrl = "${play.Play.ctxPath}/public/themes/default/";
+    mytinytodo.tagSuggestUrl = mytinytodo.mttUrl + "Tags/suggest";
 	mytinytodo.db = new mytinytodoStorageAjax(mytinytodo);
 	mytinytodo.init({
 		needAuth: false,
