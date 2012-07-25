@@ -1,7 +1,7 @@
 ninjatodo
 =========
 
-Ninja To Do is a minimalist to do list in Java, originally ported from mytinytodo 1.4.2 in php (http://mytinytodo.net). Ninja To Do uses the Play Framework 1.2.4 (http://playframework.org)
+Ninja To Do is a minimalist to do list in Java, originally ported from mytinytodo 1.4.2 in php (http://mytinytodo.net) and enhanced substantially thereafter. Ninja To Do uses the Play Framework 1.2.4 (http://playframework.org).
 
 ## Introduction
 
@@ -12,6 +12,18 @@ Agile development teams need a very light-weight to do list that also offers col
 * JDK 1.6 or later
 * Play Framework 1.2.4
 * MySQL 5.1 or later
+
+## Main Features
+
+* Each user can create multiple workspaces, with each workspace shared among a group of users
+* User permissions within each workspace.
+* Multiple to do list in each workspace.
+* Use @username tag to assign tasks to users
+* Tons of filters to quickly find what you look for
+* Very light weight UI
+* Notify you when the to do list you watched has been updated by someone else
+* Many more ...
+* Mobile web friendly, and a native mobile client is coming soon ...
 
 ## Installation
 
