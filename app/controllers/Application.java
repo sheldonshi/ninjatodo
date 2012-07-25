@@ -16,8 +16,7 @@ import java.util.List;
 public class Application extends Controller {
 
     public static void index() {
-        SocialUser socialUser = SecureSocial.getCurrentUser();
-        User user = User.find("byUsername", socialUser.id.id).first();
+        User user = User.loadBySocialUser(SecureSocial.getCurrentUser());
         List<Participation> participations = Projects.getParticipations(user);
         if (participations.isEmpty()) {
             participations.add(Projects.addProject(user, Messages.get("myFirstProject")));
