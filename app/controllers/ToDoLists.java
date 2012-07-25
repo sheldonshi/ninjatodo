@@ -26,7 +26,7 @@ public class ToDoLists extends Controller {
     /**
      * Check whether the project is visible to the user
      */
-    @Before(only = {"loadLists"})
+    @Before(only = {"loadLists","tagCloud"})
      static void checkReadAccess() {
         Projects.checkVisibility();
     }
@@ -34,7 +34,7 @@ public class ToDoLists extends Controller {
     /**
      * Check whether the project has the user as a member
      */
-    @Before(unless = {"loadLists"})
+    @Before(unless = {"loadLists","tagCloud"})
     static void checkWriteAccess() {
         Projects.checkMembership();
     }

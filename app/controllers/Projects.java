@@ -7,6 +7,7 @@ import play.mvc.Before;
 import play.mvc.Controller;
 import play.mvc.Scope;
 import play.mvc.With;
+import services.CacheService;
 import services.SecureUserService;
 import utils.Utils;
 
@@ -80,6 +81,8 @@ public class Projects extends Controller {
                     participation.role = Role.OWN;
                 }
                 participation.save();
+                // save to cache
+                CacheService.cacheRole(participation);
             }
             renderText("");
         }
@@ -104,6 +107,8 @@ public class Projects extends Controller {
                     }
                 }
                 participation.save();
+                // save to cache
+                CacheService.cacheRole(participation);
             }
             renderText("");
         }
@@ -120,6 +125,8 @@ public class Projects extends Controller {
         if (participation != null &&
                 participation.project.id == projectId) {
             participation.delete();
+            // save to cache
+            CacheService.clearRole(participation);
             renderText(participationId);
         }
     }
@@ -171,10 +178,10 @@ public class Projects extends Controller {
     }
 
     /**
-     * Check whether the project has the user as a member
+     * Check whether the project has the user as a member (can write or own)
      */
     static void checkMembership() {
-        if (isMember(getProject())) {
+        if (canWrite(getProject())) {
             return; // member of a non-public project
         } else {
             throw new RuntimeException();   // no permission
@@ -189,8 +196,16 @@ public class Projects extends Controller {
         User user = User.loadBySocialUser(SecureSocial.getCurrentUser());
         String id = Scope.Params.current().get("projectId");
         Project project = Project.findById(Long.valueOf(id));
-        if (Participation.find("project=? and user=? and role=?", project, user, Role.OWN).first() == null) {
-            throw new RuntimeException();
+        Role currentRole = CacheService.getPole(user, project);
+        if (currentRole == null) {
+            Participation participation = Participation.find("project=? and user=?", project, user).first();
+            if (participation != null) {
+                CacheService.cacheRole(participation);
+                currentRole = participation.role;
+            }
+        }
+        if (!Role.OWN.equals(currentRole)) {
+            forbidden();
         }
     }
 
@@ -204,7 +219,7 @@ public class Projects extends Controller {
             return; // public project
         } else if (project.visibility.equals(Visibility.LINK) && false) {
             // TODO deal with a private link
-        } else if (isMember(project)) {
+        } else if (canRead(project)) {
             return; // member of a non-public project
         } else {
             throw new RuntimeException();   // no permission
@@ -237,8 +252,50 @@ public class Projects extends Controller {
         return project;
     }
 
-    private static boolean isMember(Project project) {
+    /**
+     * Checks if a user is a member (at least can write) of the project
+     * @param project
+     * @return
+     */
+    private static boolean canWrite(Project project) {
+        Role currentRole = getCurrentRole(project);
+        if (Role.OWN.equals(currentRole) || Role.WRITE.equals(currentRole)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Checks if a user is a member (at least can read) of the project
+     * @param project
+     * @return
+     */
+    private static boolean canRead(Project project) {
+        Role currentRole = getCurrentRole(project);
+        if (currentRole != null) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * get role of the current user in this project
+     *
+     * @param project
+     * @return
+     */
+    private static Role getCurrentRole(Project project) {
         User user = User.loadBySocialUser(SecureSocial.getCurrentUser());
-        return Participation.find("project=? and user=?", project, user).first() != null;
+        Role currentRole = CacheService.getPole(user, project);
+        if (currentRole == null) {
+            Participation participation = Participation.find("project=? and user=?", project, user).first();
+            if (participation != null) {
+                CacheService.cacheRole(participation);
+                currentRole = participation.role;
+            }
+        }
+        return currentRole;
     }
 }
