@@ -75,18 +75,17 @@ public class Notification extends Model {
             Map<String, String> messageMap = new HashMap<String, String>();
             messageMap.put("s1", initiator.fullName);
             messageMap.put("message", "notification_" + notificationType.name().toLowerCase());
-            String message = Utils.mapToJson(messageMap);
             switch (notificationType) {
                 case RENAME_LIST:
                     messageMap.put("s2", oldListNameOnRename);
                     messageMap.put("s3", toDoList.name);
-                    message = initiator.fullName + " renamed list \"" + oldListNameOnRename + "\" to \"" + toDoList.name + "\".";
                     break;
                 default:
                     messageMap.put("s2", toDoList.name);
                     messageMap.put("s3", toDoList.project.title);
                     break;
             }
+            String message = Utils.mapToJson(messageMap);
             return createNotifications(notificationType, users, message);
         } else {
             return null;
