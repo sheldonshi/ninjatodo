@@ -1,11 +1,14 @@
 package models;
 
+import org.hibernate.annotations.*;
 import play.data.validation.MaxSize;
 import play.data.validation.Required;
 import play.db.jpa.Model;
 import play.libs.Codec;
 
 import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 import java.util.Date;
 
 /**
@@ -17,6 +20,8 @@ import java.util.Date;
  */
 @Entity
 @Table(name="project")
+@Cacheable
+@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 public class Project extends Model {
     @Required
     @MaxSize(100)

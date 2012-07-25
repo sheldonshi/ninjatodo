@@ -25,8 +25,17 @@ public class SecureUserService implements UserService.Service {
 
     @Override
     public SocialUser find(UserId id) {
-        User user = User.find("username=? and provider=?", id.id, id.provider).first();
-        SocialUser socialUser = user != null ? user.unpack() : null;
+        Long userId = CacheService.getUserId(id.id);
+        User user = null;
+        if (userId != null) {
+            user = User.findById(userId);
+        } else {
+            user = (User) User.find("username=?", id.id).first();
+            if (user != null) {
+                CacheService.cacheUserId(user.username, user.id);
+            }
+        }
+        SocialUser socialUser = user != null && user.provider.equals(id.provider) ? user.unpack() : null;
         return socialUser;
     }
 

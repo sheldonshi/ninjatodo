@@ -8,12 +8,14 @@ import play.data.validation.MaxSize;
 import play.data.validation.MinSize;
 import play.data.validation.Required;
 import play.db.jpa.JPA;
+import play.db.jpa.JPABase;
 import play.db.jpa.Model;
 import play.libs.Codec;
 import securesocial.provider.AuthenticationMethod;
 import securesocial.provider.ProviderType;
 import securesocial.provider.SocialUser;
 import securesocial.provider.UserId;
+import services.CacheService;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -89,6 +91,7 @@ public class User extends Model {
     public String verifyCode;
 
     @ManyToMany
+    @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
     public Set<ToDoList> watchedToDoLists;
     
     public User() {
@@ -142,16 +145,34 @@ public class User extends Model {
     
     public static User loadBySocialUser(SocialUser socialUser) {
         if (socialUser != null) {
-            try {
-                return (User) JPA.em()
-                        .createQuery("select u from User u left join u.watchedToDoLists where username=:username")
-                        .setParameter("username", socialUser.id.id)
-                        .getSingleResult();
-            } catch (Exception e) {
-                return null;
+            // cache user id only. if you cache the whole user, there will be hibernate session attach/detach problem
+            Long userId = CacheService.getUserId(socialUser.id.id);
+            if (userId != null) {
+                return User.findById(userId);
+            } else {
+                try {
+                    User user = (User) JPA.em()
+                            .createQuery("select u from User u left join fetch u.watchedToDoLists where username=:username")
+                            .setParameter("username", socialUser.id.id)
+                            .getSingleResult();
+                    if (user != null) {
+                        CacheService.cacheUserId(user.username, user.id);
+                    }
+                    return user;
+                } catch (Exception e) {
+                    return null;
+                }
             }
         } else {
             return null;
         }
+    }
+
+    /**
+     * store (ie insert) the entity.
+     */
+    @Override
+    public User save() {
+        return super.save();
     }
 }
