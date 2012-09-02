@@ -127,6 +127,11 @@ public class User extends Model {
      */
     public void pack(SocialUser socialUser) {
         this.username = socialUser.id.id;
+        if ("userpass".equals(socialUser.id.provider)) {
+            this.password = socialUser.password;
+        } else {
+            this.password = "";
+        }
         this.provider = socialUser.id.provider;
         this.accessToken = socialUser.accessToken;
         this.fullName = socialUser.displayName;
@@ -140,7 +145,6 @@ public class User extends Model {
             this.verifyCode = null;
         }
         this.dateLastLogin = socialUser.lastAccess;
-        this.password = socialUser.password;
     }
     
     public static User loadBySocialUser(SocialUser socialUser) {
