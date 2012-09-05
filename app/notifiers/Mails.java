@@ -1,9 +1,13 @@
 package notifiers;
 
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import json.JsonExclude;
 import models.Invitation;
 import models.Project;
 import models.Role;
 import models.User;
+import org.apache.commons.lang.StringUtils;
 import play.Play;
 import play.data.validation.Email;
 import play.data.validation.Required;
@@ -27,6 +31,17 @@ import java.util.*;
 public class Mails extends Mailer {
     private static final String SECURESOCIAL_MAILER_FROM = "securesocial.mailer.from";
 
+    /**
+     * Send invitation by email. Project could be null.
+     * 
+     * @param email
+     * @param project - nullable
+     * @param fromUser
+     * @param role
+     * @param uuid
+     * @param activationUrl
+     * @return
+     */
     public static boolean sendInvitationEmail(String email, Project project, User fromUser, 
                                               Role role, String uuid, String activationUrl) {
 
@@ -58,6 +73,38 @@ public class Mails extends Mailer {
                 return true;
             } catch (MailException me) {
                 // do nothing
+            }
+
+        }
+        return false;
+    }
+
+    /**
+     * Send notification by email
+     * 
+     * @param recipient
+     * @param message
+     * @param projectTitle
+     * @return
+     */
+    public static boolean sendNotificationEmail(User recipient, String message, String projectUrl, String projectTitle) {
+        if (recipient == null || StringUtils.isEmpty(message) || StringUtils.isEmpty(projectTitle)) {
+            return false;
+        }
+        setSubject(Messages.get("mail_notification_subject", recipient.fullName, projectTitle));
+        setFrom(Play.configuration.getProperty(SECURESOCIAL_MAILER_FROM));
+        
+        if (StringUtils.isNotEmpty(recipient.email)) {
+            try {
+
+                addRecipient(recipient.email);
+                JsonObject msgJson = new JsonParser().parse(message).getAsJsonObject();
+                send(msgJson, projectUrl);
+
+                return true;
+            } catch (MailException me) {
+                // do nothing
+                me.printStackTrace();
             }
 
         }

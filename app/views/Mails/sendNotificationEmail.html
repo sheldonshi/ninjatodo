@@ -1,0 +1,9 @@
+<html>
+<body>
+<p>${msgJson.message.getAsString()}</p>
+<p>${play.i18n.Messages.get(msgJson.message.getAsString())}</p>
+<p>${play.i18n.Messages.get(msgJson.message.getAsString()).replace("[s1]",msgJson.s1.getAsString()).replace("[s2]",msgJson.s2.getAsString()).replace("[s3]",msgJson.s3.getAsString())}</p>
+<p>&{'sendNotificationEmail_url'}</p>
+<p><a href="&{projectUrl}">&{projectUrl}</a></p>
+</body>
+</html>

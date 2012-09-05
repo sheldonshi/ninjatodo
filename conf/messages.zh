@@ -169,21 +169,24 @@ signup_passwordPattern=至少6个字节，至少一个字母和一个数字
 sendInvitationEmail_hello=您好，%s邀请您加入 Ninja To Do 项目"%s".
 sendInvitationEmail_url=点击以下链接加入：
 
+sendNotificationEmail_url=点击以下链接：
+
 mail_invitation_subject=%s邀请你加入项目“%s“
+mail_notification_subject=%s更新了项目“%s“
 
 notification_no=没有通知
 notification_clear=清空
-notification_assign_task=%s1在列表"%s2"里添加了新任务"%s3"。
-notification_remove_task=%s1从列表"%s3"里删除了任务"%s2"。
-notification_update_task=%s1修改了列表"%s3"里的任务"%s2"。
-notification_complete_task=%s1完成了任务"%s2"。
-notification_change_priority=%s1改变了任务"%s2"的优先级。
-notification_add_list=%s1在项目"%s3"中创建了新列表"%s2"。
-notification_delete_list=%s1从项目"%s3"里删除列表"%s2"。
-notification_rename_list=%s1把列表"%s2"更名为"%s3"。
-notification_clear_list=%s1清除了列表"%s2"中的所有完成的任务。
-notification_join_by_invite=%s1接受了你的邀请。
-notification_invite_in_project=%s1邀请你加入项目"%s2".
+notification_assign_task=[s1]在列表"[s2]"里添加了新任务"[s3]"。
+notification_remove_task=[s1]从列表"[s3]"里删除了任务"[s2]"。
+notification_update_task=[s1]修改了列表"[s3]"里的任务"[s2]"。
+notification_complete_task=[s1]完成了任务"[s2]"。
+notification_change_priority=[s1]改变了任务"[s2]"的优先级。
+notification_add_list=[s1]在项目"[s3]"中创建了新列表"[s2]"。
+notification_delete_list=[s1]从项目"[s3]"里删除列表"[s2]"。
+notification_rename_list=[s1]把列表"[s2]"更名为"[s3]"。
+notification_clear_list=[s1]清除了列表"[s2]"中的所有完成的任务。
+notification_join_by_invite=[s1]接受了你的邀请。
+notification_invite_in_project=[s1]邀请你加入项目"[s2]".
 notification_invite_in_project_gotoUrl_text=接受
 
 time_amomentago=刚才

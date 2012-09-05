@@ -93,6 +93,18 @@ public class User extends Model {
     @ManyToMany
     @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
     public Set<ToDoList> watchedToDoLists;
+
+    @Column(name = "watch_by_email", nullable = true)
+    @JsonExclude
+    public boolean watchByEmail = false;
+
+    @Column(name = "watch_by_push", nullable = true)
+    @JsonExclude
+    public boolean watchByPush = true;
+
+    @Column(name = "apn_token", nullable = true)
+    @JsonExclude
+    public String apnToken;
     
     public User() {
         dateCreated = new Date();

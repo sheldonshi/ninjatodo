@@ -20,8 +20,24 @@ public class NotificationJob extends Job {
      * Insert notifications in the queue into database
      */
     public void doJob() {
+        Vector<Notification> notificationsByEmail = new Vector<Notification>();
+        Vector<Notification> notificationsByPush = new Vector<Notification>();
         for (int i = 0; i < notifications.size(); i++) {
-            notifications.get(i).save();
+            Notification notification = notifications.get(i);
+            notification.save();
+            // check for needs to send email or push notification
+            if (notification.recipient.watchByEmail) {
+                notificationsByEmail.add(notification);
+            }
+            if (notification.recipient.watchByPush && notification.recipient.apnToken != null) {
+                notificationsByPush.add(notification);
+            }
+        }
+        if (!notificationsByEmail.isEmpty()) {
+            NotificationByEmailJob.queueNotification(notificationsByEmail);
+        }
+        if (!notificationsByPush.isEmpty()) {
+            NotificationByPushJob.queueNotification(notificationsByPush);
         }
         notifications.clear();
     }

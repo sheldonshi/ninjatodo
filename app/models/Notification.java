@@ -1,9 +1,11 @@
 package models;
 
+import play.Play;
 import play.data.validation.MaxSize;
 import play.data.validation.Required;
 import play.db.jpa.JPA;
 import play.db.jpa.Model;
+import play.mvc.Router;
 import utils.Utils;
 
 import javax.persistence.*;
@@ -36,6 +38,9 @@ public class Notification extends Model {
 
     @Column(name = "goto_url", nullable = true)
     public String gotoUrl;
+
+    @Column(name = "project_title", nullable = true)
+    public String projectTitle;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "notification_type", nullable = false)
@@ -86,7 +91,9 @@ public class Notification extends Model {
                     break;
             }
             String message = Utils.mapToJson(messageMap);
-            return createNotifications(notificationType, users, message);
+            // ToDO goto url is missing
+            String listUrl = Router.getFullUrl("/") + "l/" + toDoList.id;
+            return createNotifications(notificationType, users, message, listUrl, toDoList.project.title);
         } else {
             return null;
         }
@@ -116,7 +123,9 @@ public class Notification extends Model {
             messageMap.put("s3", toDo.toDoList.name);
             messageMap.put("message", "notification_" + notificationType.name().toLowerCase());
             String message = Utils.mapToJson(messageMap);
-            return createNotifications(notificationType, users, message);
+            // TODO goto url is missing
+            String listUrl = Router.getFullUrl("/") + "l/" + toDo.toDoList.id;
+            return createNotifications(notificationType, users, message, listUrl, toDo.toDoList.project.title);
         } else {
             return null;
         }
@@ -155,7 +164,7 @@ public class Notification extends Model {
         String message = Utils.mapToJson(messageMap);
         List<User> recipients = new ArrayList<User>();
         recipients.add(invitee);
-        return createNotifications(notificationType, recipients, message, activationUrl);
+        return createNotifications(notificationType, recipients, message, activationUrl, project.title);
     }
 
     /**
@@ -167,7 +176,7 @@ public class Notification extends Model {
      */
     private static List<Notification> createNotifications(NotificationType notificationType,
                                                           List<User> recipients, String message) {
-        return createNotifications(notificationType,recipients, message, null);
+        return createNotifications(notificationType, recipients, message, null, null);
     }
 
     /**
@@ -180,7 +189,7 @@ public class Notification extends Model {
      */
     private static List<Notification> createNotifications(NotificationType notificationType, 
                                                           List<User> recipients, String message,
-                                                          String gotoUrl) {
+                                                          String gotoUrl, String projectTitle) {
         List<Notification> notifications = new ArrayList<Notification> ();
         for (User recipient : recipients) {
             Notification notification = new Notification();
@@ -188,6 +197,7 @@ public class Notification extends Model {
             notification.notificationType = notificationType;
             notification.recipient = recipient;
             notification.gotoUrl = gotoUrl;
+            notification.projectTitle = projectTitle;
             notifications.add(notification);
         }
         return notifications;
