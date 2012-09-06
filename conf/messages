@@ -203,3 +203,15 @@ time_onehourago=one hour ago
 time_hoursago=%s hours ago
 time_onedayago=one day ago
 time_daysago=%s days ago
+
+user_profile_email=Email
+user_email_unverified_instr=Email verification is required.
+user_email_unverified_send=Send verification email again.
+user_profile_password=Password
+user_profile_password_hidden=*********
+user_profile_password_blank=No password
+user_profile_password_change=Change
+user_profile_password_old=Current Password
+user_profile_password_new=New Password
+user_profile_password_new2=Re-enter New Password
+user_profile_watchByEmail=Receive Email Notification

@@ -139,7 +139,7 @@ public class User extends Model {
      */
     public void pack(SocialUser socialUser) {
         this.username = socialUser.id.id;
-        if ("userpass".equals(socialUser.id.provider)) {
+        if (ProviderType.userpass.equals(socialUser.id.provider)) {
             this.password = socialUser.password;
         } else {
             this.password = "";

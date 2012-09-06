@@ -198,3 +198,15 @@ time_onehourago=一小时前
 time_hoursago=%s小时前
 time_onedayago=一天前
 time_daysago=%s天前
+
+user_profile_email=邮箱
+user_email_unverified_instr=邮箱尚未确认。
+user_email_unverified_send=再次发确认邮件。
+user_profile_password=密码
+user_profile_password_hidden=*********
+user_profile_password_blank=无
+user_profile_password_change=修改密码
+user_profile_password_old=当前密码
+user_profile_password_new=新密码
+user_profile_password_new2=再次输入新密码
+user_profile_watchByEmail=接受邮件通知

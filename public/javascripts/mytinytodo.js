@@ -2471,6 +2471,20 @@ function showUserProfile() {
     })
     return false;
 }
+
+    function saveUserProfile(frm)
+    {
+        if(!frm) return false;
+        var params = { save:'ajax' };
+        //$(frm).find("input:text,input:password,input:checked,select").filter(":enabled").each(function() { params[this.name || '__'] = this.value; });
+        //$(frm).find(":submit").attr('disabled','disabled').blur();
+        $.post(_mtt.mttUrl+'Users/save', params, function(json){
+            if(json.saved) {
+                flashInfo(_mtt.lang.get('settingsSaved'));
+                setTimeout('window.location.reload();', 1000);
+            }
+        }, 'json');
+    }
 /*
 	Settings
 */

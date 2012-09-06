@@ -1,0 +1,67 @@
+
+<script src="@{'/public/javascripts/ninjatodo_edit.js'}" type="text/javascript" charset="${_response_encoding}"></script>
+
+<div class="settings_close"><a href="#" class="mtt-back-button">&{'go_back'}</a></div>
+
+<h3>&{'set_header'}</h3>
+
+<div id="settings_msg" style="display:none"></div>
+
+#{form @Users.save() , id:'user_profile_form' }
+
+<table class="mtt-settings-table">
+    <tr>
+        <th>&{'user_profile_email'}</th>
+        <td>
+            ${user.email}
+            #{if !user.isEmailVerified}
+                &{'user_email_unverified_instr'}
+                <a href="#">&{'user_email_unverified_send'}</a>
+            #{/if}
+        </td>
+    </tr>
+    <tr>
+        <th>&{'user_profile_password'}</th>
+        <td>
+            <div id="ownerList">
+                <span class="eachMember">
+                    #{if user.provider.equals("userpass")}
+                        &{'user_profile_password_hidden'}
+                    #{/if}
+                    #{else}
+                        &{'user_profile_password_blank'}
+                    #{/else}
+                </span>
+                <span class="team-members inviteToProject">
+                <a href="#" id="addOwner" class="weak">&{'user_profile_password_change'}</a>
+                </span>
+
+                <div id="addToProject_OWN" class="addToProject">
+                    #{if user.provider.equals("userpass")}
+                        <div>&{'user_profile_password_old'}</div>
+                        <div><input type="text" name="password_old" value=""/></div>
+                    #{/if}
+                    <div>&{'user_profile_password_new'}</div>
+                    <div><input type="text" name="password_new" value=""/></div>
+                    <div>&{'user_profile_password_new2'}</div>
+                    <div><input type="text" name="password_new2" value=""/></div>
+                </div>
+            </div>
+        </td>
+    </tr>
+    <tr>
+        <th>&{'user_profile_watchByEmail'}</th>
+        <td>
+            <input type="checkbox" name="watchByEmail" value="true" #{if user.watchByEmail} checked="true" #{/if} />
+        </td>
+    </tr>
+    <tr><td colspan="2" class="form-buttons">
+
+        <input type="submit" value="&{'save'}" />
+        <input type="button" class="mtt-back-button" value="&{'cancel'}" />
+
+    </td></tr>
+</table>
+
+#{/form}
+
