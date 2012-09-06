@@ -106,6 +106,7 @@ list_rssfeed=RSS Feed
 a_settings=Settings
 a_help=Help
 a_notification=Notification
+a_user_profile=profile
 rss_feed=RSS Feed
 feed_title=%s
 feed_completed_tasks=Completed tasks

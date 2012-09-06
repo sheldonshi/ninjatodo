@@ -131,7 +131,7 @@ public class SignUpController extends Controller {
                 // send notification
                 User user = User.loadBySocialUser(SecureSocial.getCurrentUser());
                 NotificationJob.queueNotification(Notification
-                        .createOnJoinByInvite(user, invitation.fromUser));
+                        .createOnJoinByInvite(user, invitation.fromUser, invitation.project));
 
             }
         } catch ( Throwable e ) {

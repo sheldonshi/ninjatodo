@@ -137,7 +137,7 @@ public class Notification extends Model {
      * @param inviter
      * @return
      */
-    public static List<Notification> createOnJoinByInvite(User invitee, User inviter) {
+    public static List<Notification> createOnJoinByInvite(User invitee, User inviter, Project project) {
         NotificationType notificationType = NotificationType.JOIN_BY_INVITE;
         Map<String, String> messageMap = new HashMap<String, String>();
         messageMap.put("s1", invitee.fullName);
@@ -145,11 +145,15 @@ public class Notification extends Model {
         String message = Utils.mapToJson(messageMap);
         List<User> recipients = new ArrayList<User>();
         recipients.add(inviter);
-        return createNotifications(notificationType, recipients, message);
+        // if the inviter is not the project creator, notify the project creator
+        if (project != null && !inviter.equals(project.creator)) {
+            recipients.add(project.creator);
+        }
+        return createNotifications(notificationType, recipients, message, null, project != null ? project.title : null);
     }
 
     /**
-     * creates notification on join by invite
+     * creates notification on invite someone to join
      * @param inviter
      * @param project
      * @return
@@ -164,7 +168,11 @@ public class Notification extends Model {
         String message = Utils.mapToJson(messageMap);
         List<User> recipients = new ArrayList<User>();
         recipients.add(invitee);
-        return createNotifications(notificationType, recipients, message, activationUrl, project.title);
+        // if the inviter is not the project creator, notify the project creator
+        if (project != null && !inviter.equals(project.creator)) {
+            recipients.add(project.creator);
+        }
+        return createNotifications(notificationType, recipients, message, activationUrl, project != null ? project.title : null);
     }
 
     /**

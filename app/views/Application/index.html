@@ -25,7 +25,7 @@ $().ready(function(){
 <div id="container">
 <div id="projects" class="ui-corner-bl ui-corner-br lightblue_bg">
     <span class="addProject">
-        &nbsp;&nbsp;&nbsp;${selectedParticipation.user.fullName}&nbsp;&nbsp;&nbsp;&nbsp;<a href="#" id="notification" class="weak">&{'a_notification'}</a>&nbsp;&nbsp;:&nbsp;&nbsp;<a href="#" id="help" class="weak">&{'a_help'}</a>&nbsp;&nbsp;:&nbsp;&nbsp;<a href="@{securesocial.SecureSocial.logout}" class="weak">&{'a_signout'}</a>
+        &nbsp;&nbsp;&nbsp;${selectedParticipation.user.fullName}&nbsp;(<a href="#user_profile" id="user_profile">&{'a_user_profile'}</a>)&nbsp;&nbsp;&nbsp;<a href="#" id="notification" class="weak">&{'a_notification'}</a>&nbsp;&nbsp;:&nbsp;&nbsp;<a href="#" id="help" class="weak">&{'a_help'}</a>&nbsp;&nbsp;:&nbsp;&nbsp;<a href="@{securesocial.SecureSocial.logout}" class="weak">&{'a_signout'}</a>
     </span>
     <span id="projectList">&{'workspaces'}&nbsp;&nbsp;&nbsp;
 #{list items:participations, as:'participation'}
@@ -45,12 +45,6 @@ $().ready(function(){
  <div class="bar-menu">
  <span class="menu-owner" style="display:none">
    <a href="#settings" id="settings">&{'a_settings'}</a>
- </span>
- <span class="bar-delim" style="display:none"> | </span>
- <span id="bar_auth">
-  <span id="bar_public" style="display:none">Public Tasks |</span>
-  <a href="#login" id="bar_login" class="nodecor"><u>&{'a_login'}</u> <span class="arrdown"></span></a>
-  <a href="#logout" id="bar_logout">&{'a_logout'}</a>
  </span>
  </div>
 </div>

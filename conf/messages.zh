@@ -103,6 +103,7 @@ list_rssfeed=RSS输出
 a_settings=设置
 a_help=帮助
 a_notification=通知
+a_user_profile=帐户
 rss_feed=RSS输出
 feed_title=%s
 feed_completed_tasks=已完成的任务

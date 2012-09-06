@@ -529,6 +529,12 @@ var mytinytodo = window.mytinytodo = _mtt = {
 			return false;
 		});
 
+        // profile
+        $("#user_profile").click(showUserProfile);
+        $("#user_profile_form").live('submit', function() {
+            saveUserProfile(this);
+            return false;
+        });
 
 		// Settings
 		$("#settings").click(showSettings);
@@ -695,7 +701,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
         _mtt.project = projectId;
         if ($('#project_'+_mtt.project+'_WRITE').length > 0) {
             $('#mtt_body h2').html($('#project_'+_mtt.project+'_WRITE').html());
-            $('#settings').hide();
+            $('#settings').show();
         } else if ($('#project_'+_mtt.project+'_READ').length > 0) {
             $('#mtt_body h2').html($('#project_'+_mtt.project+'_READ').html());
             $('#settings').hide();
@@ -2455,8 +2461,16 @@ function logout()
 		window.location.reload();
 	}, 'json');
 	return false;
-} 
+}
 
+/* Settings */
+function showUserProfile() {
+    $('#page_ajax').load(_mtt.mttUrl+'Users/edit',null,function(){
+        _mtt.pageSet('ajax','user_profile');
+        $('#user_profile').hide();
+    })
+    return false;
+}
 /*
 	Settings
 */
