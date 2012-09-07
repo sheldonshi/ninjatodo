@@ -961,7 +961,7 @@ function addList(name)
 		var item = json.list[0];
 		var i = tabLists.length();
 		tabLists.add(item);
-		if(i > 0) {
+		if(i > 1) {
 			$('#lists ul').append('<li id="list_'+item.id+'" class="mtt-tab">'+
 					'<a href="#" title="'+item.name+'"><span>'+item.name+'</span>'+
 					'<div class="list-action"></div></a></li>');
