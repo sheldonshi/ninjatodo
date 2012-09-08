@@ -25,7 +25,7 @@ $().ready(function(){
 <div id="container">
 <div id="projects" class="ui-corner-bl ui-corner-br lightblue_bg">
     <span class="addProject">
-        &nbsp;&nbsp;&nbsp;${selectedParticipation.user.fullName}&nbsp;(<a href="#user_profile" id="user_profile">&{'a_user_profile'}</a>)&nbsp;&nbsp;&nbsp;<a href="#" id="notification" class="weak">&{'a_notification'}</a>&nbsp;&nbsp;:&nbsp;&nbsp;<a href="#" id="help" class="weak">&{'a_help'}</a>&nbsp;&nbsp;:&nbsp;&nbsp;<a href="@{securesocial.SecureSocial.logout}" class="weak">&{'a_signout'}</a>
+        &nbsp;&nbsp;&nbsp;${selectedParticipation.user.fullName}&nbsp;(<a href="#user_profile" id="user_profile">&{'a_user_profile'}</a>, <a href="#" id="user_invite">&{'actionInvite'}</a>)&nbsp;&nbsp;&nbsp;<a href="#" id="notification" class="weak">&{'a_notification'}</a>&nbsp;&nbsp;:&nbsp;&nbsp;<a href="#" id="help" class="weak">&{'a_help'}</a>&nbsp;&nbsp;:&nbsp;&nbsp;<a href="@{securesocial.SecureSocial.logout}" class="weak">&{'a_signout'}</a>
     </span>
     <span id="projectList">&{'workspaces'}&nbsp;&nbsp;&nbsp;
 #{list items:participations, as:'participation'}
