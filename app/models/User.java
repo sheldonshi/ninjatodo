@@ -138,13 +138,25 @@ public class User extends Model {
      * @return
      */
     public void pack(SocialUser socialUser) {
-        this.username = socialUser.id.id;
-        if (ProviderType.userpass.equals(socialUser.id.provider)) {
-            this.password = socialUser.password;
-        } else {
-            this.password = "";
+
+        // only change username when first registering
+        if (this.username == null) {
+            if (ProviderType.userpass.equals(socialUser.id.provider)) {
+                this.password = socialUser.password;
+                this.username = socialUser.id.id;
+            } else {
+                this.password = "";
+                // avoid collision of usernames from third party provider
+                // TODO displayName is not Latin
+                this.username = socialUser.displayName.toLowerCase().replaceAll(" ", "");
+                long count = User.count("username=?", this.username);
+                if (count > 0) {
+                    this.username += count;
+                }
+                socialUser.id.id = this.username; // Sync up socialUser and database user so that this session can be authenticated through loadUser
+            }
+            this.provider = socialUser.id.provider;
         }
-        this.provider = socialUser.id.provider;
         this.accessToken = socialUser.accessToken;
         this.fullName = socialUser.displayName;
         this.avatar = socialUser.avatarUrl;
