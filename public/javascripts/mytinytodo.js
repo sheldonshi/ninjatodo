@@ -57,6 +57,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
 		touchDevice: false
 	},
     project: '',
+    notificationId: 0,
     editJSLoaded: false,
     tagSuggestUrl: '',
 
@@ -529,6 +530,13 @@ var mytinytodo = window.mytinytodo = _mtt = {
 			return false;
 		});
 
+        // invite
+        $("#user_invite").click(showInvite);
+        $("#user_invite_form").live('submit', function() {
+            saveInvite(this);
+            return false;
+        });
+
         // profile
         $("#user_profile").click(showUserProfile);
         $("#user_profile_form").live('submit', function() {
@@ -714,6 +722,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
         $("#editTitle").flushCache().setOptions({extraParams:{projectId:_mtt.project}});
         $("#task").flushCache().setOptions({extraParams:{projectId:_mtt.project}});
         this.loadLists(1);
+        setTimeout("_mtt.newNotificationCountForProject()", 10000);
     },
 
 	loadLists: function(onInit)
@@ -925,7 +934,38 @@ var mytinytodo = window.mytinytodo = _mtt = {
     newNotificationCount: function() {
         this.db.newNotificationCount({}, function(json) {
             if (json.total < 1) return;
-            $('#notification').append(' <strong>('+json.total+')</strong>');
+
+            var count = json.list[0].count;
+            var notificationId = json.list[0].notificationId;
+            if (count > 0) {
+                $('#notification').append(' <strong>('+count+')</strong>');
+            }
+            if (notificationId > 0) {
+                _mtt.notificationId = notificationId;
+            };
+        });
+    },
+
+    newNotificationCountForProject: function() {
+        this.db.newNotificationCountForProject({projectId:_mtt.project, notificationId:_mtt.notificationId}, function(json) {
+            if (json.total < 1) return;
+            var count = json.list[0].count;
+            var countForProject = json.list[0].countForProject;
+            var notificationId = json.list[0].notificationId;
+            if (count > 0) {
+                if ($('#notification strong').length > 0) {
+                    var oldCountStr = $('#notification strong').html();
+                    $('#notification strong').html('(' + (parseInt(oldCountStr.substring(1, oldCountStr.length - 1)) + count) + ')');
+                } else {
+                    $('#notification').append(' <strong>('+json.total+')</strong>');
+                }
+            }
+            if (countForProject > 0) {
+                alert("Project content may have been modified by others. Refresh project now");
+            }
+            if (notificationId > 0) {
+                _mtt.notificationId = notificationId;
+            };
         });
     }
 };
@@ -2463,17 +2503,32 @@ function logout()
 	return false;
 }
 
+    /* invite */
+    function showInvite() {
+        $('#page_ajax').load(_mtt.mttUrl+'Invitations/index',null,function(){
+            _mtt.pageSet('ajax','user_invite');
+            $('#mtt_body').children().not('#page_ajax').hide();
+        })
+        return false;
+    }
+
+    /* invite */
+    function saveInvite() {
+        return false;
+    }
+
 /* Settings */
 function showUserProfile() {
     $('#page_ajax').load(_mtt.mttUrl+'Users/edit',null,function(){
         _mtt.pageSet('ajax','user_profile');
-        $('#user_profile').hide();
+        //$('#user_profile').hide();
+        $('#mtt_body').children().not('#page_ajax').hide();
     })
     return false;
 }
 
-    function saveUserProfile(frm)
-    {
+function saveUserProfile(frm)
+{
         if(!frm) return false;
         var params = { save:'ajax' };
         //$(frm).find("input:text,input:password,input:checked,select").filter(":enabled").each(function() { params[this.name || '__'] = this.value; });
@@ -2484,7 +2539,7 @@ function showUserProfile() {
                 setTimeout('window.location.reload();', 1000);
             }
         }, 'json');
-    }
+}
 /*
 	Settings
 */

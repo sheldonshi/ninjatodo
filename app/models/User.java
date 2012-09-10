@@ -72,9 +72,8 @@ public class User extends Model {
     @Column(name = "date_last_login", nullable = true)
     public Date dateLastLogin;
 
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "last_notification_check", nullable = true)
-    public Date lastNotificationCheck;
+    @Column(name = "last_notification_id", nullable = true)
+    public Long lastNotificationId;
 
     @Column(name = "provider", nullable = true)
     @Enumerated(EnumType.STRING)
@@ -152,6 +151,9 @@ public class User extends Model {
                 long count = User.count("username=?", this.username);
                 if (count > 0) {
                     this.username += count;
+                    if (User.count("username=?", this.username) > 0) {
+                        this.username += (int) (Math.random() * 1000);
+                    }
                 }
                 socialUser.id.id = this.username; // Sync up socialUser and database user so that this session can be authenticated through loadUser
             }

@@ -42,6 +42,9 @@ public class Notification extends Model {
     @Column(name = "project_title", nullable = true)
     public String projectTitle;
 
+    @Column(name = "project_id", nullable = true)
+    public Long projectId;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "notification_type", nullable = false)
     public NotificationType notificationType = null;
@@ -93,7 +96,7 @@ public class Notification extends Model {
             String message = Utils.mapToJson(messageMap);
             // ToDO goto url is missing
             String listUrl = Router.getFullUrl("/") + "l/" + toDoList.id;
-            return createNotifications(notificationType, users, message, listUrl, toDoList.project.title);
+            return createNotifications(notificationType, users, message, listUrl, toDoList.project);
         } else {
             return null;
         }
@@ -125,7 +128,7 @@ public class Notification extends Model {
             String message = Utils.mapToJson(messageMap);
             // TODO goto url is missing
             String listUrl = Router.getFullUrl("/") + "l/" + toDo.toDoList.id;
-            return createNotifications(notificationType, users, message, listUrl, toDo.toDoList.project.title);
+            return createNotifications(notificationType, users, message, listUrl, toDo.toDoList.project);
         } else {
             return null;
         }
@@ -149,7 +152,7 @@ public class Notification extends Model {
         if (project != null && !inviter.equals(project.creator)) {
             recipients.add(project.creator);
         }
-        return createNotifications(notificationType, recipients, message, null, project != null ? project.title : null);
+        return createNotifications(notificationType, recipients, message, null, project);
     }
 
     /**
@@ -172,7 +175,7 @@ public class Notification extends Model {
         if (project != null && !inviter.equals(project.creator)) {
             recipients.add(project.creator);
         }
-        return createNotifications(notificationType, recipients, message, activationUrl, project != null ? project.title : null);
+        return createNotifications(notificationType, recipients, message, activationUrl, project);
     }
 
     /**
@@ -197,7 +200,7 @@ public class Notification extends Model {
      */
     private static List<Notification> createNotifications(NotificationType notificationType, 
                                                           List<User> recipients, String message,
-                                                          String gotoUrl, String projectTitle) {
+                                                          String gotoUrl, Project project) {
         List<Notification> notifications = new ArrayList<Notification> ();
         for (User recipient : recipients) {
             Notification notification = new Notification();
@@ -205,7 +208,8 @@ public class Notification extends Model {
             notification.notificationType = notificationType;
             notification.recipient = recipient;
             notification.gotoUrl = gotoUrl;
-            notification.projectTitle = projectTitle;
+            notification.projectTitle = project != null ? project.title : null;
+            notification.projectId = project != null ? project.id : null;
             notifications.add(notification);
         }
         return notifications;

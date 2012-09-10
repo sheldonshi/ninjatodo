@@ -29,7 +29,7 @@ public class Invitations extends Controller {
     private static final String INVITED_CODE = "code";
     private static final String INVITATIONS_JOIN = "security.SignUpController.join";
 
-    @Before
+    @Before(unless={"index"})
     static void checkAccess() throws Throwable {
         Projects.checkMembership();
     }
@@ -37,9 +37,13 @@ public class Invitations extends Controller {
      * gets all pending acceptance invitations for a project
      * @param projectId
      */
-    public static void index(Long projectId) {
+    public static void project(Long projectId) {
         Project proj = Project.findById(projectId);
         renderText(Utils.toJson(getInvitations(proj)));
+    }
+    
+    public static void index() {
+        render();
     }
 
     /**

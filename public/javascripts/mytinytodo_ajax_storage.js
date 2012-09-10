@@ -31,7 +31,7 @@ mytinytodoStorageAjax.prototype =
 	},
 
     invitations: function(params, callback) {
-        $.getJSON(this.mtt.mttUrl+'Invitations/index?projectId='+params.project+'&rnd='+Math.random(), callback);
+        $.getJSON(this.mtt.mttUrl+'Invitations/project?projectId='+params.project+'&rnd='+Math.random(), callback);
     },
 
     invite: function(params, callback) {
@@ -147,6 +147,10 @@ mytinytodoStorageAjax.prototype =
 
     newNotificationCount: function(params, callback) {
         $.getJSON(this.mtt.mttUrl+'Notifications/checkNewCount?rnd='+Math.random(), callback);
+    },
+
+    newNotificationCountForProject: function(params, callback) {
+        $.getJSON(this.mtt.mttUrl+'Notifications/checkNewCountForProject?projectId='+params.projectId+'&notificationId='+params.notificationId+'&rnd='+Math.random(), callback);
     },
 
     clearNotification: function(params, callback) {
