@@ -3,6 +3,7 @@ package models;
 import json.JsonExclude;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
+import org.hibernate.annotations.Index;
 import play.data.validation.Email;
 import play.data.validation.MaxSize;
 import play.data.validation.MinSize;
@@ -81,6 +82,11 @@ public class User extends Model {
     
     @Column(name = "access_token", nullable = true)
     public String accessToken;
+
+    @Column(name = "access_orig_id", nullable = true)
+    // TODO this should be indexed. use @Index only works when jpa.ddl=create
+    @Index(name = "idx_user_access_orig_id")
+    public String accessOriginalId;
     
     @Column(name = "avatar", nullable = true)
     public String avatar;
@@ -117,7 +123,12 @@ public class User extends Model {
     public SocialUser unpack() {
         SocialUser socialUser = new SocialUser();
         UserId userId = new UserId();
-        userId.id = this.username;
+        if (ProviderType.userpass.equals(this.provider)) {
+            userId.id = this.username;
+        } else {
+            userId.id = this.accessOriginalId;
+        }
+        
         userId.provider = this.provider;
         socialUser.id = userId;
         socialUser.accessToken = this.accessToken;
@@ -150,12 +161,9 @@ public class User extends Model {
                 this.username = socialUser.displayName.toLowerCase().replaceAll(" ", "");
                 long count = User.count("username=?", this.username);
                 if (count > 0) {
-                    this.username += count;
-                    if (User.count("username=?", this.username) > 0) {
-                        this.username += (int) (Math.random() * 1000);
-                    }
+                    this.username += (int) (Math.random() * 10000);
                 }
-                socialUser.id.id = this.username; // Sync up socialUser and database user so that this session can be authenticated through loadUser
+                this.accessOriginalId = socialUser.id.id;
             }
             this.provider = socialUser.id.provider;
         }
@@ -172,21 +180,37 @@ public class User extends Model {
         }
         this.dateLastLogin = socialUser.lastAccess;
     }
-    
+
     public static User loadBySocialUser(SocialUser socialUser) {
         if (socialUser != null) {
+            return loadBySocialUserId(socialUser.id);
+        } else {
+            return null;
+        }
+    }
+
+    public static User loadBySocialUserId(UserId socialUserId) {
+        if (socialUserId != null) {
             // cache user id only. if you cache the whole user, there will be hibernate session attach/detach problem
-            Long userId = CacheService.getUserId(socialUser.id.id);
+            Long userId = CacheService.getUserId(socialUserId);
             if (userId != null) {
                 return User.findById(userId);
             } else {
                 try {
-                    User user = (User) JPA.em()
-                            .createQuery("select u from User u left join fetch u.watchedToDoLists where username=:username")
-                            .setParameter("username", socialUser.id.id)
-                            .getSingleResult();
+                    User user = ProviderType.userpass.equals(socialUserId.provider)
+                            ?
+                            (User) JPA.em()
+                            .createQuery("select u from User u left join fetch u.watchedToDoLists where u.username=:username")
+                            .setParameter("username", socialUserId.id)
+                            .getSingleResult() 
+                            :
+                            (User) JPA.em()
+                                    .createQuery("select u from User u left join fetch u.watchedToDoLists where u.accessOriginalId=:id and u.provider=:provider")
+                                    .setParameter("id", socialUserId.id)
+                                    .setParameter("provider", socialUserId.provider)
+                                    .getSingleResult();
                     if (user != null) {
-                        CacheService.cacheUserId(user.username, user.id);
+                        CacheService.cacheUserId(socialUserId, user.id);
                     }
                     return user;
                 } catch (Exception e) {

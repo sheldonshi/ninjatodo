@@ -9,6 +9,7 @@ import play.data.validation.*;
 import play.i18n.Messages;
 import play.libs.Crypto;
 import play.mvc.Controller;
+import play.mvc.Router;
 import securesocial.provider.*;
 
 /**
@@ -31,6 +32,7 @@ public class SignUpController extends Controller {
     private static final String SECURESOCIAL_SECURE_SOCIAL_NOTICE_PAGE_HTML = "securesocial/SecureSocial/noticePage.html";
     private static final String PASSWORD = "password";
     private static final String DISPLAY_NAME = "displayName";
+    private static final String ORIGINAL_URL = "originalUrl";
 
     public static void signup() {
         render();
@@ -153,28 +155,42 @@ public class SignUpController extends Controller {
         }
     }
 
+    /**
+     * single click facebook authenticated join by invite
+     *
+     * @param code
+     */
+    public static void joinByFacebook(@Required String code) {
+        flash.put(ORIGINAL_URL, "/auth/joinByInvite?code=" + code);
+        redirect("/auth/facebook");
+    }
+
     public static void join(@Required String code) {
         Invitation invitation = Invitation.find("byUuid", code).first();
         User existingUser = null;
         if (invitation != null) {
-            // first check whether user already exists
-            existingUser = User.find("byEmail", invitation.toEmail).first();
-            if (existingUser == null) {
+            flash.remove(ORIGINAL_URL);  // if it comes from another redirect, remove further
+            if (SecureSocial.getCurrentUser() != null) {
+                existingUser = User.loadBySocialUser(SecureSocial.getCurrentUser());
+                if (invitation.project != null) {
+                    // check existing first
+                    Participation participation = Participation.find("project=? and user=?",
+                            invitation.project, existingUser).first();
+                    if (participation == null) {
+                        participation = new Participation();
+                        participation.project = invitation.project;
+                        participation.role = invitation.role;
+                        participation.user = existingUser;
+                        participation.save();
+                    }
+                    invitation.delete();
+                    redirect("/w/" + invitation.project.id);
+                } else {
+                    redirect("/");
+                }
+            } else {
                 flash.put(SignUpController.EMAIL, invitation.toEmail);
                 flash.put(SignUpController.INVITATION_UUID, code);
-            } else if (invitation.project != null) {
-                // check existing first
-                Participation participation = Participation.find("project=? and and user=?",
-                        invitation.project, existingUser).first();
-                if (participation == null) {
-                    participation = new Participation();
-                    participation.project = invitation.project;
-                    participation.role = invitation.role;
-                    participation.user = existingUser;
-                    participation.save();
-                }
-                invitation.delete();
-                redirect("/w/" + invitation.project.id);
             }
         }
         signup();

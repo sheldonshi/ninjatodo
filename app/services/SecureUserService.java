@@ -3,6 +3,7 @@ package services;
 import controllers.securesocial.SecureSocial;
 import models.User;
 import play.libs.Codec;
+import securesocial.provider.ProviderType;
 import securesocial.provider.SocialUser;
 import securesocial.provider.UserId;
 import securesocial.provider.UserService;
@@ -25,14 +26,14 @@ public class SecureUserService implements UserService.Service {
 
     @Override
     public SocialUser find(UserId id) {
-        Long userId = CacheService.getUserId(id.id);
+        Long userId = CacheService.getUserId(id);
         User user = null;
         if (userId != null) {
             user = User.findById(userId);
         } else {
-            user = (User) User.find("username=?", id.id).first();
+            user = User.loadBySocialUserId(id);
             if (user != null) {
-                CacheService.cacheUserId(user.username, user.id);
+                CacheService.cacheUserId(id, user.id);
             }
         }
         SocialUser socialUser = user != null && user.provider.equals(id.provider) ? user.unpack() : null;
@@ -41,7 +42,11 @@ public class SecureUserService implements UserService.Service {
 
     @Override
     public void save(SocialUser socialUser) {
-        User user = User.loadBySocialUser(socialUser);
+        // because username for user from facebook is generated, we cannot check existing facebook user by
+        // username, but by accessToken
+        User user = ProviderType.userpass.equals(socialUser.id.provider) ?
+                User.loadBySocialUser(socialUser) :
+                (User) User.find("byAccessOriginalId", socialUser.id.id).first();
         if (user == null) {
             user = new User();
         }

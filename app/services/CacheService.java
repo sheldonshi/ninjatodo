@@ -4,6 +4,8 @@ import models.Participation;
 import models.Project;
 import models.Role;
 import models.User;
+import securesocial.provider.SocialUser;
+import securesocial.provider.UserId;
 
 /**
  * Created by IntelliJ IDEA.
@@ -13,15 +15,16 @@ import models.User;
  * To change this template use File | Settings | File Templates.
  */
 public class CacheService {
-    private static final String CACHE_KEY_USERNAME = "username ";
+    private static final String CACHE_KEY_USER = "user ";
+    private static final String CACHE_KEY_ROLE = "role ";
     private static final String CACHE_KEY_PARTICIPATION_DELIMITER = "|";
     
-    public static Long getUserId(String username) {
-        return play.cache.Cache.get(CACHE_KEY_USERNAME + username, Long.class);
+    public static Long getUserId(UserId socialUserId) {
+        return play.cache.Cache.get(CACHE_KEY_USER + cacheKeyForUser(socialUserId), Long.class);
     }
 
-    public static void cacheUserId(String username, Long userId) {
-        play.cache.Cache.set(CACHE_KEY_USERNAME + username, userId);
+    public static void cacheUserId(UserId socialUserId, Long userId) {
+        play.cache.Cache.set(CACHE_KEY_USER + cacheKeyForUser(socialUserId), userId);
     }
     
     public static Role getPole(User user, Project project) {
@@ -35,5 +38,9 @@ public class CacheService {
 
     public static void clearRole(Participation p) {
         play.cache.Cache.delete(p.user.id + CACHE_KEY_PARTICIPATION_DELIMITER + p.project.id);
+    }
+    
+    private static String cacheKeyForUser(UserId socialUserId) {
+        return socialUserId.id + " " + socialUserId.provider.name();
     }
 }

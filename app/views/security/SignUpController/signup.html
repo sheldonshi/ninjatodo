@@ -76,6 +76,10 @@ $(document).ready(function() {
     </div>
 #{/if}
 
+#{if flash.invitationUuid}
+    <a href="@{security.SignUpController.joinByFacebook(flash.invitationUuid)}">Sign up using Facebook</a> or
+#{/if}
+    
     <div class="clearfix" >
     #{form @securesocial.UsernamePasswordController.createAccount(), autocomplete:'off'}
         <fieldset>
