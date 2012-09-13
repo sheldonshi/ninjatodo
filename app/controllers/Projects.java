@@ -1,8 +1,10 @@
 package controllers;
 
+import au.com.bytecode.opencsv.CSVWriter;
 import controllers.securesocial.SecureSocial;
 import models.*;
 import play.db.jpa.JPA;
+import play.i18n.Messages;
 import play.mvc.Before;
 import play.mvc.Controller;
 import play.mvc.Scope;
@@ -11,6 +13,10 @@ import services.CacheService;
 import services.SecureUserService;
 import utils.Utils;
 
+import java.io.*;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -28,9 +34,19 @@ public class Projects extends Controller {
      *
      * @throws Throwable
      */
-    @Before(unless={"add"})
-    static void checkAccess() throws Throwable {
+    @Before(only={"save"})
+    static void checkOwnerAccess() throws Throwable {
         checkOwnership();
+    }
+
+    /**
+     * this checks whether a user has membership to a project
+     *
+     * @throws Throwable
+     */
+    @Before(unless={"save"})
+    static void checkAccess() throws Throwable {
+        checkMembership();
     }
 
     /**
@@ -132,6 +148,76 @@ public class Projects extends Controller {
     }
 
     /**
+     * export a project in csv
+     */
+    public static void exportInCSV(Long projectId) {
+        response.setHeader("Content-Type", "text/csv");
+        response.setHeader("Content-Disposition", "attachment; filename=\"Exported_Project.csv\"");
+
+        File csvFile = new File("tmp/project_" + projectId + ".csv");
+        if (csvFile.exists()) {
+            csvFile.delete();
+        }
+        FileWriter fw = null;
+        try {
+            fw = new FileWriter(csvFile);
+            CSVWriter writer = new CSVWriter(fw);
+            // now load the whole project
+            Project project = Project.findById(projectId);
+
+            String projectColumn = Messages.get("export_project");
+            DateFormat dateFormat = DateFormat.getDateInstance(DateFormat.SHORT);
+
+            // write project title
+            writer.writeNext(new String[]{projectColumn, project.title});
+            writer.writeNext(new String[]{""});
+
+            List<String> headers = new ArrayList<String>();
+            headers.add(Messages.get("export_header_list"));
+            headers.add(Messages.get("export_header_task"));
+            headers.add(Messages.get("export_header_priority"));
+            headers.add(Messages.get("export_header_due"));
+            headers.add(Messages.get("export_header_completed"));
+            headers.add(Messages.get("export_header_notes"));
+            writer.writeNext(headers.toArray(new String[headers.size()]));
+            
+            // write each list
+            List<ToDoList> toDoLists = ToDoList.find("byProject", project).fetch();
+            for (ToDoList toDoList : toDoLists) {
+                List<ToDo> toDos = ToDo.find("toDoList=? order by completed, dateDue desc", toDoList).fetch();
+                for (ToDo toDo : toDos) {
+                    List<String> columns = new ArrayList<String>();
+                    columns.add(toDoList.name);
+                    columns.add(toDo.title);
+                    columns.add(String.valueOf(toDo.priority));
+                    columns.add(toDo.dateDue != null ? dateFormat.format(toDo.dateDue) : "");
+                    columns.add(toDo.completed ? "true" : "false");
+                    List<Note> notes = Note.find("byToDo", toDo).fetch();
+                    String noteString = "";
+                    for (Note note : notes) {
+                        noteString += note + "\n";
+                    }
+                    columns.add(noteString);
+
+                    writer.writeNext(columns.toArray(new String[columns.size()]));
+                }
+            }
+            writer.flush();
+            renderBinary(csvFile);
+        } catch (IOException ioe) {
+            error();
+        } finally {
+            if (fw != null) {
+                try {
+                    fw.close();
+                } catch (IOException e) {
+                    
+                }
+            }
+        }
+    }
+
+    /**
      * Gets all projects this user participates
      * @param project
      * @return
@@ -189,9 +275,11 @@ public class Projects extends Controller {
     }
 
     /**
-     * checks whether this user is an admin of the project
+     * this checks whether a user has ownership role to a project
+     *
      * @throws Throwable
      */
+    @Before(only={"save"})
     static void checkOwnership() {
         User user = User.loadBySocialUser(SecureSocial.getCurrentUser());
         String id = Scope.Params.current().get("projectId");

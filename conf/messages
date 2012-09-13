@@ -215,3 +215,11 @@ user_profile_password_old=Current Password
 user_profile_password_new=New Password
 user_profile_password_new2=Re-enter New Password
 user_profile_watchByEmail=Receive Email Notification
+
+export_project=Workspace
+export_header_list=List
+export_header_task=Task
+export_header_priority=Priority
+export_header_due=Due
+export_header_completed=Completed
+export_header_notes=Notes

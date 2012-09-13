@@ -210,3 +210,11 @@ user_profile_password_old=当前密码
 user_profile_password_new=新密码
 user_profile_password_new2=再次输入新密码
 user_profile_watchByEmail=接受邮件通知
+
+export_project=工作空间
+export_header_list=文件夹
+export_header_task=任务
+export_header_priority=优先级
+export_header_due=到期日
+export_header_completed=已完成
+export_header_notes=注释
