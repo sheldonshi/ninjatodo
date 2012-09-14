@@ -175,27 +175,7 @@ public class ToDoLists extends Controller {
     public static void deleteList(Long list) {
         ToDoList toDoList = ToDoList.findById(list);
         if (toDoList != null) {
-            // first delete all tasks within the list
-            List<ToDo> todos = ToDo.find("byToDoList", toDoList).fetch();
-            for (ToDo todo : todos) {
-                todo.delete();
-            }
-            // then remove watch list, otherwise will have foreign key constraint violation
-            List<User> users = User
-                    .find("select u from User u left join u.watchedToDoLists l where l=?", toDoList)
-                    .fetch();
-            User currentUser = User.loadBySocialUser(SecureSocial.getCurrentUser());
-            if (users != null) {
-                for (User user : users) {
-                    if (user.equals(currentUser)) {
-                        currentUser.watchedToDoLists.remove(toDoList);
-                        currentUser.save();
-                    } else {
-                        user.watchedToDoLists.remove(toDoList);
-                    }
-                }
-            }
-            toDoList.delete();
+            toDoList.delete(User.loadBySocialUser(SecureSocial.getCurrentUser()));
         }
 
         // send notification

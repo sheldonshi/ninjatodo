@@ -15,7 +15,6 @@ import utils.Utils;
 
 import java.io.*;
 import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,7 +33,7 @@ public class Projects extends Controller {
      *
      * @throws Throwable
      */
-    @Before(only={"save"})
+    @Before(only={"save", "delete"})
     static void checkOwnerAccess() throws Throwable {
         checkOwnership();
     }
@@ -44,7 +43,7 @@ public class Projects extends Controller {
      *
      * @throws Throwable
      */
-    @Before(unless={"save"})
+    @Before(unless={"save", "add"})
     static void checkAccess() throws Throwable {
         checkMembership();
     }
@@ -71,6 +70,25 @@ public class Projects extends Controller {
         project.title = title;
         project.save();
         renderText("{\"saved\":\"true\"}");
+    }
+
+    /**
+     * delete this project and all its content
+     *
+     * @param projectId
+     */
+    public static void delete(Long projectId) {
+        Project project = Project.findById(projectId);
+        User user = User.loadBySocialUser(SecureSocial.getCurrentUser());
+        List<ToDoList> toDoLists = ToDoList.find("byProject", project).fetch();
+        for (ToDoList toDoList : toDoLists) {
+            toDoList.delete(user);
+        }
+        List<Participation> participations = Participation.find("byProject", project).fetch();
+        for (Participation participation : participations) {
+            participation.delete();
+        }
+        redirect("/");
     }
 
     public static void add(String title) {
@@ -284,7 +302,7 @@ public class Projects extends Controller {
         User user = User.loadBySocialUser(SecureSocial.getCurrentUser());
         String id = Scope.Params.current().get("projectId");
         Project project = Project.findById(Long.valueOf(id));
-        Role currentRole = CacheService.getPole(user, project);
+        Role currentRole = CacheService.getRole(user, project);
         if (currentRole == null) {
             Participation participation = Participation.find("project=? and user=?", project, user).first();
             if (participation != null) {
@@ -376,7 +394,7 @@ public class Projects extends Controller {
      */
     private static Role getCurrentRole(Project project) {
         User user = User.loadBySocialUser(SecureSocial.getCurrentUser());
-        Role currentRole = CacheService.getPole(user, project);
+        Role currentRole = CacheService.getRole(user, project);
         if (currentRole == null) {
             Participation participation = Participation.find("project=? and user=?", project, user).first();
             if (participation != null) {

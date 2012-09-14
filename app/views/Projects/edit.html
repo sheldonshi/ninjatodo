@@ -120,7 +120,12 @@
     </td></tr>
     <tr><td colspan="2" class="form-buttons">
 
-        <a href="@{Projects.exportInCSV(project.id)}">Export in csv</a>
+        <a href="@{Projects.exportInCSV(project.id)}">&{'export_label_csv'}</a>
+
+    </td></tr>
+    <tr><td colspan="2" class="form-buttons">
+
+        <a href="@{Projects.delete(project.id)}">&{'set_delete_project'}</a>
 
     </td></tr>
 </table>

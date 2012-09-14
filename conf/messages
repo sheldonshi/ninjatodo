@@ -163,6 +163,7 @@ set_promote_user_owner=Promote to Owner
 set_promote_user_member=Promote to Member
 set_demote_user_member=Demote to Member
 set_demote_user_viewer=Demote to viewer
+set_delete_project=Delete this project
 
 signup_usernameNotAvailable=Not available
 signup_needMoreCharacters=Need more characters
@@ -216,6 +217,7 @@ user_profile_password_new=New Password
 user_profile_password_new2=Re-enter New Password
 user_profile_watchByEmail=Receive Email Notification
 
+export_label_csv=Export in csv
 export_project=Workspace
 export_header_list=List
 export_header_task=Task
@@ -223,3 +225,7 @@ export_header_priority=Priority
 export_header_due=Due
 export_header_completed=Completed
 export_header_notes=Notes
+
+errors_403_title=Access Denied
+errors_403_message=You don't have permission to view the project.
+errors_403_home=Home

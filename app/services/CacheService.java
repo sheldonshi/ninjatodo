@@ -27,7 +27,7 @@ public class CacheService {
         play.cache.Cache.set(CACHE_KEY_USER + cacheKeyForUser(socialUserId), userId);
     }
     
-    public static Role getPole(User user, Project project) {
+    public static Role getRole(User user, Project project) {
         return play.cache.Cache.get(user.id + CACHE_KEY_PARTICIPATION_DELIMITER + project.id, 
                 Role.class);
     }

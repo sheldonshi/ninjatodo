@@ -218,3 +218,7 @@ export_header_priority=优先级
 export_header_due=到期日
 export_header_completed=已完成
 export_header_notes=注释
+
+errors_403_title=没有权限
+errors_403_message=你没有这一项目的权限。
+errors_403_home=首页

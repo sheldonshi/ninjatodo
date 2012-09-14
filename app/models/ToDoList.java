@@ -1,5 +1,6 @@
 package models;
 
+import controllers.securesocial.SecureSocial;
 import json.JsonExclude;
 import play.data.validation.MaxSize;
 import play.data.validation.Required;
@@ -7,6 +8,7 @@ import play.db.jpa.Model;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by IntelliJ IDEA.
@@ -64,5 +66,29 @@ public class ToDoList extends Model {
     public ToDoList() {
         dateCreated = new Date();
         lastUpdated = dateCreated;
+    }
+
+    public void delete(User currentUser) {
+
+        // first delete all tasks within the list
+        List<ToDo> todos = ToDo.find("byToDoList", this).fetch();
+        for (ToDo todo : todos) {
+            todo.delete();
+        }
+        // then remove watch list, otherwise will have foreign key constraint violation
+        List<User> users = User
+                .find("select u from User u left join u.watchedToDoLists l where l=?", this)
+                .fetch();
+        if (users != null) {
+            for (User user : users) {
+                if (user.equals(currentUser)) {
+                    currentUser.watchedToDoLists.remove(this);
+                    currentUser.save();
+                } else {
+                    user.watchedToDoLists.remove(this);
+                }
+            }
+        }
+        this.delete();
     }
 }
