@@ -67,7 +67,7 @@ public class Notifications extends Controller {
             if (!notifications.isEmpty()) {
                 break;
             }
-            await(3000);  // wait for 3000 millis, suspend the request (for comet connection)
+            await(10000);  // wait for 10000 millis, suspend the request (for comet connection)
         } 
         // check which of the notifications are for this project
         for (Notification notification : notifications) {
