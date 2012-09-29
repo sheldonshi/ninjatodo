@@ -157,11 +157,13 @@ public class Projects extends Controller {
         Participation participation = Participation.findById(participationId);
         // TODO check permission
         if (participation != null &&
-                participation.project.id == projectId) {
+                participation.project.id.equals(projectId)) { // use equals don't use ==
             participation.delete();
             // save to cache
             CacheService.clearRole(participation);
             renderText(participationId);
+        } else {
+
         }
     }
 
