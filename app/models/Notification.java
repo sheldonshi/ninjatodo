@@ -95,7 +95,7 @@ public class Notification extends Model {
             }
             String message = Utils.mapToJson(messageMap);
             // ToDO goto url is missing
-            String listUrl = Router.getFullUrl("/") + "l/" + toDoList.id;
+            String listUrl = "/l/" + toDoList.id;
             return createNotifications(notificationType, users, message, listUrl, toDoList.project);
         } else {
             return null;
@@ -127,7 +127,7 @@ public class Notification extends Model {
             messageMap.put("message", "notification_" + notificationType.name().toLowerCase());
             String message = Utils.mapToJson(messageMap);
             // TODO goto url is missing
-            String listUrl = Router.getFullUrl("/") + "l/" + toDo.toDoList.id;
+            String listUrl = "/l/" + toDo.toDoList.id;
             return createNotifications(notificationType, users, message, listUrl, toDo.toDoList.project);
         } else {
             return null;
