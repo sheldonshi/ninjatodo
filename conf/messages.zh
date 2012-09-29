@@ -166,6 +166,10 @@ signup_tooManyCharacters=太多字了！
 signup_needAtLeastOneLetter=需要至少一个字母
 signup_needAtLeastOneNumber=需要至少一个数字
 signup_passwordPattern=至少6个字节，至少一个字母和一个数字
+securesocial.wrongUserPass=用户名和密码不匹配
+signup_accountCreated=激活信件已发送至%s。请点邮件中链接激活帐户。
+signup_accountCreated_resend=重新发送
+signup_accountCreated_reSignUp=用不同邮箱注册
 
 sendInvitationEmail_hello=您好，%s邀请您加入 Ninja To Do 项目"%s".
 sendInvitationEmail_url=点击以下链接加入：

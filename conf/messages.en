@@ -171,6 +171,9 @@ signup_needAtLeastOneLetter=At least one letter required
 signup_needAtLeastOneNumber=At least one number required
 signup_passwordPattern=At least 6 characters, with at least one letter and one number
 securesocial.wrongUserPass=Username and password do not match.
+signup_accountCreated=An activation email has been sent to %s. Please activate your account.
+signup_accountCreated_resend=Resend
+signup_accountCreated_reSignUp=Sign up using a different email
 
 sendInvitationEmail_hello=Hello, %s invites you join Ninja To Do workspace "%s".
 sendInvitationEmail_url=Click the following link to join:

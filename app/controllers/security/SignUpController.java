@@ -27,9 +27,9 @@ public class SignUpController extends Controller {
     private static final String USER_NAME = "userName";
     private static final String SECURESOCIAL_USER_NAME_TAKEN = "securesocial.userNameTaken";
     private static final String SECURESOCIAL_ERROR_CREATING_ACCOUNT = "securesocial.errorCreatingAccount";
-    private static final String SECURESOCIAL_ACCOUNT_CREATED = "securesocial.accountCreated";
+    private static final String SECURESOCIAL_ACCOUNT_CREATED = "signup_accountCreated";
     private static final String SECURESOCIAL_ACTIVATION_TITLE = "securesocial.activationTitle";
-    private static final String SECURESOCIAL_SECURE_SOCIAL_NOTICE_PAGE_HTML = "securesocial/SecureSocial/noticePage.html";
+    private static final String SECURESOCIAL_SECURE_SOCIAL_NOTICE_PAGE_HTML = "security/SignUpController/noticePage.html";
     private static final String PASSWORD = "password";
     private static final String DISPLAY_NAME = "displayName";
     private static final String ORIGINAL_URL = "originalUrl";
@@ -145,14 +145,48 @@ public class SignUpController extends Controller {
         // create an activation id
         if (!socialUser.isEmailVerified) {
             final String uuid = UserService.createActivation(socialUser);
-            Mails.sendActivationEmail(socialUser, uuid);
-            flash.success(Messages.get(SECURESOCIAL_ACCOUNT_CREATED));
-            final String title = Messages.get(SECURESOCIAL_ACTIVATION_TITLE, socialUser.displayName);
+            sendActivationEmail(socialUser, invitationUuid, password);
+            final String title = "";//Messages.get(SECURESOCIAL_ACTIVATION_TITLE, socialUser.displayName);
             render(SECURESOCIAL_SECURE_SOCIAL_NOTICE_PAGE_HTML, title);
         } else {
             // already email verified, should login and go to project directly
             SecureSocial.authenticate(ProviderType.userpass);
         }
+    }
+
+    /**
+     * resend activation email
+     */
+    public static void resendActivation() {
+        if (flash.get(USER_NAME) != null) {
+            UserId socialUserId = new UserId();
+            socialUserId.id = flash.get(USER_NAME);
+            socialUserId.provider = ProviderType.userpass;
+            User user = User.loadBySocialUserId(socialUserId);
+            if (user != null) {
+                sendActivationEmail(user.unpack(), flash.get(INVITATION_UUID), flash.get(PASSWORD));
+                final String title = "";//Messages.get(SECURESOCIAL_ACTIVATION_TITLE, user.fullName);
+                render(SECURESOCIAL_SECURE_SOCIAL_NOTICE_PAGE_HTML, title);
+            }
+        }
+        signup();
+    }
+
+    /**
+     * sends an activation email, and store key form values in flash, so that user can sign
+     * up using a different email without re-enter other info
+     * @param socialUser
+     * @param invitationUuid
+     */
+    private static void sendActivationEmail(SocialUser socialUser, String invitationUuid, String password) {
+        Mails.sendActivationEmail(socialUser, UserService.createActivation(socialUser));
+        flash.success(Messages.get(SECURESOCIAL_ACCOUNT_CREATED, socialUser.email));
+        // for signing up using a different email
+        flash.put(USER_NAME, socialUser.id.id);
+        flash.put(DISPLAY_NAME, socialUser.displayName);
+        flash.put(INVITATION_UUID, invitationUuid);
+        flash.put(PASSWORD, password);
+        validation.keep();
     }
 
     /**
