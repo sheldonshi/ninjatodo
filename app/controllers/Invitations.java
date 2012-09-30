@@ -97,7 +97,7 @@ public class Invitations extends Controller {
      */
     public static void delete(@Required Long id, @Required Long projectId) {
         Invitation invitation = Invitation.findById(id);
-        if (invitation.project != null && invitation.project.id == projectId) {
+        if (invitation.project != null && invitation.project.id.equals(projectId)) {  // use equals not ==
             invitation.delete();
             Map returnMap = new HashMap();
             returnMap.put("id", id);
